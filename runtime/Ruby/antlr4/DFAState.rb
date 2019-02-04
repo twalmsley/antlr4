@@ -1,3 +1,4 @@
+require '../../antlr4/runtime/Ruby/antlr4/ATNConfigSet'
 class DFAState
   attr_accessor :stateNumber
   @stateNumber = -1

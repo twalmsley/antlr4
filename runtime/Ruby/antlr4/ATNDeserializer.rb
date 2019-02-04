@@ -49,6 +49,11 @@ class ATNDeserializer
   @@SERIALIZED_Uuid = @@ADDED_UNICODE_SMP
 
 
+  class << self
+    attr_accessor :SERIALIZED_Uuid
+    attr_accessor :SERIALIZED_VERSION
+  end
+
   class UnicodeDeserializer
     def readUnicode(data, p)
       data[p]
