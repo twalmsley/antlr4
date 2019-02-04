@@ -1,42 +1,27 @@
+class Tree
 
 
+  def getParent()
+
+  end
 
 
+  def getPayload()
+
+  end
 
 
+  def getChild(i)
+
+  end
 
 
+  def getChildCount()
+
+  end
 
 
+  def toStringTree()
 
-
-
-
-class Tree 
-
-
-
-	Tree getParent()
-
-
-
-
-
-
-
-
-	Object getPayload()
-
-
-	Tree getChild(int i)
-
-
-
-
-	int getChildCount()
-
-
-
-
-	String toStringTree()
+  end
 end

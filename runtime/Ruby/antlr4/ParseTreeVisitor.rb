@@ -1,52 +1,23 @@
+class ParseTreeVisitor
 
 
+  def visit(tree)
+
+  end
 
 
+  def visitChildren(node)
+
+  end
 
 
+  def visitTerminal(node)
+
+  end
 
 
+  def visitErrorNode(node)
 
-
-
-
-
-
-
-
-class ParseTreeVisitor<T> 
-
-
-
-
-
-
-
-	T visit(ParseTree tree)
-
-
-
-
-
-
-
-
-	T visitChildren(RuleNode node)
-
-
-
-
-
-
-
-	T visitTerminal(TerminalNode node)
-
-
-
-
-
-
-
-	T visitErrorNode(ErrorNode node)
+  end
 
 end

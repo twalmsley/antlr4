@@ -1,58 +1,33 @@
+require '../../antlr4/runtime/Ruby/antlr4/SyntaxTree'
+
+class ParseTree < SyntaxTree
+  # the following methods narrow the return type they are not additional methods
+
+  def getParent()
+
+  end
+
+  def getChild(i)
+
+  end
 
 
+  def setParent(parent)
+
+  end
 
 
+  def accept(visitor)
+
+  end
 
 
+  def getText()
+
+  end
 
 
+  def toStringTree(parser)
 
-
-
-
-
-
-
-
-
-
-
-class ParseTree extends SyntaxTree 
-	# the following methods narrow the return type they are not additional methods
-	
-	ParseTree getParent()
-	
-	ParseTree getChild(int i)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	void setParent(RuleContext parent)
-
-
-	<T> T accept(ParseTreeVisitor<? extends T> visitor)
-
-
-
-
-
-	String getText()
-
-
-
-
-	String toStringTree(Parser parser)
+  end
 end

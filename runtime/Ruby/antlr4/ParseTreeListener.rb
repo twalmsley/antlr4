@@ -1,27 +1,17 @@
+class ParseTreeListener
+  def visitTerminal(node)
 
+  end
 
+  def visitErrorNode(node)
 
+  end
 
+  def enterEveryRule(ctx)
 
+  end
 
+  def exitEveryRule(ctx)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class ParseTreeListener 
-	void visitTerminal(TerminalNode node)
-	void visitErrorNode(ErrorNode node)
-    void enterEveryRule(ParserRuleContext ctx)
-    void exitEveryRule(ParserRuleContext ctx)
+  end
 end
