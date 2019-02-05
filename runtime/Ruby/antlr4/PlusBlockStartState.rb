@@ -3,7 +3,7 @@ require '../../antlr4/runtime/Ruby/antlr4/BlockStartState'
 
 class PlusBlockStartState < BlockStartState
   attr_accessor :loopBackState
-  @loopBackState
+  @loopBackState = nil
 
 
   def getStateType()

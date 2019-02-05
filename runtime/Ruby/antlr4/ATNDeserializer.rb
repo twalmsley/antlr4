@@ -221,7 +221,7 @@ class ATNDeserializer
         atn.ruleToTokenType[i] = tokenType
 
         if (!isFeatureSupported(@@ADDED_LEXER_ACTIONS, uuid))
-          actionIndexIgnored = data[p]
+          @actionIndexIgnored = data[p]
           p += 1
         end
       end
@@ -642,7 +642,7 @@ class ATNDeserializer
       return PrecedencePredicateTransition.new(target, arg1)
     when Transition::ATOM
       if (arg3 != 0)
-        return AtomTransition.new(target, Token.EOF)
+        return AtomTransition.new(target, Token::EOF)
       else
         return AtomTransition.new(target, arg1)
       end

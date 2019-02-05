@@ -32,23 +32,18 @@ class Lexer < Recognizer
 
 
   attr_accessor :_tokenStartLine
-  @_tokenStartLine
 
 
   attr_accessor :_tokenStartCharPositionInLine
-  @_tokenStartCharPositionInLine
 
 
   attr_accessor :_hitEOF
-  @_hitEOF
 
 
   attr_accessor :_channel
-  @_channel
 
 
   attr_accessor :_type
-  @_type
 
   attr_accessor :_modeStack
   @_modeStack = IntegerStack.new
@@ -58,7 +53,6 @@ class Lexer < Recognizer
 
 
   attr_accessor :_text
-  @_text
 
 
   def initialize(input = nil)
@@ -326,7 +320,7 @@ class Lexer < Recognizer
     return tokens
   end
 
-  def recover(e)
+  def recover_1(e)
     if (@_input.LA(1) != IntStream.EOF)
       # skip a char and begin again
       getInterpreter().consume(@_input)
@@ -371,7 +365,7 @@ class Lexer < Recognizer
   end
 
 
-  def recover(re)
+  def recover_2(re)
     @_input.consume()
   end
 end

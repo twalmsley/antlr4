@@ -1,5 +1,4 @@
 require '../../antlr4/runtime/Ruby/antlr4/RuleNode'
-require '../../antlr4/runtime/Ruby/antlr4/ParserRuleContext'
 require '../../antlr4/runtime/Ruby/antlr4/Interval'
 require '../../antlr4/runtime/Ruby/antlr4/ATN'
 require '../../antlr4/runtime/Ruby/antlr4/Trees'
@@ -65,7 +64,7 @@ class RuleContext < RuleNode
     builder = ""
     i = 0
     while i < getChildCount()
-      builder < getChild(i).getText()
+      builder << getChild(i).getText()
       i += 1
     end
 
@@ -142,7 +141,7 @@ class RuleContext < RuleNode
 
   def to_s_list_ctx(ruleNames, stop)
     buf = ""
-    RuleContext p = this
+     p = this
     buf << "["
     while (p != nil && p != stop)
       if (ruleNames == nil)

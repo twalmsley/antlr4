@@ -3,11 +3,11 @@ require '../../antlr4/runtime/Ruby/antlr4/DecisionState'
 
 class StarLoopEntryState < DecisionState
   attr_accessor :loopBackState
-  @loopBackState
+  @loopBackState = nil
 
 
   attr_accessor :isPrecedenceDecision
-  @isPrecedenceDecision
+  @isPrecedenceDecision = false
 
 
   def getStateType()

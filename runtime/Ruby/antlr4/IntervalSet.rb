@@ -4,9 +4,8 @@ require '../../antlr4/runtime/Ruby/antlr4/Interval'
 class IntervalSet
   @intervals = nil
 
-  @readonly = false
-
   def initialize(a = nil, b = nil)
+    @readonly = false
     if (a == nil)
       @intervals = []
     elsif a.is_a? Array
@@ -94,7 +93,7 @@ class IntervalSet
     @intervals << addition
   end
 
-  def or (sets)
+  def or_sets (sets)
     r = IntervalSet.new
     sets.each {|s| r.addAll(s)}
     return r
@@ -221,7 +220,7 @@ class IntervalSet
     return result
   end
 
-  def or (a)
+  def or_list (a)
     o = IntervalSet.new
     o.addAll(self)
     o.addAll(a)

@@ -2,9 +2,6 @@ require '../../antlr4/runtime/Ruby/antlr4/Transition'
 
 class EpsilonTransition < Transition
 
-  @outermostPrecedenceReturn
-
-
   def initialize(target, outermostPrecedenceReturn = -1)
     super(target)
     @outermostPrecedenceReturn = outermostPrecedenceReturn

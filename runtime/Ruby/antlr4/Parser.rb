@@ -1,5 +1,9 @@
 require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
 require '../../antlr4/runtime/Ruby/antlr4/ParseTreeListener'
+require '../../antlr4/runtime/Ruby/antlr4/DefaultErrorStrategy'
+require '../../antlr4/runtime/Ruby/antlr4/ATNDeserializer'
+require '../../antlr4/runtime/Ruby/antlr4/VocabularyImpl'
+require '../../antlr4/runtime/Ruby/antlr4/IntegerStack'
 
 class Parser < Recognizer
 
@@ -55,28 +59,28 @@ class Parser < Recognizer
   @_errHandler = DefaultErrorStrategy.new()
 
 
-  @_input
+  @_input = nil
 
   @_precedenceStack = IntegerStack.new()
   @_precedenceStack.push(0)
 
 
-  @_ctx
+  @_ctx = nil
 
 
   @_buildParseTrees = true
 
 
-  @_tracer
+  @_tracer = nil
 
 
-  @_parseListeners
+  @_parseListeners = nil
 
 
-  @_syntaxErrors
+  @_syntaxErrors = nil
 
 
-  @matchedEOF
+  @matchedEOF = nil
 
   def initialize(input)
     setInputStream(input)
@@ -105,7 +109,7 @@ class Parser < Recognizer
     t = getCurrentToken()
     if (t.getType() == ttype)
       if (ttype == Token.EOF)
-        matchedEOF = true
+        @matchedEOF = true
       end
       @_errHandler.reportMatch(this)
       consume()
@@ -260,7 +264,7 @@ class Parser < Recognizer
   end
 
 
-  def compileParseTreePattern(pattern, patternRuleIndex)
+  def compileParseTreePattern_1(pattern, patternRuleIndex)
     if (getTokenStream() != nil)
       tokenSource = getTokenStream().getTokenSource()
       if (tokenSource.is_a? Lexer)
@@ -272,7 +276,7 @@ class Parser < Recognizer
   end
 
 
-  def compileParseTreePattern(pattern, patternRuleIndex, lexer)
+  def compileParseTreePattern_2(pattern, patternRuleIndex, lexer)
 
     m = ParseTreePatternMatcher.new(lexer, self)
     return m.compile(pattern, patternRuleIndex)
@@ -571,11 +575,11 @@ class Parser < Recognizer
   end
 
 
-  def getRuleInvocationStack()
+  def getRuleInvocationStack_1()
     return getRuleInvocationStack(@_ctx)
   end
 
-  def getRuleInvocationStack(p)
+  def getRuleInvocationStack_2(p)
     ruleNames = getRuleNames()
     stack = []
     while (p != nil)

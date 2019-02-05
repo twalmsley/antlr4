@@ -15,10 +15,6 @@ class ParserRuleContext < RuleContext
 
   attr_accessor :exception
 
-  def initialize()
-  end
-
-
   def copyFrom(ctx)
     @parent = ctx.parent
     @invokingState = ctx.invokingState

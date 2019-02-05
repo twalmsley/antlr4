@@ -3,8 +3,6 @@ require '../../antlr4/runtime/Ruby/antlr4/Token'
 class LL1Analyzer
   @@HIT_PRED = Token::INVALID_TYPE
 
-  @atn
-
   def initialize(atn)
     @atn = atn
   end

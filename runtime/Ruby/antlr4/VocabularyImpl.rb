@@ -3,15 +3,6 @@ require '../../antlr4/runtime/Ruby/antlr4/Vocabulary'
 class VocabularyImpl < Vocabulary
   @@EMPTY_NAMES = []
 
-  @literalNames = []
-
-  @symbolicNames = []
-
-  @displayNames = []
-
-  @maxTokenType
-
-
   def initialize(literalNames, symbolicNames, displayNames = nil)
     @literalNames = literalNames != nil ? literalNames : @@EMPTY_NAMES
     @symbolicNames = symbolicNames != nil ? symbolicNames : @@EMPTY_NAMES

@@ -42,6 +42,7 @@ ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 
 require '../../antlr4/runtime/Ruby/antlr4/PredictionContextCache'
 require '../../antlr4/runtime/Ruby/antlr4/Parser'
+require '../../antlr4/runtime/Ruby/antlr4/ParserRuleContext'
 require "./<file.grammarName>Listener"
 require "./<file.grammarName>Visitor"
 
@@ -501,7 +502,7 @@ PlusBlock(choice, alts, error) ::= <<
 setState(<choice.blockStartStateNumber>) <! alt block decision !>
 @_errHandler.sync(self)
 @_alt = 1<if(!choice.ast.greedy)>+1<endif>
-loop dp
+loop do
 	case (@_alt)
 	<alts:{alt|
 when <i><if(!choice.ast.greedy)>+1<endif>
@@ -510,7 +511,7 @@ when <i><if(!choice.ast.greedy)>+1<endif>
 	else
 		<error>
 	end
-	setState(<choice.loopBackStateNumber>); <! loopback/exit decision !>
+	setState(<choice.loopBackStateNumber>) <! loopback/exit decision !>
 	@_errHandler.sync(self)
 	@_alt = getInterpreter().adaptivePredict(_input,<choice.decision>,_ctx)
     break if !( _alt!=<choice.exitAlt> && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER )
@@ -576,7 +577,7 @@ if ( <if(invert)><m.varName> \<= 0 || <else>!<endif>(<expr>) )
 
 else
 	if ( _input.LA(1)==Token.EOF )
-	  matchedEOF = true
+	  @matchedEOF = true
 	end
 	@_errHandler.reportMatch(self)
 	consume()
@@ -828,6 +829,7 @@ require '../../antlr4/runtime/Ruby/antlr4/DFA'
 require '../../antlr4/runtime/Ruby/antlr4/Token'
 require '../../antlr4/runtime/Ruby/antlr4/PredictionContextCache'
 require '../../antlr4/runtime/Ruby/antlr4/VocabularyImpl'
+require '../../antlr4/runtime/Ruby/antlr4/Lexer'
 
 <if(lexerFile.genPackage)>
 module <lexerFile.genPackage>

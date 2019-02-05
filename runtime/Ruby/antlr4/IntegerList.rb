@@ -19,11 +19,13 @@ class IntegerList
     if list != nil
       @_data = Array.new(list._data)
       @_size = list._size
+    else
+      @_data = []
+      @_size = 0
     end
   end
 
   def add(value)
-
     @_data[@_size] = value
     @_size += 1
   end

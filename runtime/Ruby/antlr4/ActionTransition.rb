@@ -1,9 +1,6 @@
 require '../../antlr4/runtime/Ruby/antlr4/Transition'
 
 class ActionTransition < Transition
-  @ruleIndex
-  @actionIndex
-  @isCtxDependent
 
   def initialize(target, ruleIndex, actionIndex, isCtxDependent)
     super(target)

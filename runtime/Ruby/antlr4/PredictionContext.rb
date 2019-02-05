@@ -1,606 +1,510 @@
+require '../../antlr4/runtime/Ruby/antlr4/Integer'
+require '../../antlr4/runtime/Ruby/antlr4/RuleContext'
+#require '../../antlr4/runtime/Ruby/antlr4/EmptyPredictionContext'
 
+class PredictionContext
 
+  #EMPTY = EmptyPredictionContext.new()
 
+  EMPTY_RETURN_STATE = Integer::MAX
 
+  INITIAL_HASH = 1
 
+  @@globalNodeCount = 0
 
+  @id = @@globalNodeCount
 
+  @@globalNodeCount += 1
 
 
+  attr_accessor :cachedHashCode
 
+  def initialize(cachedHashCode)
+    @cachedHashCode = cachedHashCode
+  end
 
 
+  def self.fromRuleContext(atn, outerContext)
+    if (outerContext == nil)
+      outerContext = RuleContext.EMPTY
 
+      # if we are in RuleContext of start rule, s, then PredictionContext
+      # is EMPTY. Nobody called us. (if we are empty, return empty)
+      if (outerContext.parent == nil || outerContext == RuleContext.EMPTY)
+        return PredictionContext.EMPTY
+      end
 
+      # If we have a parent, convert it to a PredictionContext graph
+      parent = EMPTY
+      parent = PredictionContext.fromRuleContext(atn, outerContext.parent)
 
+      state = atn.states.get(outerContext.invokingState)
+      transition = state.transition(0)
+      return SingletonPredictionContext.create(parent, transition.followState.stateNumber)
+    end
 
+    def size()
 
+    end
 
+    def getParent(index)
 
+    end
 
+    def getReturnState(index)
 
+    end
 
-public abstract class PredictionContext 
+    def isEmpty()
+      return self == EMPTY
+    end
 
+    def hasEmptyPath()
+# since EMPTY_RETURN_STATE can only appear in the last position, we check last one
+      return getReturnState(size() - 1) == EMPTY_RETURN_STATE
+    end
 
 
+    def hash()
+      return @cachedHashCode
+    end
 
-	public static final EmptyPredictionContext EMPTY = new EmptyPredictionContext()
 
+    def equals(obj)
 
+    end
 
-
-
-
-	public static final int EMPTY_RETURN_STATE = Integer.MAX_VALUE
-
-	private static final int INITIAL_HASH = 1
-
-	def self.globalNodeCount = 0
-	public final int id = globalNodeCount++
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public final int cachedHashCode
-
-	protected PredictionContext(int cachedHashCode) 
-		this.cachedHashCode = cachedHashCode
-	end
-
-
-
-
-	public static PredictionContext fromRuleContext(ATN atn, RuleContext outerContext) 
-		if ( outerContext==null ) outerContext = RuleContext.EMPTY
-
-		# if we are in RuleContext of start rule, s, then PredictionContext
-		# is EMPTY. Nobody called us. (if we are empty, return empty)
-		if ( outerContext.parent==null || outerContext==RuleContext.EMPTY ) 
-			return PredictionContext.EMPTY
-		end
-
-		# If we have a parent, convert it to a PredictionContext graph
-		PredictionContext parent = EMPTY
-		parent = PredictionContext.fromRuleContext(atn, outerContext.parent)
-
-		ATNState state = atn.states.get(outerContext.invokingState)
-		RuleTransition transition = (RuleTransition)state.transition(0)
-		return SingletonPredictionContext.create(parent, transition.followState.stateNumber)
-	end
-
-	public abstract int size()
-
-	public abstract PredictionContext getParent(int index)
-
-	public abstract int getReturnState(int index)
-
-
-	public boolean isEmpty() 
-		return this == EMPTY
-	end
-
-	public boolean hasEmptyPath() 
-		# since EMPTY_RETURN_STATE can only appear in the last position, we check last one
-		return getReturnState(size() - 1) == EMPTY_RETURN_STATE
-	end
-
-	
-	public final int hashCode() 
-		return cachedHashCode
-	end
-
-	
-	public abstract boolean equals(Object obj)
-
-	protected static int calculateEmptyHashCode() 
-		int hash = MurmurHash.initialize(INITIAL_HASH)
-		hash = MurmurHash.finish(hash, 0)
-		return hash
-	end
-
-	protected static int calculateHashCode(PredictionContext parent, int returnState) 
-		int hash = MurmurHash.initialize(INITIAL_HASH)
-		hash = MurmurHash.update(hash, parent)
-		hash = MurmurHash.update(hash, returnState)
-		hash = MurmurHash.finish(hash, 2)
-		return hash
-	end
-
-	protected static int calculateHashCode(PredictionContext[] parents, int[] returnStates) 
-		int hash = MurmurHash.initialize(INITIAL_HASH)
-
-		for (PredictionContext parent : parents) 
-			hash = MurmurHash.update(hash, parent)
-		end
-
-		for (int returnState : returnStates) 
-			hash = MurmurHash.update(hash, returnState)
-		end
-
-		hash = MurmurHash.finish(hash, 2 * parents.length)
-		return hash
-	end
-
-	# dispatch
-	public static PredictionContext merge(
-		PredictionContext a, PredictionContext b,
-		boolean rootIsWildcard,
-		DoubleKeyMap<PredictionContext,PredictionContext,PredictionContext> mergeCache)
-	
-		assert a!=null && b!=null # must be empty context, never null
-
-		# share same graph if both same
-		if ( a==b || a.equals(b) ) return a
-
-		if ( a instanceof SingletonPredictionContext && b instanceof SingletonPredictionContext) 
-			return mergeSingletons((SingletonPredictionContext)a,
-								   (SingletonPredictionContext)b,
-								   rootIsWildcard, mergeCache)
-		end
-
-		# At least one of a or b is array
-		# If one is $ and rootIsWildcard, return $ as * wildcard
-		if ( rootIsWildcard ) 
-			if ( a instanceof EmptyPredictionContext ) return a
-			if ( b instanceof EmptyPredictionContext ) return b
-		end
-
-		# convert singleton so both are arrays to normalize
-		if ( a instanceof SingletonPredictionContext ) 
-			a = new ArrayPredictionContext((SingletonPredictionContext)a)
-		end
-		if ( b instanceof SingletonPredictionContext) 
-			b = new ArrayPredictionContext((SingletonPredictionContext)b)
-		end
-		return mergeArrays((ArrayPredictionContext) a, (ArrayPredictionContext) b,
-						   rootIsWildcard, mergeCache)
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public static PredictionContext mergeSingletons(
-		SingletonPredictionContext a,
-		SingletonPredictionContext b,
-		boolean rootIsWildcard,
-		DoubleKeyMap<PredictionContext,PredictionContext,PredictionContext> mergeCache)
-	
-		if ( mergeCache!=null ) 
-			PredictionContext previous = mergeCache.get(a,b)
-			if ( previous!=null ) return previous
-			previous = mergeCache.get(b,a)
-			if ( previous!=null ) return previous
-		end
-
-		PredictionContext rootMerge = mergeRoot(a, b, rootIsWildcard)
-		if ( rootMerge!=null ) 
-			if ( mergeCache!=null ) mergeCache.put(a, b, rootMerge)
-			return rootMerge
-		end
-
-		if ( a.returnState==b.returnState )  # a == b
-			PredictionContext parent = merge(a.parent, b.parent, rootIsWildcard, mergeCache)
-			# if parent is same as existing a or b parent or reduced to a parent, return it
-			if ( parent == a.parent ) return a # ax + bx = ax, if a=b
-			if ( parent == b.parent ) return b # ax + bx = bx, if a=b
-			# else: ax + ay = a'[x,y]
-			# merge parents x and y, giving array node with x,y then remainders
-			# of those graphs.  dup a, a' points at merged array
-			# new joined parent so create new singleton pointing to it, a'
-			PredictionContext a_ = SingletonPredictionContext.create(parent, a.returnState)
-			if ( mergeCache!=null ) mergeCache.put(a, b, a_)
-			return a_
-		end
-		else  # a != b payloads differ
-			# see if we can collapse parents due to $+x parents if local ctx
-			PredictionContext singleParent = null
-			if ( a==b || (a.parent!=null && a.parent.equals(b.parent)) )  # ax + bx = [a,b]x
-				singleParent = a.parent
-			end
-			if ( singleParent!=null ) 	# parents are same
-				# sort payloads and use same parent
-				int[] payloads = a.returnState, b.returnStateend
-				if ( a.returnState > b.returnState ) 
-					payloads[0] = b.returnState
-					payloads[1] = a.returnState
-				end
-				PredictionContext[] parents = singleParent, singleParentend
-				PredictionContext a_ = new ArrayPredictionContext(parents, payloads)
-				if ( mergeCache!=null ) mergeCache.put(a, b, a_)
-				return a_
-			end
-			# parents differ and can't merge them. Just pack together
-			# into array can't merge.
-			# ax + by = [ax,by]
-			int[] payloads = a.returnState, b.returnStateend
-			PredictionContext[] parents = a.parent, b.parentend
-			if ( a.returnState > b.returnState )  # sort by payload
-				payloads[0] = b.returnState
-				payloads[1] = a.returnState
-				parents = new PredictionContext[] b.parent, a.parentend
-			end
-			PredictionContext a_ = new ArrayPredictionContext(parents, payloads)
-			if ( mergeCache!=null ) mergeCache.put(a, b, a_)
-			return a_
-		end
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public static PredictionContext mergeRoot(SingletonPredictionContext a,
-											  SingletonPredictionContext b,
-											  boolean rootIsWildcard)
-	
-		if ( rootIsWildcard ) 
-			if ( a == EMPTY ) return EMPTY  # * + b = *
-			if ( b == EMPTY ) return EMPTY  # a + * = *
-		end
-		else 
-			if ( a == EMPTY && b == EMPTY ) return EMPTY # $ + $ = $
-			if ( a == EMPTY )  # $ + x = [x,$]
-				int[] payloads = b.returnState, EMPTY_RETURN_STATEend
-				PredictionContext[] parents = b.parent, nullend
-				PredictionContext joined =
-					new ArrayPredictionContext(parents, payloads)
-				return joined
-			end
-			if ( b == EMPTY )  # x + $ = [x,$] ($ is always last if present)
-				int[] payloads = a.returnState, EMPTY_RETURN_STATEend
-				PredictionContext[] parents = a.parent, nullend
-				PredictionContext joined =
-					new ArrayPredictionContext(parents, payloads)
-				return joined
-			end
-		end
-		return null
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public static PredictionContext mergeArrays(
-		ArrayPredictionContext a,
-		ArrayPredictionContext b,
-		boolean rootIsWildcard,
-		DoubleKeyMap<PredictionContext,PredictionContext,PredictionContext> mergeCache)
-	
-		if ( mergeCache!=null ) 
-			PredictionContext previous = mergeCache.get(a,b)
-			if ( previous!=null ) return previous
-			previous = mergeCache.get(b,a)
-			if ( previous!=null ) return previous
-		end
-
-		# merge sorted payloads a + b => M
-		int i = 0 # walks a
-		int j = 0 # walks b
-		int k = 0 # walks target M array
-
-		int[] mergedReturnStates =
-			new int[a.returnStates.length + b.returnStates.length]
-		PredictionContext[] mergedParents =
-			new PredictionContext[a.returnStates.length + b.returnStates.length]
-		# walk and merge to yield mergedParents, mergedReturnStates
-		while ( i<a.returnStates.length && j<b.returnStates.length ) 
-			PredictionContext a_parent = a.parents[i]
-			PredictionContext b_parent = b.parents[j]
-			if ( a.returnStates[i]==b.returnStates[j] ) 
-				# same payload (stack tops are equal), must yield merged singleton
-				int payload = a.returnStates[i]
-				# $+$ = $
-				boolean both$ = payload == EMPTY_RETURN_STATE &&
-								a_parent == null && b_parent == null
-				boolean ax_ax = (a_parent!=null && b_parent!=null) &&
-								a_parent.equals(b_parent) # ax+ax -> ax
-				if ( both$ || ax_ax ) 
-					mergedParents[k] = a_parent # choose left
-					mergedReturnStates[k] = payload
-				end
-				else  # ax+ay -> a'[x,y]
-					PredictionContext mergedParent =
-						merge(a_parent, b_parent, rootIsWildcard, mergeCache)
-					mergedParents[k] = mergedParent
-					mergedReturnStates[k] = payload
-				end
-				i++ # hop over left one as usual
-				j++ # but also skip one in right side since we merge
-			end
-			else if ( a.returnStates[i]<b.returnStates[j] )  # copy a[i] to M
-				mergedParents[k] = a_parent
-				mergedReturnStates[k] = a.returnStates[i]
-				i++
-			end
-			else  # b > a, copy b[j] to M
-				mergedParents[k] = b_parent
-				mergedReturnStates[k] = b.returnStates[j]
-				j++
-			end
-			k++
-		end
-
-		# copy over any payloads remaining in either array
-		if (i < a.returnStates.length) 
-			for (int p = i p < a.returnStates.length p++) 
-				mergedParents[k] = a.parents[p]
-				mergedReturnStates[k] = a.returnStates[p]
-				k++
-			end
-		end
-		else 
-			for (int p = j p < b.returnStates.length p++) 
-				mergedParents[k] = b.parents[p]
-				mergedReturnStates[k] = b.returnStates[p]
-				k++
-			end
-		end
-
-		# trim merged if we combined a few that had same stack tops
-		if ( k < mergedParents.length )  # write index < last position trim
-			if ( k == 1 )  # for just one merged element, return singleton top
-				PredictionContext a_ =
-					SingletonPredictionContext.create(mergedParents[0],
-													  mergedReturnStates[0])
-				if ( mergeCache!=null ) mergeCache.put(a,b,a_)
-				return a_
-			end
-			mergedParents = Arrays.copyOf(mergedParents, k)
-			mergedReturnStates = Arrays.copyOf(mergedReturnStates, k)
-		end
-
-		PredictionContext M =
-			new ArrayPredictionContext(mergedParents, mergedReturnStates)
-
-		# if we created same array as a or b, return that instead
-		# TODO: track whether this is possible above during merge sort for speed
-		if ( M.equals(a) ) 
-			if ( mergeCache!=null ) mergeCache.put(a,b,a)
-			return a
-		end
-		if ( M.equals(b) ) 
-			if ( mergeCache!=null ) mergeCache.put(a,b,b)
-			return b
-		end
-
-		combineCommonParents(mergedParents)
-
-		if ( mergeCache!=null ) mergeCache.put(a,b,M)
-		return M
-	end
-
-
-
-
-
-	protected static void combineCommonParents(PredictionContext[] parents) 
-		Map<PredictionContext, PredictionContext> uniqueParents =
-			new HashMap<PredictionContext, PredictionContext>()
-
-		for (int p = 0 p < parents.length p++) 
-			PredictionContext parent = parents[p]
-			if ( !uniqueParents.containsKey(parent) )  # don't replace
-				uniqueParents.put(parent, parent)
-			end
-		end
-
-		for (int p = 0 p < parents.length p++) 
-			parents[p] = uniqueParents.get(parents[p])
-		end
-	end
-
-	def self.toDOTString(PredictionContext context) 
-		if ( context==null ) return ""
-		StringBuilder buf = StringBuilder.new()
-		buf.append("digraph G \n")
-		buf.append("rankdir=LR\n")
-
-		List<PredictionContext> nodes = getAllContextNodes(context)
-		Collections.sort(nodes, new Comparator<PredictionContext>() 
-			
-			public int compare(PredictionContext o1, PredictionContext o2) 
-				return o1.id - o2.id
-			end
-		end)
-
-		for (PredictionContext current : nodes) 
-			if ( current instanceof SingletonPredictionContext ) 
-				String s = String.valueOf(current.id)
-				buf.append("  s").append(s)
-				String returnState = String.valueOf(current.getReturnState(0))
-				if ( current instanceof EmptyPredictionContext ) returnState = "$"
-				buf.append(" [label=\"").append(returnState).append("\"]\n")
-				continue
-			end
-			ArrayPredictionContext arr = (ArrayPredictionContext)current
-			buf.append("  s").append(arr.id)
-			buf.append(" [shape=box, label=\"")
-			buf.append("[")
-			boolean first = true
-			for (int inv : arr.returnStates) 
-				if ( !first ) buf.append(", ")
-				if ( inv == EMPTY_RETURN_STATE ) buf.append("$")
-				else buf.append(inv)
-				first = false
-			end
-			buf.append("]")
-			buf.append("\"]\n")
-		end
-
-		for (PredictionContext current : nodes) 
-			if ( current==EMPTY ) continue
-			for (int i = 0 i < current.size() i++) 
-				if ( current.getParent(i)==null ) continue
-				String s = String.valueOf(current.id)
-				buf.append("  s").append(s)
-				buf.append("->")
-				buf.append("s")
-				buf.append(current.getParent(i).id)
-				if ( current.size()>1 ) buf.append(" [label=\"parent["+i+"]\"]\n")
-				else buf.append("\n")
-			end
-		end
-
-		buf.append("end\n")
-		return buf.to_s()
-	end
-
-	# From Sam
-	public static PredictionContext getCachedContext(
-		PredictionContext context,
-		PredictionContextCache contextCache,
-		IdentityHashMap<PredictionContext, PredictionContext> visited)
-	
-		if (context.isEmpty()) 
-			return context
-		end
-
-		PredictionContext existing = visited.get(context)
-		if (existing != null) 
-			return existing
-		end
-
-		existing = contextCache.get(context)
-		if (existing != null) 
-			visited.put(context, existing)
-			return existing
-		end
-
-		boolean changed = false
-		PredictionContext[] parents = new PredictionContext[context.size()]
-		for (int i = 0 i < parents.length i++) 
-			PredictionContext parent = getCachedContext(context.getParent(i), contextCache, visited)
-			if (changed || parent != context.getParent(i)) 
-				if (!changed) 
-					parents = new PredictionContext[context.size()]
-					for (int j = 0 j < context.size() j++) 
-						parents[j] = context.getParent(j)
-					end
-
-					changed = true
-				end
-
-				parents[i] = parent
-			end
-		end
-
-		if (!changed) 
-			contextCache.add(context)
-			visited.put(context, context)
-			return context
-		end
-
-		PredictionContext updated
-		if (parents.length == 0) 
-			updated = EMPTY
-		end
-		else if (parents.length == 1) 
-			updated = SingletonPredictionContext.create(parents[0], context.getReturnState(0))
-		end
-		else 
-			ArrayPredictionContext arrayPredictionContext = (ArrayPredictionContext)context
-			updated = new ArrayPredictionContext(parents, arrayPredictionContext.returnStates)
-		end
-
-		contextCache.add(updated)
-		visited.put(updated, updated)
-		visited.put(context, updated)
-
-		return updated
-	end
+    def calculateEmptyHashCode()
+      hash = MurmurHash.initialize(INITIAL_HASH)
+      hash = MurmurHash.finish(hash, 0)
+      return hash
+    end
+
+    def self.calculateHashCode(parent, returnState)
+      hash = MurmurHash.initialize(INITIAL_HASH)
+      hash = MurmurHash.update(hash, parent)
+      hash = MurmurHash.update(hash, returnState)
+      hash = MurmurHash.finish(hash, 2)
+      return hash
+    end
+
+    def self.calculateHashCode(parents, returnStates)
+      hash = MurmurHash.initialize(INITIAL_HASH)
+
+      parents.each do |parent|
+        hash = MurmurHash.update(hash, parent)
+      end
+
+      returnStates.each do |returnState|
+        hash = MurmurHash.update(hash, returnState)
+      end
+
+      hash = MurmurHash.finish(hash, 2 * parents.length)
+      return hash
+    end
+
+# dispatch
+    def self.merge(a, b, rootIsWildcard, mergeCache)
+
+# share same graph if both same
+      if (a == b || a.equals(b))
+        return a
+      end
+
+      if (a.is_a? SingletonPredictionContext && b.is_a?(SingletonPredictionContext))
+        return mergeSingletons(a, b, rootIsWildcard, mergeCache)
+      end
+
+      # At least one of a or b is array
+      # If one is $ and rootIsWildcard, return $ as * wildcard
+      if (rootIsWildcard)
+        if (a.is_a? EmptyPredictionContext)
+          return a
+        end
+        if (b.is_a? EmptyPredictionContext)
+          return b
+        end
+      end
+
+      # convert singleton so both are arrays to normalize
+      if (a.is_a? SingletonPredictionContext)
+        a = ArrayPredictionContext.new(a)
+      end
+      if (b.is_a? SingletonPredictionContext)
+        b = ArrayPredictionContext.new(b)
+      end
+      return mergeArrays(a, b, rootIsWildcard, mergeCache)
+    end
+
+
+    def self.mergeSingletons(a, b, rootIsWildcard, mergeCache)
+
+      if (mergeCache != nil)
+        previous = mergeCache.get(a, b)
+        if (previous != nil)
+          return previous
+        end
+        previous = mergeCache.get(b, a)
+        if (previous != nil)
+          return previous
+        end
+      end
+
+      rootMerge = mergeRoot(a, b, rootIsWildcard)
+      if (rootMerge != nil)
+        if (mergeCache != nil)
+          mergeCache.put(a, b, rootMerge)
+        end
+        return rootMerge
+      end
+
+      if (a.returnState == b.returnState) # a == b
+        parent = merge(a.parent, b.parent, rootIsWildcard, mergeCache)
+        # if parent is same as existing a or b parent or reduced to a parent, return it
+        if (parent == a.parent)
+          return a # ax + bx = ax, if a=b
+        end
+        if (parent == b.parent)
+          return b # ax + bx = bx, if a=b
+        end
+        # else: ax + ay = a'[x,y]
+        # merge parents x and y, giving array node with x,y then remainders
+        # of those graphs.  dup a, a' points at merged array
+        # new joined parent so create new singleton pointing to it, a'
+        a_ = SingletonPredictionContext.create(parent, a.returnState)
+        if (mergeCache != nil)
+          mergeCache.put(a, b, a_)
+        end
+        return a_
+      else # a != b payloads differ
+        # see if we can collapse parents due to $+x parents if local ctx
+        singleParent = nil
+        if (a == b || (a.parent != nil && a.parent.equals(b.parent))) # ax + bx = [a,b]x
+          singleParent = a.parent
+        end
+        if (singleParent != nil) # parents are same
+          # sort payloads and use same parent
+          payloads = [a.returnState, b.returnState]
+          if (a.returnState > b.returnState)
+            payloads[0] = b.returnState
+            payloads[1] = a.returnState
+          end
+          parents = [singleParent, singleParent]
+          a_ = ArrayPredictionContext.new(parents, payloads)
+          if (mergeCache != nil)
+            mergeCache.put(a, b, a_)
+          end
+          return a_
+        end
+        # parents differ and can't merge them. Just pack together
+        # into array can't merge.
+        # ax + by = [ax,by]
+        payloads = [a.returnState, b.returnState]
+        parents = a.parent, b.parentend
+        if (a.returnState > b.returnState) # sort by payload
+          payloads[0] = b.returnState
+          payloads[1] = a.returnState
+          parents = [b.parent, a.parentend]
+        end
+        a_ = ArrayPredictionContext.new(parents, payloads)
+        if (mergeCache != nil)
+          mergeCache.put(a, b, a_)
+        end
+        return a_
+      end
+    end
+
+
+    def self.mergeRoot(a, b, rootIsWildcard)
+
+      if (rootIsWildcard)
+        if (a == EMPTY)
+          return EMPTY # * + b = *
+        end
+        if (b == EMPTY)
+          return EMPTY # a + * = *
+        end
+      else
+        if (a == EMPTY && b == EMPTY)
+          return EMPTY # $ + $ = $
+        end
+        if (a == EMPTY) # $ + x = [x,$]
+          payloads = [b.returnState, EMPTY_RETURN_STATE]
+          parents = [b.parent, nil]
+          joined = ArrayPredictionContext.new(parents, payloads)
+          return joined
+        end
+        if (b == EMPTY) # x + $ = [x,$] ($ is always last if present)
+          payloads = [a.returnState, EMPTY_RETURN_STATE]
+          parents = [a.parent, nil]
+          joined = ArrayPredictionContext.new(parents, payloads)
+          return joined
+        end
+      end
+      return nil
+    end
+
+
+    def self.mergeArrays(a, b, rootIsWildcard, mergeCache)
+      if (mergeCache != nil)
+        previous = mergeCache.get(a, b)
+        if (previous != nil)
+          return previous
+        end
+        previous = mergeCache.get(b, a)
+        if (previous != nil)
+          return previous
+        end
+      end
+
+      # merge sorted payloads a + b => M
+      i = 0 # walks a
+      j = 0 # walks b
+      k = 0 # walks target M array
+
+      mergedReturnStates = []
+      mergedParents = []
+      # walk and merge to yield mergedParents, mergedReturnStates
+      while (i < a.returnStates.length && j < b.returnStates.length)
+        a_parent = a.parents[i]
+        b_parent = b.parents[j]
+        if (a.returnStates[i] == b.returnStates[j])
+          # same payload (stack tops are equal), must yield merged singleton
+          payload = a.returnStates[i]
+          # $+$ = $
+          both = payload == EMPTY_RETURN_STATE &&
+              a_parent == nil && b_parent == nil
+          ax_ax = (a_parent != nil && b_parent != nil) &&
+              a_parent.equals(b_parent) # ax+ax -> ax
+          if (both || ax_ax)
+            mergedParents[k] = a_parent # choose left
+            mergedReturnStates[k] = payload
+          else # ax+ay -> a'[x,y]
+            mergedParent =
+                merge(a_parent, b_parent, rootIsWildcard, mergeCache)
+            mergedParents[k] = mergedParent
+            mergedReturnStates[k] = payload
+          end
+          i += 1 # hop over left one as usual
+          j += 1 # but also skip one in right side since we merge
+        elsif (a.returnStates[i] < b.returnStates[j]) # copy a[i] to M
+          mergedParents[k] = a_parent
+          mergedReturnStates[k] = a.returnStates[i]
+          i += 1
+        else # b > a, copy b[j] to M
+          mergedParents[k] = b_parent
+          mergedReturnStates[k] = b.returnStates[j]
+          j += 1
+        end
+
+        k += 1
+      end
+
+      # copy over any payloads remaining in either array
+      if (i < a.returnStates.length)
+        p = i
+        while p < a.returnStates.length
+          mergedParents[k] = a.parents[p]
+          mergedReturnStates[k] = a.returnStates[p]
+          k += 1
+          p += 1
+        end
+      else
+        p = j
+        while p < b.returnStates.length
+          mergedParents[k] = b.parents[p]
+          mergedReturnStates[k] = b.returnStates[p]
+          k += 1
+          p += 1
+        end
+      end
+
+      # trim merged if we combined a few that had same stack tops
+      if (k < mergedParents.length) # write index < last position trim
+        if (k == 1) # for just one merged element, return singleton top
+          a_ = SingletonPredictionContext.create(mergedParents[0],
+                                                 mergedReturnStates[0])
+          if (mergeCache != nil)
+            mergeCache.put(a, b, a_)
+          end
+          return a_
+        end
+      end
+
+      m = ArrayPredictionContext.new(mergedParents, mergedReturnStates)
+
+      # if we created same array as a or b, return that instead
+      # TODO: track whether this is possible above during merge sort for speed
+      if (m.equals(a))
+        if (mergeCache != nil)
+          mergeCache.put(a, b, a)
+        end
+        return a
+      end
+      if (m.equals(b))
+        if (mergeCache != nil)
+          mergeCache.put(a, b, b)
+        end
+        return b
+      end
+
+      combineCommonParents(mergedParents)
+
+      if (mergeCache != nil)
+        mergeCache.put(a, b, m)
+      end
+      return m
+    end
+
+
+    def self.combineCommonParents(parents)
+      uniqueParents = Hash.new
+
+      p = 0
+      while p < parents.length
+        parent = parents[p]
+        if (!uniqueParents.has_key?(parent)) # don't replace
+          uniqueParents[parent] = parent
+        end
+        p += 1
+      end
+
+      p = 0
+      while p < parents.length
+        parents[p] = uniqueParents[parents[p]]
+        p += 1
+      end
+    end
+
+    def self.toDOTString(context)
+      if (context == nil)
+        return ""
+      end
+      buf = ""
+      buf << "digraph G \n"
+      buf << "rankdir=LR\n"
+
+      nodes = getAllContextNodes(context)
+      nodes.sort {|a, b| a.id - b.id}
+
+      nodes.each do |current|
+        if (current.is_a? SingletonPredictionContext)
+          s = current.id.to_s
+          buf << "  s" << s
+          returnState = current.getReturnState(0).to_s
+          if (current.is_a? EmptyPredictionContext)
+            returnState = "$"
+          end
+          buf << " [label=\"" << returnState << "\"]\n"
+          next
+        end
+        arr = current
+        buf << "  s" << arr.id
+        buf << " [shape=box, label=\""
+        buf << "["
+        first = true
+        arr.returnStates.each do |inv|
+          if (!first)
+            buf << ", "
+          end
+          if (inv == EMPTY_RETURN_STATE)
+            buf << "$"
+          else
+            buf << inv
+          end
+          first = false
+        end
+        buf << "]"
+        buf << "\"]\n"
+      end
+
+      nodes.each do |current|
+        if (current == EMPTY)
+          next
+        end
+        i = 0
+        while i < current.size
+          if (current.getParent(i) == nil)
+            i += 1
+            next
+          end
+          String s = String.valueOf(current.id)
+          buf << "  s" << s
+          buf << "->"
+          buf << "s"
+          buf << current.getParent(i).id
+          if (current.size() > 1)
+            buf << " [label=\"parent[" + i + "]\"]\n"
+          else
+            buf << "\n"
+          end
+          i += 1
+        end
+      end
+
+      buf << "end\n"
+      return buf
+    end
+
+    def self.getCachedContext(context, contextCache, visited)
+
+      if (context.isEmpty())
+        return context
+      end
+
+      existing = visited[context]
+      if (existing != nil)
+        return existing
+      end
+
+      existing = contextCache[context]
+      if (existing != nil)
+        visited[context] = existing
+        return existing
+      end
+
+      changed = false
+      parents = []
+      i = 0
+      while i < parents.length
+        parent = getCachedContext(context.getParent(i), contextCache, visited)
+        if (changed || parent != context.getParent(i))
+          if (!changed)
+            parents = []
+            j = 0
+            while j < context.size()
+              parents[j] = context.getParent(j)
+              j += 1
+            end
+            changed = true
+          end
+          parents[i] = parent
+        end
+        i += 1
+      end
+
+      if (!changed)
+        contextCache.add(context)
+        visited[context] = context
+        return context
+      end
+
+      updated = nil
+      if (parents.length == 0)
+        updated = EMPTY
+      elsif (parents.length == 1)
+        updated = SingletonPredictionContext.create(parents[0], context.getReturnState(0))
+      else
+        arrayPredictionContext = context
+        updated = ArrayPredictionContext.new(parents, arrayPredictionContext.returnStates)
+      end
+
+      contextCache.add(updated)
+      visited[updated] = updated
+      visited[context] = updated
+
+      return updated
+    end
 
 #	# extra structures, but cut/paste/morphed works, so leave it.
 #	# seems to do a breadth-first walk
@@ -616,7 +520,7 @@ public abstract class PredictionContext
 #			nodes.add(current)
 #			for (int i = 0 i < current.size() i++) 
 #				PredictionContext parent = current.getParent(i)
-#				if ( parent!=null && visited.put(parent, parent) == null) 
+#				if ( parent!=nil && visited.put(parent, parent) == nil) 
 #					workList.push(parent)
 #				end
 #			end
@@ -624,97 +528,105 @@ public abstract class PredictionContext
 #		return nodes
 #	end
 
-	# ter's recursive version of Sam's getAllNodes()
-	public static List<PredictionContext> getAllContextNodes(PredictionContext context) 
-		List<PredictionContext> nodes = new ArrayList<PredictionContext>()
-		Map<PredictionContext, PredictionContext> visited =
-			new IdentityHashMap<PredictionContext, PredictionContext>()
-		getAllContextNodes_(context, nodes, visited)
-		return nodes
-	end
+# ter's recursive version of Sam's getAllNodes()
+    def self.getAllContextNodes(context)
+      nodes = []
+      visited = Hash.new
+      getAllContextNodes_(context, nodes, visited)
+      return nodes
+    end
 
-	def self.getAllContextNodes_(PredictionContext context,
-										   List<PredictionContext> nodes,
-										   Map<PredictionContext, PredictionContext> visited)
-	
-		if ( context==null || visited.containsKey(context) ) return
-		visited.put(context, context)
-		nodes.add(context)
-		for (int i = 0 i < context.size() i++) 
-			getAllContextNodes_(context.getParent(i), nodes, visited)
-		end
-	end
+    def self.getAllContextNodes_(context, nodes, visited)
 
-	public String toString(Recognizer<?,?> recog) 
-		return toString()
-#		return toString(recog, ParserRuleContext.EMPTY)
-	end
+      if (context == nil || visited.has_key?(context))
+        return
+      end
+      visited[context] = context
+      nodes.add(context)
+      i = 0
+      while i < context.size()
+        getAllContextNodes_(context.getParent(i), nodes, visited)
+        i += 1
+      end
+    end
 
-	public String[] toStrings(Recognizer<?, ?> recognizer, int currentState) 
-		return toStrings(recognizer, EMPTY, currentState)
-	end
+    def to_s_recog(recog)
+      return to_s()
+    end
 
-	# FROM SAM
-	public String[] toStrings(Recognizer<?, ?> recognizer, PredictionContext stop, int currentState) 
-		List<String> result = new ArrayList<String>()
+    def toStrings(recognizer, currentState)
+      return toStrings_3(recognizer, EMPTY, currentState)
+    end
 
-		outer:
-		for (int perm = 0  perm++) 
-			int offset = 0
-			boolean last = true
-			PredictionContext p = this
-			int stateNumber = currentState
-			StringBuilder localBuffer = StringBuilder.new()
-			localBuffer.append("[")
-			while ( !p.isEmpty() && p != stop ) 
-				int index = 0
-				if (p.size() > 0) 
-					int bits = 1
-					while ((1 << bits) < p.size()) 
-						bits++
-					end
+    def toStrings_3(recognizer, stop, currentState)
+      result = []
 
-					int mask = (1 << bits) - 1
-					index = (perm >> offset) & mask
-					last &= index >= p.size() - 1
-					if (index >= p.size()) 
-						continue outer
-					end
-					offset += bits
-				end
+      while toStrings_3_inner
 
-				if ( recognizer!=null ) 
-					if (localBuffer.length() > 1) 
-						# first char is '[', if more than that this isn't the first rule
-						localBuffer.append(' ')
-					end
+      end
 
-					ATN atn = recognizer.getATN()
-					ATNState s = atn.states.get(stateNumber)
-					String ruleName = recognizer.getRuleNames()[s.ruleIndex]
-					localBuffer.append(ruleName)
-				end
-				else if ( p.getReturnState(index)!= EMPTY_RETURN_STATE) 
-					if ( !p.isEmpty() ) 
-						if (localBuffer.length() > 1) 
-							# first char is '[', if more than that this isn't the first rule
-							localBuffer.append(' ')
-						end
+      return result.toArray(new String[result.size()])
+    end
 
-						localBuffer.append(p.getReturnState(index))
-					end
-				end
-				stateNumber = p.getReturnState(index)
-				p = p.getParent(index)
-			end
-			localBuffer.append("]")
-			result.add(localBuffer.to_s())
+    def toStrings_3_inner
+      perm = 0
+      while perm
+        offset = 0
+        last = true
+        p = self
+        stateNumber = currentState
+        localBuffer = ""
+        localBuffer << "["
+        while (!p.isEmpty() && p != stop)
+          index = 0
+          if (p.size() > 0)
+            bits = 1
+            while ((1 << bits) < p.size())
+              bits += 1
+            end
 
-			if (last) 
-				break
-			end
-		end
+            mask = (1 << bits) - 1
+            index = (perm >> offset) & mask
+            last &= index >= p.size() - 1
+            if (index >= p.size())
+              return true
+            end
+            offset += bits
+          end
 
-		return result.toArray(new String[result.size()])
-	end
+          if (recognizer != nil)
+            if (localBuffer.length() > 1)
+              # first char is '[', if more than that this isn't the first rule
+              localBuffer << ' '
+            end
+
+            atn = recognizer.getATN()
+            s = atn.states.get(stateNumber)
+            ruleName = recognizer.getRuleNames()[s.ruleIndex]
+            localBuffer << ruleName
+          elsif (p.getReturnState(index) != EMPTY_RETURN_STATE)
+            if (!p.isEmpty())
+              if (localBuffer.length() > 1)
+                # first char is '[', if more than that this isn't the first rule
+                localBuffer << ' '
+              end
+
+              localBuffer << p.getReturnState(index)
+            end
+          end
+          stateNumber = p.getReturnState(index)
+          p = p.getParent(index)
+        end
+        localBuffer << "]"
+        result.push(localBuffer.to_s())
+
+        if (last)
+          break
+        end
+        perm += 1
+      end
+    end
+
+    return false
+  end
 end

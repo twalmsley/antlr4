@@ -1,41 +1,37 @@
+require '../../antlr4/runtime/Ruby/antlr4/SingletonPredictionContext'
+
+class EmptyPredictionContext < SingletonPredictionContext
+  def initialize()
+    super(nil, EMPTY_RETURN_STATE)
+  end
 
 
+  def isEmpty()
+    return true
+  end
 
 
+  def size()
+    return 1
+  end
 
 
+  def getParent(index)
+    return nil
+  end
 
 
-class EmptyPredictionContext extends SingletonPredictionContext 
-	public EmptyPredictionContext() 
-		super(null, EMPTY_RETURN_STATE)
-	end
+  def getReturnState(index)
+    return returnState
+  end
 
-	
-	public boolean isEmpty()  return true end
 
-	
-	public int size() 
-		return 1
-	end
+  def equals(o)
+    return self == o
+  end
 
-	
-	public PredictionContext getParent(int index) 
-		return null
-	end
 
-	
-	public int getReturnState(int index) 
-		return returnState
-	end
-
-	
-	public boolean equals(Object o) 
-		return this == o
-	end
-
-	
-	public String toString() 
-		return "$"
-	end
+  def t_s()
+    return "$"
+  end
 end

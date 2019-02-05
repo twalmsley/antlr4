@@ -3,7 +3,7 @@ require '../../antlr4/runtime/Ruby/antlr4/ATNState'
 
 class BlockEndState < ATNState
   attr_accessor :startState
-  @startState
+  @startState = nil
 
 
   def getStateType()
