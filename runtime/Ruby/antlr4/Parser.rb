@@ -56,33 +56,17 @@ class Parser < Recognizer
 
   @@bypassAltsAtnCache = Hash.new
 
-  @_errHandler = DefaultErrorStrategy.new()
-
-
-  @_input = nil
-
-  @_precedenceStack = IntegerStack.new()
-  @_precedenceStack.push(0)
-
-
-  @_ctx = nil
-
-
-  @_buildParseTrees = true
-
-
-  @_tracer = nil
-
-
-  @_parseListeners = nil
-
-
-  @_syntaxErrors = nil
-
-
-  @matchedEOF = nil
-
   def initialize(input)
+    @_errHandler = DefaultErrorStrategy.new()
+    @_input = nil
+    @_precedenceStack = IntegerStack.new()
+    @_precedenceStack.push(0)
+    @_ctx = nil
+    @_buildParseTrees = true
+    @_tracer = nil
+    @_parseListeners = nil
+    @_syntaxErrors = nil
+    @matchedEOF = nil
     setInputStream(input)
   end
 

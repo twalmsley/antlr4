@@ -42,6 +42,7 @@ ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 
 require '../../antlr4/runtime/Ruby/antlr4/PredictionContextCache'
 require '../../antlr4/runtime/Ruby/antlr4/Parser'
+require '../../antlr4/runtime/Ruby/antlr4/ParserATNSimulator'
 require '../../antlr4/runtime/Ruby/antlr4/ParserRuleContext'
 require "./<file.grammarName>Listener"
 require "./<file.grammarName>Visitor"
@@ -883,6 +884,7 @@ class <lexer.name> <"\<"> <superClass; null="Lexer">
 		i = 0
 		while i \< @@_ATN.getNumberOfDecisions()
 			@@_decisionToDFA[i] = DFA.new(@@_ATN.getDecisionState(i), i)
+			i+=1
 		end
 
 		@_interp = LexerATNSimulator.new(self,@@_ATN,@_decisionToDFA,@_sharedContextCache)

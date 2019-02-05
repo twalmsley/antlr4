@@ -1,140 +1,22 @@
+require '../../antlr4/runtime/Ruby/antlr4/IntStream'
 
 
+class TokenStream < IntStream
 
 
+  def LT(k)
 
+  end
 
 
+  def get(index)
 
+  end
 
 
+  def getTokenSource()
 
+  end
 
 
-class TokenStream extends IntStream 
-
-
-
-
-
-
-
-
-
-	public Token LT(int k)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public Token get(int index)
-
-
-
-
-
-	public TokenSource getTokenSource()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getText(Interval interval)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getText()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getText(RuleContext ctx)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public String getText(Token start, Token stop)
 end
