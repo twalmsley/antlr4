@@ -187,7 +187,7 @@ Parser_(parser, funcs, atn, sempredFuncs, ctor, superClass) ::= <<
 
 class <parser.name> \< <superClass; null="Parser">
 
-	@@_decisionToDFA
+	@@_decisionToDFA = nil
 	@@_sharedContextCache = PredictionContextCache.new()
 	<if(parser.tokens)>
 		<parser.tokens:{k | <k>=<parser.tokens.(k)>}; separator="\n", wrap, anchor>
@@ -404,9 +404,10 @@ setState(<choice.stateNumber>)
 <if(choice.label)><labelref(choice.label)> = _input.LT(1)<endif>
 <preamble; separator="\n">
 case (_input.LA(1))
-<choice.altLook,alts:{look,alt| <cases(ttypes=look)>
-	<alt>
-	}; separator="\n">
+<if(choice.altLook && alts)>
+<choice.altLook, alts:{look, alt | when <look:{l | <parser.name><l>}; separator=", ">
+	<alt>}; separator="\n\n">
+<endif>
 else
 	<error>
 end
@@ -678,7 +679,7 @@ def <t.name>()
 end
 >>
 ContextTokenListIndexedGetterDecl(t)  ::= <<
-def <t.name>( i)
+def <t.name>_i( i)
 	return getToken(<parser.name>.<t.name>, i)
 end
 >>
@@ -693,7 +694,7 @@ def <r.name>()
 end
 >>
 ContextRuleListIndexedGetterDecl(r)   ::= <<
-def <r.name>( i)
+def <r.name>_i( i)
 	return getRuleContext("<r.ctxName>",i)
 end
 >>

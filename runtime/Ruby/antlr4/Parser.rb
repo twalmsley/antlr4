@@ -3,7 +3,6 @@ require '../../antlr4/runtime/Ruby/antlr4/ParseTreeListener'
 require '../../antlr4/runtime/Ruby/antlr4/DefaultErrorStrategy'
 require '../../antlr4/runtime/Ruby/antlr4/ATNDeserializer'
 require '../../antlr4/runtime/Ruby/antlr4/VocabularyImpl'
-require '../../antlr4/runtime/Ruby/antlr4/IntegerStack'
 
 class Parser < Recognizer
 
@@ -59,7 +58,7 @@ class Parser < Recognizer
   def initialize(input)
     @_errHandler = DefaultErrorStrategy.new()
     @_input = nil
-    @_precedenceStack = IntegerStack.new()
+    @_precedenceStack = []
     @_precedenceStack.push(0)
     @_ctx = nil
     @_buildParseTrees = true

@@ -1,7 +1,6 @@
 require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
 require '../../antlr4/runtime/Ruby/antlr4/Token'
 require '../../antlr4/runtime/Ruby/antlr4/CommonTokenFactory'
-require '../../antlr4/runtime/Ruby/antlr4/IntegerStack'
 
 class Lexer < Recognizer
 
@@ -46,7 +45,7 @@ class Lexer < Recognizer
   attr_accessor :_type
 
   attr_accessor :_modeStack
-  @_modeStack = IntegerStack.new
+  @_modeStack = []
 
   attr_accessor :_mode
   @_mode = DEFAULT_MODE
