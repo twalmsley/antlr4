@@ -36,7 +36,7 @@ class CommonTokenStream < BufferedTokenStream
     if (i < 0)
       return nil
     end
-    return tokens.get(i)
+    return @tokens.get(i)
   end
 
 
@@ -59,7 +59,7 @@ class CommonTokenStream < BufferedTokenStream
       n += 1
     end
     #		if ( i>range ) range = i
-    return tokens.get(i)
+    return @tokens[i]
   end
 
 
@@ -67,9 +67,9 @@ class CommonTokenStream < BufferedTokenStream
     n = 0
     fill()
     i = 0
-    while i < tokens.size()
-      t = tokens.get(i)
-      if (t.getChannel() == channel)
+    while i < @tokens.size()
+      t = @tokens.get(i)
+      if (t.getChannel() == @channel)
         n += 1
       end
       if (t.getType() == Token.EOF)

@@ -3,22 +3,14 @@ require '../../antlr4/runtime/Ruby/antlr4/TokenStream'
 class BufferedTokenStream < TokenStream
 
 
-  @tokenSource = nil
-
-
-  @tokens = []
-
-
-  @p = -1
-
-
-  @fetchedEOF = false
-
   def initialize(tokenSource)
     if (tokenSource == nil)
       raise nilPointerException, "tokenSource cannot be nil"
     end
     @tokenSource = tokenSource
+    @tokens = []
+    @p = -1
+    @fetchedEOF = false
   end
 
 
@@ -107,7 +99,7 @@ class BufferedTokenStream < TokenStream
       if (t.is_a? WritableToken)
         t.setTokenIndex(@tokens.size())
       end
-      tokens.add(t)
+      @tokens.add(t)
       if (t.getType() == Token.EOF)
         @fetchedEOF = true
         return i + 1
@@ -123,7 +115,7 @@ class BufferedTokenStream < TokenStream
     if (i < 0 || i >= @tokens.size())
       raise IndexOutOfBoundsException, "token index " + i + " out of range 0.." + (@tokens.size() - 1)
     end
-    return @tokens.get(i)
+    return @tokens[i]
   end
 
 
@@ -157,7 +149,7 @@ class BufferedTokenStream < TokenStream
     if ((@p - k) < 0)
       return nil
     end
-    return @tokens.get(@p - k)
+    return @tokens[@p - k]
   end
 
 
