@@ -1,9 +1,9 @@
 require '../../antlr4/runtime/Ruby/antlr4/ATNSimulator'
+require '../../antlr4/runtime/Ruby/antlr4/EmptyPredictionContext'
+require '../../antlr4/runtime/Ruby/antlr4/Integer'
 
 
 class LexerATNSimulator < ATNSimulator
-  debug = false
-  dfa_debug = false
 
   MIN_DFA_EDGE = 0
   MAX_DFA_EDGE = 127 # forces unicode to stay in ATN
@@ -24,30 +24,20 @@ class LexerATNSimulator < ATNSimulator
   end
 
 
-  @recog = nil
-
-
-  @startIndex = -1
-
-
-  @line = 1
-
-
-  @charPositionInLine = 0
-
-
-  @decisionToDFA
-  @mode = Lexer::DEFAULT_MODE
-
-
-  @prevAccept = SimState.new
-
-  @match_calls = 0
 
   def initialize(recog, atn, decisionToDFA, sharedContextCache)
     super(atn, sharedContextCache)
+    @debug = false
+    @dfa_debug = false
+
     @decisionToDFA = decisionToDFA
     @recog = recog
+    @startIndex = -1
+    @line = 1
+    @charPositionInLine = 0
+    @mode = Lexer::DEFAULT_MODE
+    @prevAccept = SimState.new
+    @match_calls = 0
   end
 
   def copyState(simulator)
@@ -95,9 +85,9 @@ class LexerATNSimulator < ATNSimulator
   end
 
   def matchATN(input)
-    startState = atn.modeToStartState.get(mode)
+    startState = atn.modeToStartState[@mode]
 
-    if (debug)
+    if (@debug)
       printf "matchATN mode %d start: %s\n" % [@mode, startState]
     end
 
@@ -114,7 +104,7 @@ class LexerATNSimulator < ATNSimulator
 
     predict = execATN(input, nextState)
 
-    if (debug)
+    if (@debug)
       printf "DFA after matchATN: %s\n" % [decisionToDFA[old_mode].toLexerString()]
     end
 
@@ -122,7 +112,7 @@ class LexerATNSimulator < ATNSimulator
   end
 
   def execATN(input, ds0)
-    if (debug)
+    if (@debug)
       printf "start state closure=%s\n" % [ds0.configs]
     end
 
@@ -136,7 +126,7 @@ class LexerATNSimulator < ATNSimulator
     s = ds0 # s is current/from DFA state
 
     while (true) # while more work
-      if (debug)
+      if (@debug)
         printf "execATN loop starting closure: %s\n" % [s.configs]
       end
 
@@ -253,7 +243,7 @@ class LexerATNSimulator < ATNSimulator
         next
       end
 
-      if (debug)
+      if (@debug)
         printf "testing %s at %s\n" % [getTokenName(t), c.to_s(recog, true)]
       end
 
@@ -283,7 +273,7 @@ class LexerATNSimulator < ATNSimulator
 
   def accept(input, lexerActionExecutor, startIndex, index, line, charPos)
 
-    if (debug)
+    if (@debug)
       printf "ACTION %s\n" % [lexerActionExecutor]
     end
 
@@ -308,9 +298,10 @@ class LexerATNSimulator < ATNSimulator
 
 
   def computeStartState(input, p)
+    @@EMPTY = EmptyPredictionContext.new(Integer::MAX)
 
-    initialContext = PredictionContext.EMPTY
-    configs = OrderedATNConfigSet.new()
+    initialContext = @@EMPTY
+    configs = Hash.new()
     i = 0
     while i < p.getNumberOfTransitions()
       target = p.transition(i).target
@@ -323,12 +314,12 @@ class LexerATNSimulator < ATNSimulator
 
 
   def closure(input, config, configs, currentAltReachedAcceptState, speculative, treatEofAsEpsilon)
-    if (debug)
+    if (@debug)
       puts("closure(" + config.to_s(recog, true) + ")")
     end
 
     if (config.state.is_a? RuleStopState)
-      if (debug)
+      if (@debug)
         if (@recog != nil)
           printf "closure at %s rule stop %s\n" % [recog.getRuleNames()[config.state.ruleIndex], config]
         else
@@ -401,7 +392,7 @@ class LexerATNSimulator < ATNSimulator
 
     when Transition.PREDICATE
       pt = t
-      if (debug)
+      if (@debug)
         puts("EVAL rule " + pt.ruleIndex + ":" + pt.predIndex)
       end
       configs.hasSemanticContext = true
@@ -503,7 +494,7 @@ class LexerATNSimulator < ATNSimulator
       return
     end
 
-    if (debug)
+    if (@debug)
       puts("EDGE " + p + " -> " + q + " upon " + t)
     end
 

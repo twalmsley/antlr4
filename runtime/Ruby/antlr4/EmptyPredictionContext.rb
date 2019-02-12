@@ -1,10 +1,10 @@
 require '../../antlr4/runtime/Ruby/antlr4/SingletonPredictionContext'
 
 class EmptyPredictionContext < SingletonPredictionContext
-  def initialize()
-    super(nil, EMPTY_RETURN_STATE)
-  end
 
+  def initialize(returnState)
+    super(nil, returnState)
+  end
 
   def isEmpty()
     return true

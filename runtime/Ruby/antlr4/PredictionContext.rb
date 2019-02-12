@@ -4,22 +4,15 @@ require '../../antlr4/runtime/Ruby/antlr4/RuleContext'
 
 class PredictionContext
 
-  #EMPTY = EmptyPredictionContext.new()
-
-  EMPTY_RETURN_STATE = Integer::MAX
-
-  INITIAL_HASH = 1
-
-  @@globalNodeCount = 0
-
-  @id = @@globalNodeCount
-
-  @@globalNodeCount += 1
-
+  class << self
+    @@globalNodeCount = 0
+  end
 
   attr_accessor :cachedHashCode
 
   def initialize(cachedHashCode)
+    @id = @@globalNodeCount
+    @@globalNodeCount += 1
     @cachedHashCode = cachedHashCode
   end
 
@@ -35,7 +28,6 @@ class PredictionContext
       end
 
       # If we have a parent, convert it to a PredictionContext graph
-      parent = EMPTY
       parent = PredictionContext.fromRuleContext(atn, outerContext.parent)
 
       state = atn.states.get(outerContext.invokingState)
@@ -72,35 +64,6 @@ class PredictionContext
 
     def equals(obj)
 
-    end
-
-    def calculateEmptyHashCode()
-      hash = MurmurHash.initialize(INITIAL_HASH)
-      hash = MurmurHash.finish(hash, 0)
-      return hash
-    end
-
-    def self.calculateHashCode(parent, returnState)
-      hash = MurmurHash.initialize(INITIAL_HASH)
-      hash = MurmurHash.update(hash, parent)
-      hash = MurmurHash.update(hash, returnState)
-      hash = MurmurHash.finish(hash, 2)
-      return hash
-    end
-
-    def self.calculateHashCode(parents, returnStates)
-      hash = MurmurHash.initialize(INITIAL_HASH)
-
-      parents.each do |parent|
-        hash = MurmurHash.update(hash, parent)
-      end
-
-      returnStates.each do |returnState|
-        hash = MurmurHash.update(hash, returnState)
-      end
-
-      hash = MurmurHash.finish(hash, 2 * parents.length)
-      return hash
     end
 
 # dispatch

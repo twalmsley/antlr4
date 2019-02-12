@@ -1,6 +1,7 @@
 require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
 require '../../antlr4/runtime/Ruby/antlr4/Token'
 require '../../antlr4/runtime/Ruby/antlr4/CommonTokenFactory'
+require '../../antlr4/runtime/Ruby/antlr4/LexerNoViableAltException'
 
 class Lexer < Recognizer
 
@@ -14,45 +15,16 @@ class Lexer < Recognizer
   MAX_CHAR_VALUE = 0x10FFFF
 
   attr_accessor :_input
-  @_input = nil
-
-  @_tokenFactorySourcePair = nil
-
-
-  @_factory = CommonTokenFactory::DEFAULT
-
-
   attr_accessor :token
-  @_token = nil
-
-
   attr_accessor :_tokenStartCharIndex
-  @_tokenStartCharIndex = -1
-
-
   attr_accessor :_tokenStartLine
-
-
   attr_accessor :_tokenStartCharPositionInLine
-
-
   attr_accessor :_hitEOF
-
-
   attr_accessor :_channel
-
-
   attr_accessor :_type
-
   attr_accessor :_modeStack
-  @_modeStack = []
-
   attr_accessor :_mode
-  @_mode = DEFAULT_MODE
-
-
   attr_accessor :_text
-
 
   def initialize(input = nil)
     if input != nil
@@ -61,6 +33,11 @@ class Lexer < Recognizer
       @_tokenFactorySourcePair.a = self
       @_tokenFactorySourcePair.b = input
     end
+    @_modeStack = []
+    @_tokenStartCharIndex = -1
+    @_mode = DEFAULT_MODE
+    @_factory = CommonTokenFactory::DEFAULT
+    @_token = nil
   end
 
   def reset
@@ -115,26 +92,26 @@ class Lexer < Recognizer
       end
 
       @_token = nil
-      @_channel = Token.DEFAULT_CHANNEL
+      @_channel = Token::DEFAULT_CHANNEL
       @_tokenStartCharIndex = @_input.index()
       @_tokenStartCharPositionInLine = getInterpreter().getCharPositionInLine()
       @_tokenStartLine = getInterpreter().getLine()
       @_text = nil
       loop do
-        @_type = Token.INVALID_TYPE
+        @_type = Token::INVALID_TYPE
 
         ttype = 0
         begin
-          ttype = getInterpreter().match(@_input, _mode)
+          ttype = getInterpreter().match(@_input, @_mode)
         rescue LexerNoViableAltException => e
           notifyListeners(e) # report error
           recover(e)
           ttype = SKIP
         end
-        if (@_input.LA(1) == IntStream.EOF)
+        if (@_input.LA(1) == IntStream::EOF)
           @_hitEOF = true
         end
-        if (_type == Token.INVALID_TYPE)
+        if (_type == Token::INVALID_TYPE)
           @_type = ttype
         end
         if (@_type == SKIP)

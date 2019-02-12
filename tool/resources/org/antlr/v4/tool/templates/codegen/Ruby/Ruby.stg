@@ -888,7 +888,7 @@ class <lexer.name> <"\<"> <superClass; null="Lexer">
 			i+=1
 		end
 
-		@_interp = LexerATNSimulator.new(self,@@_ATN,@_decisionToDFA,@_sharedContextCache)
+		@_interp = LexerATNSimulator.new(self,@@_ATN,@@_decisionToDFA,@_sharedContextCache)
 	end
 
 	def getGrammarFileName()
