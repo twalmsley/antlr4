@@ -78,13 +78,9 @@ class ATNState
       if t.target.stateNumber == e.target.stateNumber
 
         if t.label != nil && e.label != nil && t.label.equals(e.label)
-
-          STDERR.puts "Repeated transition upon %s from %d->%d" % [e.label, @stateNumber, t.target.stateNumber]
           alreadyPresent = true
           break
         elsif t.isEpsilon && e.isEpsilon
-
-          STDERR.puts "Repeated epsilon transition from %d->%d" % [@stateNumber, t.target.stateNumber]
           alreadyPresent = true
           break
         end

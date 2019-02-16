@@ -1,7 +1,7 @@
 require '../../antlr4/runtime/Ruby/antlr4/ATNSimulator'
 require '../../antlr4/runtime/Ruby/antlr4/EmptyPredictionContext'
 require '../../antlr4/runtime/Ruby/antlr4/Integer'
-
+require '../../antlr4/runtime/Ruby/antlr4/LexerATNConfig'
 
 class LexerATNSimulator < ATNSimulator
 
@@ -301,11 +301,11 @@ class LexerATNSimulator < ATNSimulator
     @@EMPTY = EmptyPredictionContext.new(Integer::MAX)
 
     initialContext = @@EMPTY
-    configs = Hash.new()
+    configs = ATNConfigSet.new()
     i = 0
     while i < p.getNumberOfTransitions()
       target = p.transition(i).target
-      c = LexerATNConfig.new(target, i + 1, initialContext)
+      c = LexerATNConfig.create_from_target(target, i + 1, initialContext)
       closure(input, c, configs, false, false, false)
       i += 1
     end
@@ -380,17 +380,17 @@ class LexerATNSimulator < ATNSimulator
 
     c = nil
     case (t.getSerializationType())
-    when Transition.RULE
+    when Transition::RULE
       ruleTransition = t
-      newContext = SingletonPredictionContext.create(config.context, ruleTransition.followState.stateNumber)
-      c = LexerATNConfig.new(config, t.target, newContext)
+      newContext = SingletonPredictionContext.new(config.context, ruleTransition.followState.stateNumber)
+      c = LexerATNConfig.create_from_config2(config, t.target, newContext)
 
 
-    when Transition.PRECEDENCE
+    when Transition::PRECEDENCE
 
       raise UnsupportedOperationException, "Precedence predicates are not supported in lexers."
 
-    when Transition.PREDICATE
+    when Transition::PREDICATE
       pt = t
       if (@debug)
         puts("EVAL rule " + pt.ruleIndex + ":" + pt.predIndex)
@@ -400,7 +400,7 @@ class LexerATNSimulator < ATNSimulator
         c = LexerATNConfig.new(config, t.target)
       end
 
-    when Transition.ACTION
+    when Transition::ACTION
 
       if (config.context == nil || config.context.hasEmptyPath())
         # execute actions anywhere in the start rule for a token.
@@ -422,9 +422,9 @@ class LexerATNSimulator < ATNSimulator
         c = new LexerATNConfig(config, t.target)
       end
 
-    when Transition.EPSILON
-      c = new LexerATNConfig(config, t.target)
-    when Transition.ATOM, Transition.RANGE, Transition.SET
+    when Transition::EPSILON
+      c = LexerATNConfig.create_from_config(config, t.target)
+    when Transition::ATOM, Transition::RANGE, Transition::SET
       if (treatEofAsEpsilon)
         if (t.matches(CharStream.EOF, Lexer.MIN_CHAR_VALUE, Lexer.MAX_CHAR_VALUE))
           c = LexerATNConfig.new(config, t.target)

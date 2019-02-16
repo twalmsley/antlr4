@@ -35,14 +35,6 @@ class SingletonPredictionContext < PredictionContext
     @returnState = returnState
   end
 
-  def self.create(parent, returnState)
-    if (returnState == EMPTY_RETURN_STATE && parent == nil)
-      # someone can pass in the bits of an array ctx that mean $
-      return EMPTY
-    end
-    return SingletonPredictionContext.new(parent, returnState)
-  end
-
   def size()
     return 1
   end
