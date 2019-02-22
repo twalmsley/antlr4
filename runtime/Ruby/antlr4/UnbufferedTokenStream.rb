@@ -98,7 +98,7 @@ class UnbufferedTokenStream<T extends Token> implements TokenStream
 		end
 
 		if ( index >= n ) 
-			assert n > 0 && tokens[n-1].getType() == Token.EOF
+			assert n > 0 && tokens[n-1].getType() == Token::EOF
 			return tokens[n-1]
 		end
 
@@ -135,7 +135,7 @@ class UnbufferedTokenStream<T extends Token> implements TokenStream
 
 	
 	public void consume() 
-		if (LA(1) == Token.EOF) 
+		if (LA(1) == Token::EOF)
 			throw new IllegalStateException("cannot consume EOF")
 		end
 
@@ -172,7 +172,7 @@ class UnbufferedTokenStream<T extends Token> implements TokenStream
 
 	protected int fill(int n) 
 		for (int i=0 i<n i++) 
-			if (this.n > 0 && tokens[this.n-1].getType() == Token.EOF) 
+			if (this.n > 0 && tokens[this.n-1].getType() == Token::EOF)
 				return i
 			end
 

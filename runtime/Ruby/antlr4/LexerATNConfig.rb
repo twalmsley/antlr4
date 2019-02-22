@@ -7,6 +7,7 @@ class LexerATNConfig < ATNConfig
   attr_accessor :lexerActionExecutor
 
   def initialize
+    super
     @passedThroughNonGreedyDecision = false
     @lexerActionExecutor = nil
   end

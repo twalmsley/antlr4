@@ -135,7 +135,7 @@ class TokenStreamRewriter
 		
 		public int execute(StringBuilder buf) 
 			buf.append(text)
-			if ( tokens.get(index).getType()!=Token.EOF ) 
+			if ( tokens.get(index).getType()!=Token::EOF )
 				buf.append(tokens.get(index).getText())
 			end
 			return index+1
@@ -405,7 +405,7 @@ class TokenStreamRewriter
 			Token t = tokens.get(i)
 			if ( op==null ) 
 				# no operation at that index, just dump token
-				if ( t.getType()!=Token.EOF ) buf.append(t.getText())
+				if ( t.getType()!=Token::EOF ) buf.append(t.getText())
 				i++ # move to next token
 			end
 			else 

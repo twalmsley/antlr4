@@ -2,6 +2,7 @@ require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
 require '../../antlr4/runtime/Ruby/antlr4/Token'
 require '../../antlr4/runtime/Ruby/antlr4/CommonTokenFactory'
 require '../../antlr4/runtime/Ruby/antlr4/LexerNoViableAltException'
+require 'pry'
 
 class Lexer < Recognizer
 
@@ -27,6 +28,7 @@ class Lexer < Recognizer
   attr_accessor :_text
 
   def initialize(input = nil)
+    super()
     if input != nil
       @_input = input
       @_tokenFactorySourcePair = OpenStruct.new
@@ -46,8 +48,8 @@ class Lexer < Recognizer
       @_input.seek(0) # rewind the input
     end
     @_token = nil
-    @_type = Token.INVALID_TYPE
-    @_channel = Token.DEFAULT_CHANNEL
+    @_type = Token::INVALID_TYPE
+    @_channel = Token::DEFAULT_CHANNEL
     @_tokenStartCharIndex = -1
     @_tokenStartCharPositionInLine = -1
     @_tokenStartLine = -1
@@ -100,18 +102,18 @@ class Lexer < Recognizer
       loop do
         @_type = Token::INVALID_TYPE
 
-        ttype = 0
         begin
+
           ttype = getInterpreter().match(@_input, @_mode)
         rescue LexerNoViableAltException => e
           notifyListeners(e) # report error
-          recover(e)
+          recover_1(e)
           ttype = SKIP
         end
         if (@_input.LA(1) == IntStream::EOF)
           @_hitEOF = true
         end
-        if (_type == Token::INVALID_TYPE)
+        if (@_type == Token::INVALID_TYPE)
           @_type = ttype
         end
         if (@_type == SKIP)
@@ -205,7 +207,7 @@ class Lexer < Recognizer
   def emitEOF
     cpos = getCharPositionInLine()
     line = getLine()
-    eof = @_factory.create(@_tokenFactorySourcePair, Token.EOF, nil, Token.DEFAULT_CHANNEL, @_input.index(), @_input.index() - 1,
+    eof = @_factory.create(@_tokenFactorySourcePair, Token::EOF, nil, Token::DEFAULT_CHANNEL, @_input.index(), @_input.index() - 1,
                            line, cpos)
     emit(eof)
     return eof
@@ -289,7 +291,7 @@ class Lexer < Recognizer
   def getAllTokens()
     tokens = []
     t = nextToken()
-    while (t.getType() != Token.EOF)
+    while (t.getType() != Token::EOF)
       tokens << t
       t = nextToken()
     end
@@ -297,7 +299,7 @@ class Lexer < Recognizer
   end
 
   def recover_1(e)
-    if (@_input.LA(1) != IntStream.EOF)
+    if (@_input.LA(1) != IntStream::EOF)
       # skip a char and begin again
       getInterpreter().consume(@_input)
     end
@@ -323,7 +325,7 @@ class Lexer < Recognizer
     s = ""
     s << c
     case (c)
-    when Token.EOF
+    when Token::EOF
       s = "<EOF>"
     when '\n'
       s = "\\n"

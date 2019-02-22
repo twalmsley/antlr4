@@ -85,7 +85,7 @@ class ATNSerializer
 		data.add(atn.states.size())
 		for (ATNState s : atn.states) 
 			if ( s==null )  # might be optimized away
-				data.add(ATNState.INVALID_TYPE)
+				data.add(ATNState::INVALID_TYPE)
 				continue
 			end
 
@@ -107,14 +107,14 @@ class ATNSerializer
 				data.add(s.ruleIndex)
 			end
 
-			if ( s.getStateType() == ATNState.LOOP_END ) 
+			if ( s.getStateType() == ATNState::LOOP_END )
 				data.add(((LoopEndState)s).loopBackState.stateNumber)
 			end
 			else if ( s instanceof BlockStartState ) 
 				data.add(((BlockStartState)s).endState.stateNumber)
 			end
 
-			if (s.getStateType() != ATNState.RULE_STOP) 
+			if (s.getStateType() != ATNState::RULE_STOP)
 				# the deserializer can trivially derive these edges, so there's no need to serialize them
 				nedges += s.getNumberOfTransitions()
 			end
@@ -122,7 +122,7 @@ class ATNSerializer
 			for (int i=0 i<s.getNumberOfTransitions() i++) 
 				Transition t = s.transition(i)
 				int edgeType = Transition.serializationTypes.get(t.getClass())
-				if ( edgeType == Transition.SET || edgeType == Transition.NOT_SET ) 
+				if ( edgeType == Transition::SET || edgeType == Transition::NOT_SET )
 					SetTransition st = (SetTransition)t
 					sets.put(st.set, true)
 				end
@@ -147,7 +147,7 @@ class ATNSerializer
 			ATNState ruleStartState = atn.ruleToStartState[r]
 			data.add(ruleStartState.stateNumber)
 			if (atn.grammarType == ATNType.LEXER) 
-				if (atn.ruleToTokenType[r] == Token.EOF) 
+				if (atn.ruleToTokenType[r] == Token::EOF)
 					data.add(Character.MAX_VALUE)
 				end
 				else 
@@ -207,7 +207,7 @@ class ATNSerializer
 				continue
 			end
 
-			if (s.getStateType() == ATNState.RULE_STOP) 
+			if (s.getStateType() == ATNState::RULE_STOP)
 				continue
 			end
 
@@ -225,40 +225,40 @@ class ATNSerializer
 				int arg2 = 0
 				int arg3 = 0
 				switch ( edgeType ) 
-					case Transition.RULE :
+					case Transition::RULE :
 						trg = ((RuleTransition)t).followState.stateNumber
 						arg1 = ((RuleTransition)t).target.stateNumber
 						arg2 = ((RuleTransition)t).ruleIndex
 						arg3 = ((RuleTransition)t).precedence
 						break
-					case Transition.PRECEDENCE:
+					case Transition::PRECEDENCE:
 						PrecedencePredicateTransition ppt = (PrecedencePredicateTransition)t
 						arg1 = ppt.precedence
 						break
-					case Transition.PREDICATE :
+					case Transition::PREDICATE :
 						PredicateTransition pt = (PredicateTransition)t
 						arg1 = pt.ruleIndex
 						arg2 = pt.predIndex
 						arg3 = pt.isCtxDependent ? 1 : 0 
 						break
-					case Transition.RANGE :
+					case Transition::RANGE :
 						arg1 = ((RangeTransition)t).from
 						arg2 = ((RangeTransition)t).to
-						if (arg1 == Token.EOF) 
+						if (arg1 == Token::EOF)
 							arg1 = 0
 							arg3 = 1
 						end
 
 						break
-					case Transition.ATOM :
+					case Transition::ATOM :
 						arg1 = ((AtomTransition)t).label
-						if (arg1 == Token.EOF) 
+						if (arg1 == Token::EOF)
 							arg1 = 0
 							arg3 = 1
 						end
 
 						break
-					case Transition.ACTION :
+					case Transition::ACTION :
 						ActionTransition at = (ActionTransition)t
 						arg1 = at.ruleIndex
 						arg2 = at.actionIndex
@@ -268,13 +268,13 @@ class ATNSerializer
 
 						arg3 = at.isCtxDependent ? 1 : 0 
 						break
-					case Transition.SET :
+					case Transition::SET :
 						arg1 = setIndices.get(((SetTransition)t).set)
 						break
-					case Transition.NOT_SET :
+					case Transition::NOT_SET :
 						arg1 = setIndices.get(((SetTransition)t).set)
 						break
-					case Transition.WILDCARD :
+					case Transition::WILDCARD :
 						break
 				end
 
@@ -382,8 +382,8 @@ class ATNSerializer
 		data.add(nSets)
 
 		for (IntervalSet set : sets) 
-			boolean containsEof = set.contains(Token.EOF)
-			if (containsEof && set.getIntervals().get(0).b == Token.EOF) 
+			boolean containsEof = set.contains(Token::EOF)
+			if (containsEof && set.getIntervals().get(0).b == Token::EOF)
 				data.add(set.getIntervals().size() - 1)
 			end
 			else 
@@ -392,8 +392,8 @@ class ATNSerializer
 
 			data.add(containsEof ? 1 : 0)
 			for (Interval I : set.getIntervals()) 
-				if (I.a == Token.EOF) 
-					if (I.b == Token.EOF) 
+				if (I.a == Token::EOF)
+					if (I.b == Token::EOF)
 						continue
 					end
 					else 
@@ -437,18 +437,18 @@ class ATNSerializer
 		int nstates = ATNDeserializer.toInt(data[p++])
 		for (int i=0 i<nstates i++) 
 			int stype = ATNDeserializer.toInt(data[p++])
-            if ( stype==ATNState.INVALID_TYPE ) continue # ignore bad type of states
+            if ( stype==ATNState::INVALID_TYPE ) continue # ignore bad type of states
 			int ruleIndex = ATNDeserializer.toInt(data[p++])
 			if (ruleIndex == Character.MAX_VALUE) 
 				ruleIndex = -1
 			end
 
 			String arg = ""
-			if ( stype == ATNState.LOOP_END ) 
+			if ( stype == ATNState::LOOP_END )
 				int loopBackStateNumber = ATNDeserializer.toInt(data[p++])
 				arg = " "+loopBackStateNumber
 			end
-			else if ( stype == ATNState.PLUS_BLOCK_START || stype == ATNState.STAR_BLOCK_START || stype == ATNState.BLOCK_START ) 
+			else if ( stype == ATNState::PLUS_BLOCK_START || stype == ATNState::STAR_BLOCK_START || stype == ATNState::BLOCK_START )
 				int endStateNumber = ATNDeserializer.toInt(data[p++])
 				arg = " "+endStateNumber
 			end
@@ -532,7 +532,7 @@ class ATNSerializer
 			buf.append(i+setIndexOffset).append(":")
 			boolean containsEof = data[p++] != 0
 			if (containsEof) 
-				buf.append(getTokenName(Token.EOF))
+				buf.append(getTokenName(Token::EOF))
 			end
 
 			for (int j=0 j<nintervals j++) 

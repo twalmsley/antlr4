@@ -48,7 +48,7 @@ class CommonTokenStream < BufferedTokenStream
     if (k < 0)
       return LB(-k)
     end
-    i = p
+    i = @p
     n = 1 # we know tokens[p] is a good one
     # find k good tokens
     while (n < k)
@@ -72,7 +72,7 @@ class CommonTokenStream < BufferedTokenStream
       if (t.getChannel() == @channel)
         n += 1
       end
-      if (t.getType() == Token.EOF)
+      if (t.getType() == Token::EOF)
         break
       end
       i += 1

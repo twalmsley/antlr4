@@ -108,14 +108,14 @@ class ATNDeserializer
     version = data[p]
     p += 1
     if (version != @@SERIALIZED_VERSION)
-      reason = sprintf "Could not deserialize ATN with version %d (expected %d)." % [version, @@SERIALIZED_VERSION]
+      reason = sprintf "Could not deserialize ATN with version %d (expected %d).\n" % [version, @@SERIALIZED_VERSION]
       raise UnsupportedOperationException, reason
     end
 
     uuid = toUuid(data, p)
     p += 8
     if (!@@SUPPORTED_UuidS.include?(uuid))
-      reason = sprintf "Could not deserialize ATN with Uuid %s (expected %s or a legacy Uuid)." % [uuid, @@SERIALIZED_Uuid]
+      reason = sprintf "Could not deserialize ATN with Uuid %s (expected %s or a legacy Uuid).\n" % [uuid, @@SERIALIZED_Uuid]
       raise UnsupportedOperationException, reason
     end
 
@@ -215,7 +215,7 @@ class ATNDeserializer
         tokenType = data[p]
         p += 1
         if (tokenType == 0xFFFF)
-          tokenType = Token.EOF
+          tokenType = Token::EOF
         end
 
         atn.ruleToTokenType[i] = tokenType
@@ -628,7 +628,7 @@ class ATNDeserializer
       return EpsilonTransition.new(target)
     when Transition::RANGE
       if (arg3 != 0)
-        return RangeTransition.new(target, Token.EOF, arg2)
+        return RangeTransition.new(target, Token::EOF, arg2)
       else
         return RangeTransition.new(target, arg1, arg2)
       end
@@ -690,7 +690,7 @@ class ATNDeserializer
     when ATNState::LOOP_END
       s = LoopEndState.new
     else
-      message = sprintf " The specified state type % d is not valid." % [type]
+      message = sprintf " The specified state type % d is not valid.\n" % [type]
       raise IllegalArgumentException, message
     end
     s.ruleIndex = ruleIndex
@@ -725,7 +725,7 @@ class ATNDeserializer
       return LexerTypeAction.new(data1)
 
     else
-      message = sprintf " The specified lexer action type % d is not valid." % [type]
+      message = sprintf " The specified lexer action type % d is not valid.\n" % [type]
       raise IllegalArgumentException, message
     end
   end

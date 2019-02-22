@@ -131,14 +131,14 @@ class ListTokenSource implements TokenSource
 				end
 
 				int stop = Math.max(-1, start - 1)
-				eofToken = _factory.create(new Pair<TokenSource, CharStream>(this, getInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine())
+				eofToken = _factory.create(new Pair<TokenSource, CharStream>(this, getInputStream()), Token::EOF, "EOF", Token::DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine())
 			end
 
 			return eofToken
 		end
 
 		Token t = tokens.get(i)
-		if (i == tokens.size() - 1 && t.getType() == Token.EOF) 
+		if (i == tokens.size() - 1 && t.getType() == Token::EOF)
 			eofToken = t
 		end
 

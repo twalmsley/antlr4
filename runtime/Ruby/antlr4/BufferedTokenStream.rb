@@ -1,4 +1,5 @@
 require '../../antlr4/runtime/Ruby/antlr4/TokenStream'
+require '../../antlr4/runtime/Ruby/antlr4/WritableToken'
 
 class BufferedTokenStream < TokenStream
 
@@ -46,7 +47,7 @@ class BufferedTokenStream < TokenStream
 
 
   def size()
-    return tokens.size()
+    return @tokens.length
   end
 
 
@@ -56,10 +57,10 @@ class BufferedTokenStream < TokenStream
       if (@fetchedEOF)
         # the last token in tokens is EOF. skip check if p indexes any
         # fetched token except the last.
-        skipEofCheck = @p < @tokens.size() - 1
+        skipEofCheck = @p < @tokens.length - 1
       else
         # no EOF token in tokens. skip check if p indexes a fetched token.
-        skipEofCheck = @p < @tokens.size()
+        skipEofCheck = @p < @tokens.length
       end
     else
 # not yet initialized
@@ -77,7 +78,7 @@ class BufferedTokenStream < TokenStream
 
 
   def sync(i)
-    n = i - @tokens.size() + 1 # how many more elements we need?
+    n = i - @tokens.length + 1 # how many more elements we need?
 
     if (n > 0)
       fetched = fetch(n)
@@ -97,10 +98,10 @@ class BufferedTokenStream < TokenStream
     while i < n
       t = @tokenSource.nextToken()
       if (t.is_a? WritableToken)
-        t.setTokenIndex(@tokens.size())
+        t.setTokenIndex(@tokens.length)
       end
-      @tokens.add(t)
-      if (t.getType() == Token.EOF)
+      @tokens << t
+      if (t.type == Token::EOF)
         @fetchedEOF = true
         return i + 1
       end
@@ -112,8 +113,8 @@ class BufferedTokenStream < TokenStream
 
 
   def get(i)
-    if (i < 0 || i >= @tokens.size())
-      raise IndexOutOfBoundsException, "token index " + i + " out of range 0.." + (@tokens.size() - 1)
+    if (i < 0 || i >= @tokens.length)
+      raise IndexOutOfBoundsException, "token index " + i + " out of range 0.." + (@tokens.length - 1)
     end
     return @tokens[i]
   end
@@ -125,13 +126,13 @@ class BufferedTokenStream < TokenStream
     end
     lazyInit()
     subset = []
-    if (stop >= @tokens.size())
-      stop = @tokens.size() - 1
+    if (stop >= @tokens.length)
+      stop = @tokens.length - 1
     end
     i = start
     while i <= stop
-      t = @tokens.get(i)
-      if (t.getType() == Token.EOF)
+      t = @tokens[i]
+      if (t.getType() == Token::EOF)
         break
       end
       subset.add(t)
@@ -142,7 +143,7 @@ class BufferedTokenStream < TokenStream
 
 
   def LA(i)
-    return LT(i).getType()
+    return LT(i).type
   end
 
   def LB(k)
@@ -165,12 +166,12 @@ class BufferedTokenStream < TokenStream
 
     i = @p + k - 1
     sync(i)
-    if (i >= @tokens.size()) # return EOF token
+    if (i >= @tokens.length) # return EOF token
       # EOF must be last token
-      return @tokens.get(@tokens.size() - 1)
+      return @tokens.get(@tokens.length - 1)
     end
 #		if ( i>range ) range = i
-    return @tokens.get(i)
+    return @tokens[i]
   end
 
 
@@ -204,11 +205,11 @@ class BufferedTokenStream < TokenStream
 
   def getTokens_1(start, stop, types = nil)
     lazyInit()
-    if (start < 0 || stop >= @tokens.size() ||
-        stop < 0 || start >= @tokens.size())
+    if (start < 0 || stop >= @tokens.length ||
+        stop < 0 || start >= @tokens.length)
 
       raise IndexOutOfBoundsException, "start " + start + " or stop " + stop +
-          " not in 0.." + (@tokens.size() - 1)
+          " not in 0.." + (@tokens.length - 1)
     end
     if (start > stop)
       return nil
@@ -218,7 +219,7 @@ class BufferedTokenStream < TokenStream
     filteredTokens = []
     i = start
     while i <= stop
-      t = @tokens.get(i)
+      t = @tokens[i]
       if (types == nil || types.include?(t.getType()))
         filteredTokens.add(t)
       end
@@ -243,15 +244,15 @@ class BufferedTokenStream < TokenStream
       return size() - 1
     end
 
-    token = @tokens.get(i)
-    while (token.getChannel() != channel)
-      if (token.getType() == Token.EOF)
+    token = @tokens[i]
+    while (token.channel != channel)
+      if (token.type == Token::EOF)
         return i
       end
 
       i += 1
       sync(i)
-      token = @tokens.get(i)
+      token = @tokens[i]
     end
 
     return i
@@ -266,8 +267,8 @@ class BufferedTokenStream < TokenStream
     end
 
     while (i >= 0)
-      token = @tokens.get(i)
-      if (token.getType() == Token.EOF || token.getChannel() == channel)
+      token = @tokens[i]
+      if (token.type == Token::EOF || token.channel == channel)
         return i
       end
 
@@ -281,7 +282,7 @@ class BufferedTokenStream < TokenStream
   def getHiddenTokensToRight(tokenIndex, channel)
     lazyInit()
     if (tokenIndex < 0 || tokenIndex >= tokens.size())
-      raise IndexOutOfBoundsException, tokenIndex + " not in 0.." + (@tokens.size() - 1)
+      raise IndexOutOfBoundsException, tokenIndex + " not in 0.." + (@tokens.length - 1)
     end
 
     nextOnChannel =
@@ -307,7 +308,7 @@ class BufferedTokenStream < TokenStream
   def getHiddenTokensToLeft(tokenIndex, channel)
     lazyInit()
     if (tokenIndex < 0 || tokenIndex >= tokens.size())
-      raise IndexOutOfBoundsException, tokenIndex + " not in 0.." + (@tokens.size() - 1)
+      raise IndexOutOfBoundsException, tokenIndex + " not in 0.." + (@tokens.length - 1)
     end
 
     if (tokenIndex == 0)
@@ -336,7 +337,7 @@ class BufferedTokenStream < TokenStream
     hidden = []
     i = from
     while i <= to
-      t = @tokens.get(i)
+      t = @tokens[i]
       if (channel == -1)
         if (t.getChannel() != Lexer.DEFAULT_TOKEN_CHANNEL)
           hidden.add(t)
@@ -372,15 +373,15 @@ class BufferedTokenStream < TokenStream
       return ""
     end
     fill()
-    if (stop >= @tokens.size())
-      stop = @tokens.size() - 1
+    if (stop >= @tokens.length)
+      stop = @tokens.length - 1
     end
 
     buf = ""
     i = start
     while i <= stop
-      t = @tokens.get(i)
-      if (t.getType() == Token.EOF)
+      t = @tokens[i]
+      if (t.getType() == Token::EOF)
         break
       end
       buf << t.getText()

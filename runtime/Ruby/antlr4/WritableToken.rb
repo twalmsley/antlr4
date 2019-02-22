@@ -1,21 +1,21 @@
+require '../../antlr4/runtime/Ruby/antlr4/Token'
 
+class WritableToken < Token
+  def setText(text)
+  end
 
+  def setType(ttype)
+  end
 
+  def setLine(line)
+  end
 
+  def setCharPositionInLine(pos)
+  end
 
+  def setChannel(channel)
+  end
 
-
-
-class WritableToken extends Token 
-	public void setText(String text)
-
-	public void setType(int ttype)
-
-	public void setLine(int line)
-
-	public void setCharPositionInLine(int pos)
-
-	public void setChannel(int channel)
-
-	public void setTokenIndex(int index)
+  def setTokenIndex(index)
+  end
 end

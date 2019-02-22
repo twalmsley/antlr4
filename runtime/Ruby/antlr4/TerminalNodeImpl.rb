@@ -60,7 +60,7 @@ class TerminalNodeImpl implements TerminalNode
 
 	
 	public String toString() 
-			if ( symbol.getType() == Token.EOF ) return "<EOF>"
+			if ( symbol.getType() == Token::EOF ) return "<EOF>"
 			return symbol.getText()
 	end
 

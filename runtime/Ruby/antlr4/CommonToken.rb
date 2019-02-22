@@ -1,285 +1,111 @@
-
-
-
-
-
-
-
-
-
-
-
-
-class CommonToken implements WritableToken, Serializable 
-
-
-
-
-	protected static final Pair<TokenSource, CharStream> EMPTY_SOURCE =
-		new Pair<TokenSource, CharStream>(null, null)
-
-
-
-
-	protected int type
-
-
-
-
-	protected int line
-
-
-
-
-
-	protected int charPositionInLine = -1 # set to invalid position
-
-
-
-
-
-	protected int channel=DEFAULT_CHANNEL
-
-
-
-
-
-
-
-
-
-
-
-
-	protected Pair<TokenSource, CharStream> source
-
-
-
-
-
-
-
-	protected String text
-
-
-
-
-
-	protected int index = -1
-
-
-
-
-
-	protected int start
-
-
-
-
-
-	protected int stop
-
-
-
-
-
-
-	public CommonToken(int type) 
-		this.type = type
-		this.source = EMPTY_SOURCE
-	end
-
-	public CommonToken(Pair<TokenSource, CharStream> source, int type, int channel, int start, int stop) 
-		this.source = source
-		this.type = type
-		this.channel = channel
-		this.start = start
-		this.stop = stop
-		if (source.a != null) 
-			this.line = source.a.getLine()
-			this.charPositionInLine = source.a.getCharPositionInLine()
-		end
-	end
-
-
-
-
-
-
-
-
-	public CommonToken(int type, text) 
-		this.type = type
-		this.channel = DEFAULT_CHANNEL
-		this.text = text
-		this.source = EMPTY_SOURCE
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public CommonToken(Token oldToken) 
-		type = oldToken.getType()
-		line = oldToken.getLine()
-		index = oldToken.getTokenIndex()
-		charPositionInLine = oldToken.getCharPositionInLine()
-		channel = oldToken.getChannel()
-		start = oldToken.getStartIndex()
-		stop = oldToken.getStopIndex()
-
-		if (oldToken instanceof CommonToken) 
-			text = ((CommonToken)oldToken).text
-			source = ((CommonToken)oldToken).source
-		end
-		else 
-			text = oldToken.getText()
-			source = new Pair<TokenSource, CharStream>(oldToken.getTokenSource(), oldToken.getInputStream())
-		end
-	end
-
-	
-	public int getType() 
-		return type
-	end
-
-	
-	public void setLine(int line) 
-		this.line = line
-	end
-
-	
-	public String getText() 
-		if ( text!=null ) 
-			return text
-		end
-
-		CharStream input = getInputStream()
-		if ( input==null ) return null
-		int n = input.size()
-		if ( start<n && stop<n) 
-			return input.getText(Interval.of(start,stop))
-		end
-		else 
-			return "<EOF>"
-		end
-	end
-
-
-
-
-
-
-
-
-
-
-	
-	public void setText(String text) 
-		this.text = text
-	end
-
-	
-	public int getLine() 
-		return line
-	end
-
-	
-	public int getCharPositionInLine() 
-		return charPositionInLine
-	end
-
-	
-	public void setCharPositionInLine(int charPositionInLine) 
-		this.charPositionInLine = charPositionInLine
-	end
-
-	
-	public int getChannel() 
-		return channel
-	end
-
-	
-	public void setChannel(int channel) 
-		this.channel = channel
-	end
-
-	
-	public void setType(int type) 
-		this.type = type
-	end
-
-	
-	public int getStartIndex() 
-		return start
-	end
-
-	public void setStartIndex(int start) 
-		this.start = start
-	end
-
-	
-	public int getStopIndex() 
-		return stop
-	end
-
-	public void setStopIndex(int stop) 
-		this.stop = stop
-	end
-
-	
-	public int getTokenIndex() 
-		return index
-	end
-
-	
-	public void setTokenIndex(int index) 
-		this.index = index
-	end
-
-	
-	public TokenSource getTokenSource() 
-		return source.a
-	end
-
-	
-	public CharStream getInputStream() 
-		return source.b
-	end
-
-	
-	public String toString() 
-		return toString(null)
-	end
-
-	public String toString(Recognizer r) 
-
-		String channelStr = ""
-		if ( channel>0 ) 
-			channelStr=",channel="+channel
-		end
-		String txt = getText()
-		if ( txt!=null ) 
-			txt = txt.replace("\n","\\n")
-			txt = txt.replace("\r","\\r")
-			txt = txt.replace("\t","\\t")
-		end
-		else 
-			txt = "<no text>"
-		end
-		String typeString = String.valueOf(type)
-		if ( r!=null ) 
-			typeString = r.getVocabulary().getDisplayName(type)
-		end
-		return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+typeString+">"+channelStr+","+line+":"+getCharPositionInLine()+"]"
-	end
+require 'ostruct'
+require '../../antlr4/runtime/Ruby/antlr4/Token'
+
+class CommonToken
+
+  EMPTY_SOURCE = OpenStruct.new
+
+  attr_accessor :type
+  attr_accessor :line
+  attr_accessor :charPositionInLine
+  attr_accessor :channel
+  attr_accessor :source
+  attr_accessor :text
+  attr_accessor :index
+  attr_accessor :start
+  attr_accessor :stop
+
+
+  def initialize(type = nil)
+    @charPositionInLine = -1
+    @channel = Token::DEFAULT_CHANNEL
+    @index = -1
+    @type = type
+    @source = EMPTY_SOURCE
+  end
+
+  def self.create_1(source, type, channel, start, stop)
+    result = CommonToken.new(type)
+    result.source = source
+    result.channel = channel
+    result.start = start
+    result.stop = stop
+    if (source.a != nil)
+      result.line = source.a.getLine()
+      result.charPositionInLine = source.a.getCharPositionInLine()
+    end
+    result
+  end
+
+  def self.create_2(type, text)
+    result = CommonToken.new(type)
+    result.text = text
+    result
+  end
+
+  def create_3(oldToken)
+    result = CommonToken.new(oldToken.getType())
+
+    result.line = oldToken.getLine()
+    result.index = oldToken.getTokenIndex()
+    result.charPositionInLine = oldToken.getCharPositionInLine()
+    result.channel = oldToken.getChannel()
+    result.start = oldToken.getStartIndex()
+    result.stop = oldToken.getStopIndex()
+
+    if (oldToken.is_a? CommonToken)
+      result.text = oldToken.text
+      result.source = oldToken.source
+    else
+      result.text = oldToken.getText()
+      result.source = OpenStruct.new
+      result.source.a = oldToken.getTokenSource()
+      result.source.b = oldToken.getInputStream()
+    end
+    result
+  end
+
+  def getInputStream
+
+  end
+
+  def getText()
+    if (text != nil)
+      return text
+    end
+
+    input = getInputStream()
+    if (input == nil)
+      return nil
+    end
+    n = input.size()
+    if (@start < n && @stop < n)
+      return input.getText(Interval.of(@start, @stop))
+    else
+      return "<EOF>"
+    end
+  end
+
+
+  def to_s(r)
+
+    channelStr = ""
+    if (@channel > 0)
+      channelStr = ",channel=" + @channel
+    end
+    txt = getText()
+    if (txt != nil)
+      txt = txt.replace("\n", "\\n")
+      txt = txt.replace("\r", "\\r")
+      txt = txt.replace("\t", "\\t")
+    else
+      txt = "<no text>"
+    end
+
+    typeString = type.to_s
+    if (r != nil)
+      typeString = r.getVocabulary().getDisplayName(@type)
+    end
+    return "[@" + getTokenIndex() + "," + @start + ":" + @stop + "='" + txt + "',<" + typeString + ">" + channelStr + "," + @line + ":" + getCharPositionInLine() + "]"
+  end
 end

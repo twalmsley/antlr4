@@ -1,4 +1,6 @@
 require '../../antlr4/runtime/Ruby/antlr4/ANTLRErrorStrategy'
+require '../../antlr4/runtime/Ruby/antlr4/NoViableAltException'
+require '../../antlr4/runtime/Ruby/antlr4/InputMismatchException'
 
 class DefaultErrorStrategy < ANTLRErrorStrategy
 
@@ -90,7 +92,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
 
   def sync(recognizer)
-    s = recognizer.getInterpreter().atn.states.get(recognizer.getState())
+    s = recognizer.getInterpreter().atn.states[recognizer.getState()]
 #		System.err.println("sync @ "+s.stateNumber+"="+s.getClass().getSimpleName())
 # If already recovering, don't try to sync
     if (inErrorRecoveryMode(recognizer))
@@ -102,14 +104,14 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
 # try cheaper subset first might get lucky. seems to shave a wee bit off
     nextTokens = recognizer.getATN().nextTokens(s)
-    if (nextTokens.include?(la))
+    if (nextTokens.contains(la))
       # We are sure the token matches
       @nextTokensContext = nil
-      @nextTokensState = ATNState.INVALID_STATE_NUMBER
+      @nextTokensState = ATNState::INVALID_STATE_NUMBER
       return
     end
 
-    if (nextTokens.include?(Token.EPSILON))
+    if (nextTokens.contains(Token::EPSILON))
       if (@nextTokensContext == nil)
         # It's possible the next token won't match information tracked
         # by sync is restricted for performance.
@@ -120,15 +122,16 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     end
 
     case (s.getStateType())
-    when ATNState.BLOCK_START, ATNState.STAR_BLOCK_START, ATNState.PLUS_BLOCK_START, ATNState.STAR_LOOP_ENTRY
+    when ATNState::BLOCK_START, ATNState::STAR_BLOCK_START, ATNState::PLUS_BLOCK_START, ATNState::STAR_LOOP_ENTRY
 # report error and recover if possible
       if (singleTokenDeletion(recognizer) != nil)
         return
       end
 
-      raise InputMismatchException, recognizer
+      exc = InputMismatchException.create(recognizer)
+      raise exc
 
-    when ATNState.PLUS_LOOP_BACK, ATNState.STAR_LOOP_BACK
+    when ATNState::PLUS_LOOP_BACK, ATNState::STAR_LOOP_BACK
 
 #			System.err.println("at loop back: "+s.getClass().getSimpleName())
       reportUnwantedToken(recognizer)
@@ -146,9 +149,8 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   def reportNoViableAlternative(recognizer, e)
 
     tokens = recognizer.getInputStream()
-    input = ""
     if (tokens != nil)
-      if (e.getStartToken().getType() == Token.EOF)
+      if (e.getStartToken().getType() == Token::EOF)
         input = "<EOF>"
       else
         input = tokens.getText(e.getStartToken(), e.getOffendingToken())
@@ -162,9 +164,9 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
 
   def reportInputMismatch(recognizer, e)
-    msg = "mismatched input " + getTokenErrorDisplay(e.getOffendingToken()) +
-        " expecting " + e.getExpectedTokens().to_s(recognizer.getVocabulary())
-    recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e)
+    msg = "mismatched input " + getTokenErrorDisplay(e.offendingToken) +
+        " expecting " + e.getExpectedTokens().toString_from_Vocabulary(recognizer.getVocabulary())
+    recognizer.notifyErrorListeners(e.offendingToken, msg, e)
   end
 
 
@@ -224,10 +226,14 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     end
 
 # even that didn't work must throw the exception
+    exc = InputMismatchException.new
+    exc.recog = recognizer
     if (nextTokensContext == nil)
-      raise InputMismatchException, recognizer
+      raise exc
     else
-      raise InputMismatchException, recognizer, nextTokensState, nextTokensContext
+      exc.token = @nextTokensState
+      exc.context = @nextTokensContext
+      raise exc
     end
 
   end
@@ -254,7 +260,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   def singleTokenDeletion(recognizer)
     nextTokenType = recognizer.getInputStream().LA(2)
     expecting = getExpectedTokens(recognizer)
-    if (expecting.include?(nextTokenType))
+    if (expecting.contains(nextTokenType))
       reportUnwantedToken(recognizer)
 
       recognizer.consume() # simply delete extra token
@@ -270,26 +276,26 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   def getMissingSymbol(recognizer)
     currentSymbol = recognizer.getCurrentToken()
     expecting = getExpectedTokens(recognizer)
-    expectedTokenType = Token.INVALID_TYPE
+    expectedTokenType = Token::INVALID_TYPE
     if (!expecting.isNil())
       expectedTokenType = expecting.getMinElement() # get any element
     end
     tokenText = ""
-    if (expectedTokenType == Token.EOF)
+    if (expectedTokenType == Token::EOF)
       tokenText = "<missing EOF>"
     else
       tokenText = "<missing " + recognizer.getVocabulary().getDisplayName(expectedTokenType) + ">"
     end
     current = currentSymbol
     lookback = recognizer.getInputStream().LT(-1)
-    if (current.getType() == Token.EOF && lookback != nil)
+    if (current.getType() == Token::EOF && lookback != nil)
       current = lookback
     end
 
     pair = OpenStruct.new
     pair.a = current.getTokenSource()
     pair.b = current.getTokenSource().getInputStream()
-    return recognizer.getTokenFactory().create(pair, expectedTokenType, tokenText, Token.DEFAULT_CHANNEL, -1, -1, current.getLine(), current.getCharPositionInLine())
+    return recognizer.getTokenFactory().create(pair, expectedTokenType, tokenText, Token::DEFAULT_CHANNEL, -1, -1, current.getLine(), current.getCharPositionInLine())
   end
 
 
@@ -304,7 +310,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     end
     s = getSymbolText(t)
     if (s == nil)
-      if (getSymbolType(t) == Token.EOF)
+      if (getSymbolType(t) == Token::EOF)
         s = "<EOF>"
       else
         s = "<" + getSymbolType(t) + ">"
@@ -319,7 +325,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   end
 
   def getSymbolType(symbol)
-    return symbol.getType()
+    return symbol.type
   end
 
 
@@ -344,7 +350,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
       recoverSet.addAll(follow)
       ctx = ctx.parent
     end
-    recoverSet.remove(Token.EPSILON)
+    recoverSet.remove(Token::EPSILON)
     return recoverSet
   end
 
@@ -352,7 +358,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   def consumeUntil(recognizer, set)
 #		System.err.println("consumeUntil("+set.to_s(recognizer.getTokenNames())+")")
     ttype = recognizer.getInputStream().LA(1)
-    while (ttype != Token.EOF && !set.include?(ttype))
+    while (ttype != Token::EOF && !set.include?(ttype))
       recognizer.consume()
       ttype = recognizer.getInputStream().LA(1)
     end

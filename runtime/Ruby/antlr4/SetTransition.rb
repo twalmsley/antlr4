@@ -7,7 +7,7 @@ class SetTransition < Transition
   def initialize(target, set)
     super(target)
     if (set == nil)
-      set = IntervalSet.of(Token.INVALID_TYPE)
+      set = IntervalSet.of(Token::INVALID_TYPE)
     end
 
     @set = set

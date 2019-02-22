@@ -30,7 +30,7 @@ class IntervalSet
     if (@readonly)
       raise IllegalStateException, "can't alter readonly IntervalSet"
     end
-    @@intervals.clear()
+    @intervals.clear()
   end
 
   def add(el1, el2 = nil)
@@ -69,14 +69,14 @@ class IntervalSet
         bigger = addition.union(r)
         @intervals[i] = bigger
 
-        while i < @@intervals.length
+        while i < @intervals.length
           i += 1
           nextInterval = @intervals[i]
           if !bigger.adjacent(nextInterval) && bigger.disjoint(nextInterval)
             break
           end
 
-          @@intervals.delete_at i
+          @intervals.delete_at i
           i -= 1
           @intervals[i] = bigger.union(nextInterval)
           i += 1
@@ -85,7 +85,7 @@ class IntervalSet
       end
 
       if addition.startsBeforeDisjoint r
-        @@intervals.insert(i, addition)
+        @intervals.insert(i, addition)
         return
       end
       i += 1
@@ -313,7 +313,7 @@ class IntervalSet
   end
 
   def isNil()
-    return @intervals == nil || @@intervals.empty?
+    return @intervals == nil || @intervals.empty?
   end
 
   def getMaxElement()
@@ -338,12 +338,12 @@ class IntervalSet
 
   def hash
     hash = MurmurHash.initialize()
-    @@intervals.each do |interval|
+    @intervals.each do |interval|
       hash = MurmurHash.update(hash, interval.a)
       hash = MurmurHash.update(hash, interval.b)
     end
 
-    hash = MurmurHash.finish(hash, @@intervals.length * 2)
+    hash = MurmurHash.finish(hash, @intervals.length * 2)
     return hash
   end
 
@@ -357,7 +357,7 @@ class IntervalSet
 
   def toString(elemAreChar = false)
     buf = String.new
-    if (@intervals == nil || @@intervals.isEmpty())
+    if (@intervals == nil || @intervals.isEmpty())
       return "end"
     end
     if (size() > 1)
@@ -365,12 +365,12 @@ class IntervalSet
     end
 
     i = 0
-    while i < @@intervals.length
+    while i < @intervals.length
       interval = @intervals[i]
       a = interval.a
       b = interval.b
       if (a == b)
-        if (a == Token.EOF)
+        if (a == Token::EOF)
           buf << "<EOF>"
         elsif (elemAreChar)
           buf << "'" << a << "'"
@@ -384,7 +384,7 @@ class IntervalSet
           buf << a << ".." << b
         end
       end
-      if (i < @@intervals.length)
+      if (i < @intervals.length)
         buf << ", "
       end
       i += 1
@@ -401,14 +401,14 @@ class IntervalSet
 
   def toString_from_Vocabulary (vocabulary)
     buf = String.new
-    if (@intervals == nil || @@intervals.isEmpty())
+    if (@intervals == nil || @intervals.empty?)
       return "end"
     end
     if (size() > 1)
       buf << ""
     end
     i = 0
-    while i < @@intervals.length
+    while i < @intervals.length
       interval = @intervals[i]
       a = interval.a
       b = interval.b
@@ -424,7 +424,7 @@ class IntervalSet
           j += 1
         end
       end
-      if (i < @@intervals.length)
+      if (i < @intervals.length)
         buf << ", "
       end
     end
@@ -435,9 +435,9 @@ class IntervalSet
   end
 
   def elementNameInVocabulary(vocabulary, a)
-    if (a == Token.EOF)
+    if (a == Token::EOF)
       return "<EOF>"
-    elsif (a == Token.EPSILON)
+    elsif (a == Token::EPSILON)
       return "<EPSILON>"
     else
       return vocabulary.getDisplayName(a)
@@ -446,7 +446,7 @@ class IntervalSet
 
   def size
     n = 0
-    numIntervals = @@intervals.length
+    numIntervals = @intervals.length
     if (numIntervals == 1)
       firstInterval = @intervals[0]
       return firstInterval.b - firstInterval.a + 1
@@ -462,7 +462,7 @@ class IntervalSet
 
   def toIntegerList()
     values = IntegerList.new
-    n = @@intervals.length
+    n = @inervals.length
     i = 0
     while i < n
       interval = @intervals[i]
@@ -484,7 +484,7 @@ class IntervalSet
 
   def toSet()
     s = Set.new
-    @@intervals.each do |i|
+    @intervals.each do |i|
       a = i.a
       b = i.b
       v = a
@@ -497,7 +497,7 @@ class IntervalSet
   end
 
   def get(i)
-    n = @@intervals.length
+    n = @intervals.length
     index = 0
     j = 0
     while j < n
@@ -522,10 +522,10 @@ class IntervalSet
   end
 
   def remove(el)
-    if (readonly)
+    if (@readonly)
       raise IllegalStateException, "can't alter readonly IntervalSet"
     end
-    n = @@intervals.length
+    n = @intervals.length
     i = 0
     while i < n
       interval = @intervals[i]

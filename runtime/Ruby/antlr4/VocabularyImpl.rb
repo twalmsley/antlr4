@@ -14,7 +14,7 @@ class VocabularyImpl < Vocabulary
   EMPTY_VOCABULARY = VocabularyImpl.new(@@EMPTY_NAMES, @@EMPTY_NAMES, @@EMPTY_NAMES)
 
 
-  def fromTokenNames(tokenNames)
+  def self.fromTokenNames(tokenNames)
     if (tokenNames == nil || tokenNames.length == 0)
       return EMPTY_VOCABULARY
     end
@@ -71,7 +71,7 @@ class VocabularyImpl < Vocabulary
       return @symbolicNames[tokenType]
     end
 
-    if (tokenType == Token.EOF)
+    if (tokenType == Token::EOF)
       return "EOF"
     end
 

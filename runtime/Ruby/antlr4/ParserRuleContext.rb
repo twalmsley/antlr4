@@ -1,6 +1,5 @@
 require '../../antlr4/runtime/Ruby/antlr4/RuleContext'
 
-
 class ParserRuleContext < RuleContext
 
 
@@ -208,7 +207,8 @@ class ParserRuleContext < RuleContext
 
 
   def toInfoString(recognizer)
-    rules = recognizer.getRuleInvocationStack(self)
+
+    rules = recognizer.getRuleInvocationStack_2(self)
     rules.reverse!
     return "ParserRuleContext" + rules + "" +
         "start=" + start +

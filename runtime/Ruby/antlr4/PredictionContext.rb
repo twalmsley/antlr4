@@ -8,6 +8,8 @@ class PredictionContext
     @@globalNodeCount = 0
   end
 
+  EMPTY_RETURN_STATE = Integer::MAX
+
   attr_accessor :cachedHashCode
 
   def initialize(cachedHashCode)
@@ -34,440 +36,441 @@ class PredictionContext
       transition = state.transition(0)
       return SingletonPredictionContext.create(parent, transition.followState.stateNumber)
     end
+  end
 
-    def size()
+  def size()
 
-    end
+  end
 
-    def getParent(index)
+  def getParent(index)
 
-    end
+  end
 
-    def getReturnState(index)
+  def getReturnState(index)
 
-    end
+  end
 
-    def isEmpty()
-      return self == EMPTY
-    end
+  def isEmpty()
+    return self == EMPTY
+  end
 
-    def hasEmptyPath()
+  def hasEmptyPath()
 # since EMPTY_RETURN_STATE can only appear in the last position, we check last one
-      return getReturnState(size() - 1) == EMPTY_RETURN_STATE
-    end
+    return getReturnState(size() - 1) == EMPTY_RETURN_STATE
+  end
 
 
-    def hash()
-      return @cachedHashCode
-    end
+  def hash()
+    return @cachedHashCode
+  end
 
 
-    def equals(obj)
+  def equals(obj)
 
-    end
+  end
 
 # dispatch
-    def self.merge(a, b, rootIsWildcard, mergeCache)
+  def self.merge(a, b, rootIsWildcard, mergeCache)
 
 # share same graph if both same
-      if (a == b || a.equals(b))
-        return a
-      end
-
-      if (a.is_a? SingletonPredictionContext && b.is_a?(SingletonPredictionContext))
-        return mergeSingletons(a, b, rootIsWildcard, mergeCache)
-      end
-
-      # At least one of a or b is array
-      # If one is $ and rootIsWildcard, return $ as * wildcard
-      if (rootIsWildcard)
-        if (a.is_a? EmptyPredictionContext)
-          return a
-        end
-        if (b.is_a? EmptyPredictionContext)
-          return b
-        end
-      end
-
-      # convert singleton so both are arrays to normalize
-      if (a.is_a? SingletonPredictionContext)
-        a = ArrayPredictionContext.new(a)
-      end
-      if (b.is_a? SingletonPredictionContext)
-        b = ArrayPredictionContext.new(b)
-      end
-      return mergeArrays(a, b, rootIsWildcard, mergeCache)
+    if (a == b || a.equals(b))
+      return a
     end
 
+    if (a.is_a? SingletonPredictionContext && b.is_a?(SingletonPredictionContext))
+      return mergeSingletons(a, b, rootIsWildcard, mergeCache)
+    end
 
-    def self.mergeSingletons(a, b, rootIsWildcard, mergeCache)
+    # At least one of a or b is array
+    # If one is $ and rootIsWildcard, return $ as * wildcard
+    if (rootIsWildcard)
+      if (a.is_a? EmptyPredictionContext)
+        return a
+      end
+      if (b.is_a? EmptyPredictionContext)
+        return b
+      end
+    end
 
+    # convert singleton so both are arrays to normalize
+    if (a.is_a? SingletonPredictionContext)
+      a = ArrayPredictionContext.new(a)
+    end
+    if (b.is_a? SingletonPredictionContext)
+      b = ArrayPredictionContext.new(b)
+    end
+    return mergeArrays(a, b, rootIsWildcard, mergeCache)
+  end
+
+
+  def self.mergeSingletons(a, b, rootIsWildcard, mergeCache)
+
+    if (mergeCache != nil)
+      previous = mergeCache.get(a, b)
+      if (previous != nil)
+        return previous
+      end
+      previous = mergeCache.get(b, a)
+      if (previous != nil)
+        return previous
+      end
+    end
+
+    rootMerge = mergeRoot(a, b, rootIsWildcard)
+    if (rootMerge != nil)
       if (mergeCache != nil)
-        previous = mergeCache.get(a, b)
-        if (previous != nil)
-          return previous
-        end
-        previous = mergeCache.get(b, a)
-        if (previous != nil)
-          return previous
-        end
+        mergeCache.put(a, b, rootMerge)
       end
+      return rootMerge
+    end
 
-      rootMerge = mergeRoot(a, b, rootIsWildcard)
-      if (rootMerge != nil)
-        if (mergeCache != nil)
-          mergeCache.put(a, b, rootMerge)
-        end
-        return rootMerge
+    if (a.returnState == b.returnState) # a == b
+      parent = merge(a.parent, b.parent, rootIsWildcard, mergeCache)
+      # if parent is same as existing a or b parent or reduced to a parent, return it
+      if (parent == a.parent)
+        return a # ax + bx = ax, if a=b
       end
-
-      if (a.returnState == b.returnState) # a == b
-        parent = merge(a.parent, b.parent, rootIsWildcard, mergeCache)
-        # if parent is same as existing a or b parent or reduced to a parent, return it
-        if (parent == a.parent)
-          return a # ax + bx = ax, if a=b
-        end
-        if (parent == b.parent)
-          return b # ax + bx = bx, if a=b
-        end
-        # else: ax + ay = a'[x,y]
-        # merge parents x and y, giving array node with x,y then remainders
-        # of those graphs.  dup a, a' points at merged array
-        # new joined parent so create new singleton pointing to it, a'
-        a_ = SingletonPredictionContext.create(parent, a.returnState)
-        if (mergeCache != nil)
-          mergeCache.put(a, b, a_)
-        end
-        return a_
-      else # a != b payloads differ
-        # see if we can collapse parents due to $+x parents if local ctx
-        singleParent = nil
-        if (a == b || (a.parent != nil && a.parent.equals(b.parent))) # ax + bx = [a,b]x
-          singleParent = a.parent
-        end
-        if (singleParent != nil) # parents are same
-          # sort payloads and use same parent
-          payloads = [a.returnState, b.returnState]
-          if (a.returnState > b.returnState)
-            payloads[0] = b.returnState
-            payloads[1] = a.returnState
-          end
-          parents = [singleParent, singleParent]
-          a_ = ArrayPredictionContext.new(parents, payloads)
-          if (mergeCache != nil)
-            mergeCache.put(a, b, a_)
-          end
-          return a_
-        end
-        # parents differ and can't merge them. Just pack together
-        # into array can't merge.
-        # ax + by = [ax,by]
+      if (parent == b.parent)
+        return b # ax + bx = bx, if a=b
+      end
+      # else: ax + ay = a'[x,y]
+      # merge parents x and y, giving array node with x,y then remainders
+      # of those graphs.  dup a, a' points at merged array
+      # new joined parent so create new singleton pointing to it, a'
+      a_ = SingletonPredictionContext.create(parent, a.returnState)
+      if (mergeCache != nil)
+        mergeCache.put(a, b, a_)
+      end
+      return a_
+    else # a != b payloads differ
+      # see if we can collapse parents due to $+x parents if local ctx
+      singleParent = nil
+      if (a == b || (a.parent != nil && a.parent.equals(b.parent))) # ax + bx = [a,b]x
+        singleParent = a.parent
+      end
+      if (singleParent != nil) # parents are same
+        # sort payloads and use same parent
         payloads = [a.returnState, b.returnState]
-        parents = a.parent, b.parentend
-        if (a.returnState > b.returnState) # sort by payload
+        if (a.returnState > b.returnState)
           payloads[0] = b.returnState
           payloads[1] = a.returnState
-          parents = [b.parent, a.parentend]
         end
+        parents = [singleParent, singleParent]
         a_ = ArrayPredictionContext.new(parents, payloads)
         if (mergeCache != nil)
           mergeCache.put(a, b, a_)
         end
         return a_
       end
-    end
-
-
-    def self.mergeRoot(a, b, rootIsWildcard)
-
-      if (rootIsWildcard)
-        if (a == EMPTY)
-          return EMPTY # * + b = *
-        end
-        if (b == EMPTY)
-          return EMPTY # a + * = *
-        end
-      else
-        if (a == EMPTY && b == EMPTY)
-          return EMPTY # $ + $ = $
-        end
-        if (a == EMPTY) # $ + x = [x,$]
-          payloads = [b.returnState, EMPTY_RETURN_STATE]
-          parents = [b.parent, nil]
-          joined = ArrayPredictionContext.new(parents, payloads)
-          return joined
-        end
-        if (b == EMPTY) # x + $ = [x,$] ($ is always last if present)
-          payloads = [a.returnState, EMPTY_RETURN_STATE]
-          parents = [a.parent, nil]
-          joined = ArrayPredictionContext.new(parents, payloads)
-          return joined
-        end
+      # parents differ and can't merge them. Just pack together
+      # into array can't merge.
+      # ax + by = [ax,by]
+      payloads = [a.returnState, b.returnState]
+      parents = a.parent, b.parentend
+      if (a.returnState > b.returnState) # sort by payload
+        payloads[0] = b.returnState
+        payloads[1] = a.returnState
+        parents = [b.parent, a.parentend]
       end
-      return nil
-    end
-
-
-    def self.mergeArrays(a, b, rootIsWildcard, mergeCache)
+      a_ = ArrayPredictionContext.new(parents, payloads)
       if (mergeCache != nil)
-        previous = mergeCache.get(a, b)
-        if (previous != nil)
-          return previous
+        mergeCache.put(a, b, a_)
+      end
+      return a_
+    end
+  end
+
+
+  def self.mergeRoot(a, b, rootIsWildcard)
+
+    if (rootIsWildcard)
+      if (a == EMPTY)
+        return EMPTY # * + b = *
+      end
+      if (b == EMPTY)
+        return EMPTY # a + * = *
+      end
+    else
+      if (a == EMPTY && b == EMPTY)
+        return EMPTY # $ + $ = $
+      end
+      if (a == EMPTY) # $ + x = [x,$]
+        payloads = [b.returnState, EMPTY_RETURN_STATE]
+        parents = [b.parent, nil]
+        joined = ArrayPredictionContext.new(parents, payloads)
+        return joined
+      end
+      if (b == EMPTY) # x + $ = [x,$] ($ is always last if present)
+        payloads = [a.returnState, EMPTY_RETURN_STATE]
+        parents = [a.parent, nil]
+        joined = ArrayPredictionContext.new(parents, payloads)
+        return joined
+      end
+    end
+    return nil
+  end
+
+
+  def self.mergeArrays(a, b, rootIsWildcard, mergeCache)
+    if (mergeCache != nil)
+      previous = mergeCache.get(a, b)
+      if (previous != nil)
+        return previous
+      end
+      previous = mergeCache.get(b, a)
+      if (previous != nil)
+        return previous
+      end
+    end
+
+    # merge sorted payloads a + b => M
+    i = 0 # walks a
+    j = 0 # walks b
+    k = 0 # walks target M array
+
+    mergedReturnStates = []
+    mergedParents = []
+    # walk and merge to yield mergedParents, mergedReturnStates
+    while (i < a.returnStates.length && j < b.returnStates.length)
+      a_parent = a.parents[i]
+      b_parent = b.parents[j]
+      if (a.returnStates[i] == b.returnStates[j])
+        # same payload (stack tops are equal), must yield merged singleton
+        payload = a.returnStates[i]
+        # $+$ = $
+        both = payload == EMPTY_RETURN_STATE &&
+            a_parent == nil && b_parent == nil
+        ax_ax = (a_parent != nil && b_parent != nil) &&
+            a_parent.equals(b_parent) # ax+ax -> ax
+        if (both || ax_ax)
+          mergedParents[k] = a_parent # choose left
+          mergedReturnStates[k] = payload
+        else # ax+ay -> a'[x,y]
+          mergedParent =
+              merge(a_parent, b_parent, rootIsWildcard, mergeCache)
+          mergedParents[k] = mergedParent
+          mergedReturnStates[k] = payload
         end
-        previous = mergeCache.get(b, a)
-        if (previous != nil)
-          return previous
-        end
+        i += 1 # hop over left one as usual
+        j += 1 # but also skip one in right side since we merge
+      elsif (a.returnStates[i] < b.returnStates[j]) # copy a[i] to M
+        mergedParents[k] = a_parent
+        mergedReturnStates[k] = a.returnStates[i]
+        i += 1
+      else # b > a, copy b[j] to M
+        mergedParents[k] = b_parent
+        mergedReturnStates[k] = b.returnStates[j]
+        j += 1
       end
 
-      # merge sorted payloads a + b => M
-      i = 0 # walks a
-      j = 0 # walks b
-      k = 0 # walks target M array
+      k += 1
+    end
 
-      mergedReturnStates = []
-      mergedParents = []
-      # walk and merge to yield mergedParents, mergedReturnStates
-      while (i < a.returnStates.length && j < b.returnStates.length)
-        a_parent = a.parents[i]
-        b_parent = b.parents[j]
-        if (a.returnStates[i] == b.returnStates[j])
-          # same payload (stack tops are equal), must yield merged singleton
-          payload = a.returnStates[i]
-          # $+$ = $
-          both = payload == EMPTY_RETURN_STATE &&
-              a_parent == nil && b_parent == nil
-          ax_ax = (a_parent != nil && b_parent != nil) &&
-              a_parent.equals(b_parent) # ax+ax -> ax
-          if (both || ax_ax)
-            mergedParents[k] = a_parent # choose left
-            mergedReturnStates[k] = payload
-          else # ax+ay -> a'[x,y]
-            mergedParent =
-                merge(a_parent, b_parent, rootIsWildcard, mergeCache)
-            mergedParents[k] = mergedParent
-            mergedReturnStates[k] = payload
-          end
-          i += 1 # hop over left one as usual
-          j += 1 # but also skip one in right side since we merge
-        elsif (a.returnStates[i] < b.returnStates[j]) # copy a[i] to M
-          mergedParents[k] = a_parent
-          mergedReturnStates[k] = a.returnStates[i]
-          i += 1
-        else # b > a, copy b[j] to M
-          mergedParents[k] = b_parent
-          mergedReturnStates[k] = b.returnStates[j]
-          j += 1
-        end
-
+    # copy over any payloads remaining in either array
+    if (i < a.returnStates.length)
+      p = i
+      while p < a.returnStates.length
+        mergedParents[k] = a.parents[p]
+        mergedReturnStates[k] = a.returnStates[p]
         k += 1
+        p += 1
       end
-
-      # copy over any payloads remaining in either array
-      if (i < a.returnStates.length)
-        p = i
-        while p < a.returnStates.length
-          mergedParents[k] = a.parents[p]
-          mergedReturnStates[k] = a.returnStates[p]
-          k += 1
-          p += 1
-        end
-      else
-        p = j
-        while p < b.returnStates.length
-          mergedParents[k] = b.parents[p]
-          mergedReturnStates[k] = b.returnStates[p]
-          k += 1
-          p += 1
-        end
+    else
+      p = j
+      while p < b.returnStates.length
+        mergedParents[k] = b.parents[p]
+        mergedReturnStates[k] = b.returnStates[p]
+        k += 1
+        p += 1
       end
+    end
 
-      # trim merged if we combined a few that had same stack tops
-      if (k < mergedParents.length) # write index < last position trim
-        if (k == 1) # for just one merged element, return singleton top
-          a_ = SingletonPredictionContext.create(mergedParents[0],
-                                                 mergedReturnStates[0])
-          if (mergeCache != nil)
-            mergeCache.put(a, b, a_)
-          end
-          return a_
-        end
-      end
-
-      m = ArrayPredictionContext.new(mergedParents, mergedReturnStates)
-
-      # if we created same array as a or b, return that instead
-      # TODO: track whether this is possible above during merge sort for speed
-      if (m.equals(a))
+    # trim merged if we combined a few that had same stack tops
+    if (k < mergedParents.length) # write index < last position trim
+      if (k == 1) # for just one merged element, return singleton top
+        a_ = SingletonPredictionContext.create(mergedParents[0],
+                                               mergedReturnStates[0])
         if (mergeCache != nil)
-          mergeCache.put(a, b, a)
+          mergeCache.put(a, b, a_)
         end
-        return a
+        return a_
       end
-      if (m.equals(b))
-        if (mergeCache != nil)
-          mergeCache.put(a, b, b)
-        end
-        return b
-      end
+    end
 
-      combineCommonParents(mergedParents)
+    m = ArrayPredictionContext.new(mergedParents, mergedReturnStates)
 
+    # if we created same array as a or b, return that instead
+    # TODO: track whether this is possible above during merge sort for speed
+    if (m.equals(a))
       if (mergeCache != nil)
-        mergeCache.put(a, b, m)
+        mergeCache.put(a, b, a)
       end
-      return m
+      return a
+    end
+    if (m.equals(b))
+      if (mergeCache != nil)
+        mergeCache.put(a, b, b)
+      end
+      return b
     end
 
+    combineCommonParents(mergedParents)
 
-    def self.combineCommonParents(parents)
-      uniqueParents = Hash.new
+    if (mergeCache != nil)
+      mergeCache.put(a, b, m)
+    end
+    return m
+  end
 
-      p = 0
-      while p < parents.length
-        parent = parents[p]
-        if (!uniqueParents.has_key?(parent)) # don't replace
-          uniqueParents[parent] = parent
-        end
-        p += 1
+
+  def self.combineCommonParents(parents)
+    uniqueParents = Hash.new
+
+    p = 0
+    while p < parents.length
+      parent = parents[p]
+      if (!uniqueParents.has_key?(parent)) # don't replace
+        uniqueParents[parent] = parent
       end
-
-      p = 0
-      while p < parents.length
-        parents[p] = uniqueParents[parents[p]]
-        p += 1
-      end
+      p += 1
     end
 
-    def self.toDOTString(context)
-      if (context == nil)
-        return ""
+    p = 0
+    while p < parents.length
+      parents[p] = uniqueParents[parents[p]]
+      p += 1
+    end
+  end
+
+  def self.toDOTString(context)
+    if (context == nil)
+      return ""
+    end
+    buf = ""
+    buf << "digraph G \n"
+    buf << "rankdir=LR\n"
+
+    nodes = getAllContextNodes(context)
+    nodes.sort {|a, b| a.id - b.id}
+
+    nodes.each do |current|
+      if (current.is_a? SingletonPredictionContext)
+        s = current.id.to_s
+        buf << "  s" << s
+        returnState = current.getReturnState(0).to_s
+        if (current.is_a? EmptyPredictionContext)
+          returnState = "$"
+        end
+        buf << " [label=\"" << returnState << "\"]\n"
+        next
       end
-      buf = ""
-      buf << "digraph G \n"
-      buf << "rankdir=LR\n"
-
-      nodes = getAllContextNodes(context)
-      nodes.sort {|a, b| a.id - b.id}
-
-      nodes.each do |current|
-        if (current.is_a? SingletonPredictionContext)
-          s = current.id.to_s
-          buf << "  s" << s
-          returnState = current.getReturnState(0).to_s
-          if (current.is_a? EmptyPredictionContext)
-            returnState = "$"
-          end
-          buf << " [label=\"" << returnState << "\"]\n"
-          next
+      arr = current
+      buf << "  s" << arr.id
+      buf << " [shape=box, label=\""
+      buf << "["
+      first = true
+      arr.returnStates.each do |inv|
+        if (!first)
+          buf << ", "
         end
-        arr = current
-        buf << "  s" << arr.id
-        buf << " [shape=box, label=\""
-        buf << "["
-        first = true
-        arr.returnStates.each do |inv|
-          if (!first)
-            buf << ", "
-          end
-          if (inv == EMPTY_RETURN_STATE)
-            buf << "$"
-          else
-            buf << inv
-          end
-          first = false
+        if (inv == EMPTY_RETURN_STATE)
+          buf << "$"
+        else
+          buf << inv
         end
-        buf << "]"
-        buf << "\"]\n"
+        first = false
       end
-
-      nodes.each do |current|
-        if (current == EMPTY)
-          next
-        end
-        i = 0
-        while i < current.size
-          if (current.getParent(i) == nil)
-            i += 1
-            next
-          end
-          String s = String.valueOf(current.id)
-          buf << "  s" << s
-          buf << "->"
-          buf << "s"
-          buf << current.getParent(i).id
-          if (current.size() > 1)
-            buf << " [label=\"parent[" + i + "]\"]\n"
-          else
-            buf << "\n"
-          end
-          i += 1
-        end
-      end
-
-      buf << "end\n"
-      return buf
+      buf << "]"
+      buf << "\"]\n"
     end
 
-    def self.getCachedContext(context, contextCache, visited)
-
-      if (context.isEmpty())
-        return context
+    nodes.each do |current|
+      if (current == EMPTY)
+        next
       end
-
-      existing = visited[context]
-      if (existing != nil)
-        return existing
-      end
-
-      existing = contextCache[context]
-      if (existing != nil)
-        visited[context] = existing
-        return existing
-      end
-
-      changed = false
-      parents = []
       i = 0
-      while i < parents.length
-        parent = getCachedContext(context.getParent(i), contextCache, visited)
-        if (changed || parent != context.getParent(i))
-          if (!changed)
-            parents = []
-            j = 0
-            while j < context.size()
-              parents[j] = context.getParent(j)
-              j += 1
-            end
-            changed = true
-          end
-          parents[i] = parent
+      while i < current.size
+        if (current.getParent(i) == nil)
+          i += 1
+          next
+        end
+        String s = String.valueOf(current.id)
+        buf << "  s" << s
+        buf << "->"
+        buf << "s"
+        buf << current.getParent(i).id
+        if (current.size() > 1)
+          buf << " [label=\"parent[" + i + "]\"]\n"
+        else
+          buf << "\n"
         end
         i += 1
       end
-
-      if (!changed)
-        contextCache.add(context)
-        visited[context] = context
-        return context
-      end
-
-      updated = nil
-      if (parents.length == 0)
-        updated = EMPTY
-      elsif (parents.length == 1)
-        updated = SingletonPredictionContext.create(parents[0], context.getReturnState(0))
-      else
-        arrayPredictionContext = context
-        updated = ArrayPredictionContext.new(parents, arrayPredictionContext.returnStates)
-      end
-
-      contextCache.add(updated)
-      visited[updated] = updated
-      visited[context] = updated
-
-      return updated
     end
+
+    buf << "end\n"
+    return buf
+  end
+
+  def self.getCachedContext(context, contextCache, visited)
+
+    if (context.isEmpty())
+      return context
+    end
+
+    existing = visited[context]
+    if (existing != nil)
+      return existing
+    end
+
+    existing = contextCache[context]
+    if (existing != nil)
+      visited[context] = existing
+      return existing
+    end
+
+    changed = false
+    parents = []
+    i = 0
+    while i < parents.length
+      parent = getCachedContext(context.getParent(i), contextCache, visited)
+      if (changed || parent != context.getParent(i))
+        if (!changed)
+          parents = []
+          j = 0
+          while j < context.size()
+            parents[j] = context.getParent(j)
+            j += 1
+          end
+          changed = true
+        end
+        parents[i] = parent
+      end
+      i += 1
+    end
+
+    if (!changed)
+      contextCache.add(context)
+      visited[context] = context
+      return context
+    end
+
+    updated = nil
+    if (parents.length == 0)
+      updated = EMPTY
+    elsif (parents.length == 1)
+      updated = SingletonPredictionContext.create(parents[0], context.getReturnState(0))
+    else
+      arrayPredictionContext = context
+      updated = ArrayPredictionContext.new(parents, arrayPredictionContext.returnStates)
+    end
+
+    contextCache.add(updated)
+    visited[updated] = updated
+    visited[context] = updated
+
+    return updated
+  end
 
 #	# extra structures, but cut/paste/morphed works, so leave it.
 #	# seems to do a breadth-first walk
@@ -492,104 +495,104 @@ class PredictionContext
 #	end
 
 # ter's recursive version of Sam's getAllNodes()
-    def self.getAllContextNodes(context)
-      nodes = []
-      visited = Hash.new
-      getAllContextNodes_(context, nodes, visited)
-      return nodes
+  def self.getAllContextNodes(context)
+    nodes = []
+    visited = Hash.new
+    getAllContextNodes_(context, nodes, visited)
+    return nodes
+  end
+
+  def self.getAllContextNodes_(context, nodes, visited)
+
+    if (context == nil || visited.has_key?(context))
+      return
+    end
+    visited[context] = context
+    nodes.add(context)
+    i = 0
+    while i < context.size()
+      getAllContextNodes_(context.getParent(i), nodes, visited)
+      i += 1
+    end
+  end
+
+  def to_s_recog(recog)
+    return to_s()
+  end
+
+  def toStrings(recognizer, currentState)
+    return toStrings_3(recognizer, EMPTY, currentState)
+  end
+
+  def toStrings_3(recognizer, stop, currentState)
+    result = []
+
+    while toStrings_3_inner
+
     end
 
-    def self.getAllContextNodes_(context, nodes, visited)
+    return result.toArray(new String[result.size()])
+  end
 
-      if (context == nil || visited.has_key?(context))
-        return
-      end
-      visited[context] = context
-      nodes.add(context)
-      i = 0
-      while i < context.size()
-        getAllContextNodes_(context.getParent(i), nodes, visited)
-        i += 1
-      end
-    end
-
-    def to_s_recog(recog)
-      return to_s()
-    end
-
-    def toStrings(recognizer, currentState)
-      return toStrings_3(recognizer, EMPTY, currentState)
-    end
-
-    def toStrings_3(recognizer, stop, currentState)
-      result = []
-
-      while toStrings_3_inner
-
-      end
-
-      return result.toArray(new String[result.size()])
-    end
-
-    def toStrings_3_inner
-      perm = 0
-      while perm
-        offset = 0
-        last = true
-        p = self
-        stateNumber = currentState
-        localBuffer = ""
-        localBuffer << "["
-        while (!p.isEmpty() && p != stop)
-          index = 0
-          if (p.size() > 0)
-            bits = 1
-            while ((1 << bits) < p.size())
-              bits += 1
-            end
-
-            mask = (1 << bits) - 1
-            index = (perm >> offset) & mask
-            last &= index >= p.size() - 1
-            if (index >= p.size())
-              return true
-            end
-            offset += bits
+  def toStrings_3_inner
+    perm = 0
+    while perm
+      offset = 0
+      last = true
+      p = self
+      stateNumber = currentState
+      localBuffer = ""
+      localBuffer << "["
+      while (!p.isEmpty() && p != stop)
+        index = 0
+        if (p.size() > 0)
+          bits = 1
+          while ((1 << bits) < p.size())
+            bits += 1
           end
 
-          if (recognizer != nil)
+          mask = (1 << bits) - 1
+          index = (perm >> offset) & mask
+          last &= index >= p.size() - 1
+          if (index >= p.size())
+            return true
+          end
+          offset += bits
+        end
+
+        if (recognizer != nil)
+          if (localBuffer.length() > 1)
+            # first char is '[', if more than that this isn't the first rule
+            localBuffer << ' '
+          end
+
+          atn = recognizer.getATN()
+          s = atn.states.get(stateNumber)
+          ruleName = recognizer.getRuleNames()[s.ruleIndex]
+          localBuffer << ruleName
+        elsif (p.getReturnState(index) != EMPTY_RETURN_STATE)
+          if (!p.isEmpty())
             if (localBuffer.length() > 1)
               # first char is '[', if more than that this isn't the first rule
               localBuffer << ' '
             end
 
-            atn = recognizer.getATN()
-            s = atn.states.get(stateNumber)
-            ruleName = recognizer.getRuleNames()[s.ruleIndex]
-            localBuffer << ruleName
-          elsif (p.getReturnState(index) != EMPTY_RETURN_STATE)
-            if (!p.isEmpty())
-              if (localBuffer.length() > 1)
-                # first char is '[', if more than that this isn't the first rule
-                localBuffer << ' '
-              end
-
-              localBuffer << p.getReturnState(index)
-            end
+            localBuffer << p.getReturnState(index)
           end
-          stateNumber = p.getReturnState(index)
-          p = p.getParent(index)
         end
-        localBuffer << "]"
-        result.push(localBuffer.to_s())
-
-        if (last)
-          break
-        end
-        perm += 1
+        stateNumber = p.getReturnState(index)
+        p = p.getParent(index)
       end
-    end
+      localBuffer << "]"
+      result.push(localBuffer.to_s())
 
+      if (last)
+        break
+      end
+      perm += 1
+    end
     return false
   end
+
 end
+

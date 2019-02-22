@@ -1,12 +1,7 @@
+require 'singleton'
+
 class ConsoleErrorListener
-
-
-  class << self
-    attr_reader :INSTANCE
-  end
-
-  @@INSTANCE = ConsoleErrorListener.new
-
+  include Singleton
 
   def syntaxError(recognizer,
                   offendingSymbol,
@@ -15,7 +10,7 @@ class ConsoleErrorListener
                   msg,
                   e)
 
-    STDERR.printf "line %d:%d %s" % [line, charPositionInLine, msg]
+    STDERR.printf "line %d:%d %s\n" % [line, charPositionInLine, msg]
   end
 
 end

@@ -1,18 +1,14 @@
 require '../../antlr4/runtime/Ruby/antlr4/ATNConfigSet'
 class DFAState
   attr_accessor :stateNumber
-  @stateNumber = -1
 
 
   attr_accessor :configs
-  @configs = ATNConfigSet.new()
 
 
   attr_accessor :edges
-  @edges = []
 
   attr_accessor :isAcceptState
-  @isAcceptState = false
 
 
   attr_accessor :prediction
@@ -25,6 +21,20 @@ class DFAState
 
   attr_accessor :predicates
 
+  def initialize(x = nil)
+    @isAcceptState = false
+    @edges = []
+    @stateNumber = -1
+
+    if x == nil
+      @configs = ATNConfigSet.new()
+    elsif x.is_a?(ATNConfigSet)
+      @configs = x
+    else
+      @stateNumber = x
+    end
+
+  end
 
   class PredPrediction
 
@@ -65,8 +75,8 @@ class DFAState
 
 
   def hash()
-    hash = MurmurHash.initialize(7)
-    hash = MurmurHash.update(hash, configs.hashCode())
+    hash = 7
+    hash = MurmurHash.update_int(hash, configs.hash())
     hash = MurmurHash.finish(hash, 1)
     return hash
   end
@@ -89,7 +99,7 @@ class DFAState
 
   def to_s()
     buf = String.new
-    buf << @stateNumber << ":" << @configs
+    buf << @stateNumber.to_s << ":" << @configs.to_s
     if (@isAcceptState)
       buf << "=>"
       if (@predicates != nil)

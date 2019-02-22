@@ -1,16 +1,16 @@
 require '../../antlr4/runtime/Ruby/antlr4/ATNConfigSet'
-require '../../antlr4/runtime/Ruby/antlr4/AbstractConfigHashSet'
+require 'set'
 
 class OrderedATNConfigSet < ATNConfigSet
 
-  class LexerConfigHashSet < AbstractConfigHashSet
+  class LexerConfigHashSet
     def initialize()
       super(ObjectEqualityComparator.INSTANCE)
     end
   end
 
   def initialize()
-    @configLookup = LexerConfigHashSet.new()
+    @configLookup = Set.new()
   end
 
 end

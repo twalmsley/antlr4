@@ -1,3 +1,5 @@
+require '../../antlr4/runtime/Ruby/antlr4/CommonToken'
+
 class CommonTokenFactory
 
 
@@ -16,12 +18,12 @@ class CommonTokenFactory
              channel, start, stop,
              line, charPositionInLine)
 
-    t = CommonToken.new(source, type, channel, start, stop)
-    t.setLine(line)
-    t.setCharPositionInLine(charPositionInLine)
+    t = CommonToken.create_1(source, type, channel, start, stop)
+    t.line = line
+    t.charPositionInLine = charPositionInLine
     if (text != nil)
-      t.setText(text)
-    elsif (copyText && source.b != nil)
+      t.text = text
+    elsif (@copyText && source.b != nil)
       t.setText(source.b.getText(Interval.of(start, stop)))
     end
 
@@ -30,6 +32,6 @@ class CommonTokenFactory
 
 
   def createSimple(type, text)
-    return CommonToken.new(type, text)
+    return CommonToken.create_2(type, text)
   end
 end

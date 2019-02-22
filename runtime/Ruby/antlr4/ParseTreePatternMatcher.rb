@@ -216,7 +216,7 @@ class ParseTreePatternMatcher
 		end
 
 		# Make sure tree pattern compilation checks for a complete parse
-		if ( tokens.LA(1)!=Token.EOF ) 
+		if ( tokens.LA(1)!=Token::EOF )
 			throw new StartRuleDoesNotConsumeFullPattern()
 		end
 
@@ -374,7 +374,7 @@ class ParseTreePatternMatcher
 				# add special rule token or conjure up new token from name
 				if ( Character.isUpperCase(tagChunk.getTag().charAt(0)) ) 
 					Integer ttype = parser.getTokenType(tagChunk.getTag())
-					if ( ttype==Token.INVALID_TYPE ) 
+					if ( ttype==Token::INVALID_TYPE )
 						throw new IllegalArgumentException("Unknown token "+tagChunk.getTag()+" in pattern: "+pattern)
 					end
 					TokenTagToken t = new TokenTagToken(tagChunk.getTag(), ttype, tagChunk.getLabel())
@@ -397,7 +397,7 @@ class ParseTreePatternMatcher
 				ANTLRInputStream in = new ANTLRInputStream(textChunk.getText())
 				lexer.setInputStream(in)
 				Token t = lexer.nextToken()
-				while ( t.getType()!=Token.EOF ) 
+				while ( t.getType()!=Token::EOF )
 					tokens.add(t)
 					t = lexer.nextToken()
 				end

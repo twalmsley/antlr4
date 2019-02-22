@@ -139,7 +139,7 @@ loop:
 					i++
 					break
 
-				case Token.EOF :
+				case Token::EOF :
 					break loop
 
 				default :
@@ -168,7 +168,7 @@ loop:
 					new XPathWildcardElement()
 			case XPathLexer.TOKEN_REF :
 			case XPathLexer.STRING :
-				if ( ttype==Token.INVALID_TYPE ) 
+				if ( ttype==Token::INVALID_TYPE )
 					throw new IllegalArgumentException(word+
 													   " at index "+
 													   wordToken.getStartIndex()+

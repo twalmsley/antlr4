@@ -1,7 +1,6 @@
 class DFA
 
   attr_accessor :states
-  @states = Hash.new
 
   attr_accessor :s0
 
@@ -17,6 +16,7 @@ class DFA
   def initialize(atnStartState, decision = 0)
     @atnStartState = atnStartState
     @decision = decision
+    @states = Hash.new
 
     precedenceDfa = false
     if (atnStartState.is_a? StarLoopEntryState)

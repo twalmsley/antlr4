@@ -1,25 +1,27 @@
 require 'weakref'
 require '../../antlr4/runtime/Ruby/antlr4/ConsoleErrorListener'
+require '../../antlr4/runtime/Ruby/antlr4/ProxyErrorListener'
 
 class Recognizer
 
   EOF = -1
 
-  @tokenTypeMapCache = []
-  @ruleIndexMapCache = []
-
-
-  @_listeners = []
-  @_listeners << ConsoleErrorListener.INSTANCE
-
-  @_interp = nil
-
-  @_stateNumber = -1
+  def initialize
+    @tokenTypeMapCache = []
+    @ruleIndexMapCache = []
+    @_listeners = []
+    @_listeners << ConsoleErrorListener.instance
+    @_interp = nil
+    @_stateNumber = -1
+  end
 
   def getVocabulary()
     return VocabularyImpl.fromTokenNames(getTokenNames())
   end
 
+  def getTokenNames()
+    return nil
+  end
 
   def getTokenTypeMap()
     vocabulary = getVocabulary()
@@ -40,7 +42,7 @@ class Recognizer
         i += 1
       end
 
-      result["EOF"] = Token.EOF
+      result["EOF"] = Token::EOF
       @tokenTypeMapCache[vocabulary] = result
     end
 
@@ -68,7 +70,7 @@ class Recognizer
     if (ttype != nil)
       return ttype
     end
-    return Token.INVALID_TYPE
+    return Token::INVALID_TYPE
   end
 
 
@@ -105,7 +107,7 @@ class Recognizer
     end
     s = t.getText()
     if (s == nil)
-      if (t.getType() == Token.EOF)
+      if (t.getType() == Token::EOF)
         s = "<EOF>"
       else
         s = "<" + t.getType() + ">"
@@ -140,7 +142,7 @@ class Recognizer
   end
 
   def getErrorListenerDispatch()
-    return ProxyErrorListener.new(getErrorListeners())
+    return ProxyErrorListener.new(@_listeners)
   end
 
 # subclass needs to override these if there are sempreds or actions

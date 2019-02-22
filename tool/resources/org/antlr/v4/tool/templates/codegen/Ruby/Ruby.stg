@@ -44,6 +44,7 @@ require '../../antlr4/runtime/Ruby/antlr4/PredictionContextCache'
 require '../../antlr4/runtime/Ruby/antlr4/Parser'
 require '../../antlr4/runtime/Ruby/antlr4/ParserATNSimulator'
 require '../../antlr4/runtime/Ruby/antlr4/ParserRuleContext'
+require '../../antlr4/runtime/Ruby/antlr4/RecognitionException'
 require "./<file.grammarName>Listener"
 require "./<file.grammarName>Visitor"
 
@@ -334,13 +335,13 @@ def <currentRule.name>(<args; separator=",">)
 	rescue RecognitionException => re
 		@_localctx.exception = re
 		@_errHandler.reportError(self, re)
-		@_errHandler.recover(this, re)
+		@_errHandler.recover(self, re)
 	<endif>
 	ensure
 		<finallyAction>
 		exitRule()
 	end
-	return _localctx
+	return @_localctx
 end
 >>
 
@@ -374,20 +375,20 @@ def <currentRule.name>( _p<args:{a | , <a>}>)
 
 	rescue RecognitionException => re
 		@_localctx.exception = re
-		@_errHandler.reportError(this, re)
-		@_errHandler.recover(this, re)
+		@_errHandler.reportError(self, re)
+		@_errHandler.recover(self, re)
 
 	ensure
 		<finallyAction>
 		unrollRecursionContexts(_parentctx)
 	end
-	return _localctx
+	return @_localctx
 end
 >>
 
 CodeBlockForOuterMostAlt(currentOuterMostAltCodeBlock, locals, preamble, ops) ::= <<
 <if(currentOuterMostAltCodeBlock.altLabel)>@_localctx =  <currentOuterMostAltCodeBlock.altLabel; format="cap">Context.new(_localctx)<endif>
-enterOuterAlt(_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
+enterOuterAlt(@_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
 <CodeBlockForAlt(currentAltCodeBlock=currentOuterMostAltCodeBlock, ...)>
 >>
 
@@ -575,7 +576,7 @@ setState(<m.stateNumber>)
 <if(m.labels)><m.labels:{l | <labelref(l)> = }>_input.LT(1)<endif>
 <capture>
 if ( <if(invert)><m.varName> \<= 0 || <else>!<endif>(<expr>) )
-	<if(m.labels)><m.labels:{l | <labelref(l)> = (Token)}><endif>_errHandler.recoverInline(this)
+	<if(m.labels)><m.labels:{l | <labelref(l)> = (Token)}><endif>_errHandler.recoverInline(self)
 
 else
 	if ( _input.LA(1)==Token.EOF )
@@ -848,7 +849,6 @@ Lexer(lexer, atn, actionFuncs, sempredFuncs, superClass) ::= <<
 
 class <lexer.name> <"\<"> <superClass; null="Lexer">
 
-	@_decisionToDFA
 	@_sharedContextCache = PredictionContextCache.new
 	<if(lexer.tokens)>
 		<lexer.tokens:{k | <k>=<lexer.tokens.(k)>}; separator="\n", wrap, anchor>
@@ -877,7 +877,9 @@ class <lexer.name> <"\<"> <superClass; null="Lexer">
 
 	<atn>
 
-	@@_decisionToDFA = []
+	class \<\< self
+		@@_decisionToDFA = []
+	end
 
 	def initialize(input)
 		super(input)

@@ -160,7 +160,7 @@ class ParserInterpreter extends Parser
 	public ParserRuleContext parse(int startRuleIndex) 
 		RuleStartState startRuleStartState = atn.ruleToStartState[startRuleIndex]
 
-		rootContext = createInterpreterRuleContext(null, ATNState.INVALID_STATE_NUMBER, startRuleIndex)
+		rootContext = createInterpreterRuleContext(null, ATNState::INVALID_STATE_NUMBER, startRuleIndex)
 		if (startRuleStartState.isLeftRecursiveRule) 
 			enterRecursionRule(rootContext, startRuleStartState.stateNumber, startRuleIndex, 0)
 		end
@@ -171,7 +171,7 @@ class ParserInterpreter extends Parser
 		while ( true ) 
 			ATNState p = getATNState()
 			switch ( p.getStateType() ) 
-			case ATNState.RULE_STOP :
+			case ATNState::RULE_STOP :
 				# pop return from rule
 				if ( _ctx.isEmpty() ) 
 					if (startRuleStartState.isLeftRecursiveRule) 
@@ -225,8 +225,8 @@ class ParserInterpreter extends Parser
 
 		Transition transition = p.transition(predictedAlt - 1)
 		switch (transition.getSerializationType()) 
-			case Transition.EPSILON:
-				if ( p.getStateType()==ATNState.STAR_LOOP_ENTRY &&
+			case Transition::EPSILON:
+				if ( p.getStateType()==ATNState::STAR_LOOP_ENTRY &&
 					 ((StarLoopEntryState)p).isPrecedenceDecision &&
 					 !(transition.target instanceof LoopEndState))
 				
@@ -242,24 +242,24 @@ class ParserInterpreter extends Parser
 				end
 				break
 
-			case Transition.ATOM:
+			case Transition::ATOM:
 				match(((AtomTransition)transition).label)
 				break
 
-			case Transition.RANGE:
-			case Transition.SET:
-			case Transition.NOT_SET:
-				if (!transition.matches(_input.LA(1), Token.MIN_USER_TOKEN_TYPE, 65535)) 
+			case Transition::RANGE:
+			case Transition::SET:
+			case Transition::NOT_SET:
+				if (!transition.matches(_input.LA(1), Token::MIN_USER_TOKEN_TYPE, 65535))
 					recoverInline()
 				end
 				matchWildcard()
 				break
 
-			case Transition.WILDCARD:
+			case Transition::WILDCARD:
 				matchWildcard()
 				break
 
-			case Transition.RULE:
+			case Transition::RULE:
 				RuleStartState ruleStartState = (RuleStartState)transition.target
 				int ruleIndex = ruleStartState.ruleIndex
 				InterpreterRuleContext newctx = createInterpreterRuleContext(_ctx, p.stateNumber, ruleIndex)
@@ -271,7 +271,7 @@ class ParserInterpreter extends Parser
 				end
 				break
 
-			case Transition.PREDICATE:
+			case Transition::PREDICATE:
 				PredicateTransition predicateTransition = (PredicateTransition)transition
 				if (!sempred(_ctx, predicateTransition.ruleIndex, predicateTransition.predIndex)) 
 					throw new FailedPredicateException(this)
@@ -279,12 +279,12 @@ class ParserInterpreter extends Parser
 
 				break
 
-			case Transition.ACTION:
+			case Transition::ACTION:
 				ActionTransition actionTransition = (ActionTransition)transition
 				action(_ctx, actionTransition.ruleIndex, actionTransition.actionIndex)
 				break
 
-			case Transition.PRECEDENCE:
+			case Transition::PRECEDENCE:
 				if (!precpred(_ctx, ((PrecedencePredicateTransition)transition).precedence)) 
 					throw new FailedPredicateException(this, String.format("precpred(_ctx, %d)", ((PrecedencePredicateTransition)transition).precedence))
 				end
@@ -407,14 +407,14 @@ class ParserInterpreter extends Parser
 			if ( e instanceof InputMismatchException ) 
 				InputMismatchException ime = (InputMismatchException)e
 				Token tok = e.getOffendingToken()
-				int expectedTokenType = Token.INVALID_TYPE
+				int expectedTokenType = Token::INVALID_TYPE
 				if ( !ime.getExpectedTokens().isNil() ) 
 					expectedTokenType = ime.getExpectedTokens().getMinElement() # get any element
 				end
 				Token errToken =
 					getTokenFactory().create(new Pair<TokenSource, CharStream>(tok.getTokenSource(), tok.getTokenSource().getInputStream()),
 				                             expectedTokenType, tok.getText(),
-				                             Token.DEFAULT_CHANNEL,
+				                             Token::DEFAULT_CHANNEL,
 				                            -1, -1, # invalid start/stop
 				                             tok.getLine(), tok.getCharPositionInLine())
 				_ctx.addErrorNode(createErrorNode(_ctx,errToken))
@@ -423,8 +423,8 @@ class ParserInterpreter extends Parser
 				Token tok = e.getOffendingToken()
 				Token errToken =
 					getTokenFactory().create(new Pair<TokenSource, CharStream>(tok.getTokenSource(), tok.getTokenSource().getInputStream()),
-				                             Token.INVALID_TYPE, tok.getText(),
-				                             Token.DEFAULT_CHANNEL,
+				                             Token::INVALID_TYPE, tok.getText(),
+				                             Token::DEFAULT_CHANNEL,
 				                            -1, -1, # invalid start/stop
 				                             tok.getLine(), tok.getCharPositionInLine())
 				_ctx.addErrorNode(createErrorNode(_ctx,errToken))

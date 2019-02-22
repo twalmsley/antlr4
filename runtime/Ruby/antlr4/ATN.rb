@@ -4,7 +4,11 @@ class IllegalArgumentException < RuntimeError
 end
 
 class ATN
-  @@INVALID_ALT_NUMBER = 0
+
+  class << self
+    attr_accessor :INVALID_ALT_NUMBER
+    @@INVALID_ALT_NUMBER = 0
+  end
 
   attr_accessor :states
   attr_accessor :grammarType
@@ -77,26 +81,26 @@ class ATN
     end
 
     ctx = context
-    s = @states.get(stateNumber)
+    s = @states[stateNumber]
     following = self.nextTokens(s)
-    if !following.include?(Token.EPSILON)
+    if !following.contains(Token::EPSILON)
       return following
     end
 
     expected = IntervalSet.new
     expected.concat(following)
-    expected.delete(Token.EPSILON)
-    while ctx != nil && ctx.invokingState >= 0 && following.include?(Token.EPSILON)
+    expected.delete(Token::EPSILON)
+    while ctx != nil && ctx.invokingState >= 0 && following.include?(Token::EPSILON)
       invokingState = @states[ctx.invokingState]
       rt = invokingState.transition(0)
       following = self.nextTokens(rt.followState)
       expected.addAll(following)
-      expected.remove(Token.EPSILON)
+      expected.remove(Token::EPSILON)
       ctx = ctx.parent
     end
 
-    if following.include?(Token.EPSILON)
-      expected << Token.EOF
+    if following.include?(Token::EPSILON)
+      expected << Token::EOF
     end
 
     expected

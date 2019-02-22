@@ -464,14 +464,14 @@ class ParserATNSimulator < ATNSimulator
     reach = nil
 
 
-    if (skippedStopStates == nil && t != Token.EOF)
+    if (skippedStopStates == nil && t != Token::EOF)
       if (intermediate.size() == 1)
         # Don' t pursue the closure if there is just one state.
         # It can only have one alternative just add to result
         # Also don't pursue the closure if there is unique alternative
         # among the configurations.
         reach = intermediate
-      elsif (getUniqueAlt(intermediate) != ATN.INVALID_ALT_NUMBER)
+      elsif (getUniqueAlt(intermediate) != ATN::INVALID_ALT_NUMBER)
         # Also don't pursue the closure if there is unique alternative
         # among the configurations.
         reach = intermediate
@@ -482,7 +482,7 @@ class ParserATNSimulator < ATNSimulator
     if (reach == nil)
       reach = ATNConfigSet.new(fullCtx)
       closureBusy = Set.new
-      treatEofAsEpsilon = t == Token.EOF
+      treatEofAsEpsilon = t == Token::EOF
       intermediate.each do |c|
         closure(c, reach, closureBusy, false, fullCtx, treatEofAsEpsilon)
       end
@@ -520,7 +520,7 @@ class ParserATNSimulator < ATNSimulator
 
       if (lookToEndOfRule && config.state.onlyHasEpsilonTransitions())
         nextTokens = atn.nextTokens(config.state)
-        if (nextTokens.include?(Token.EPSILON))
+        if (nextTokens.include?(Token::EPSILON))
           endOfRuleState = atn.ruleToStopState[config.state.ruleIndex]
           result.add(ATNConfig.new(config, endOfRuleState), @mergeCache)
         end
@@ -908,7 +908,7 @@ class ParserATNSimulator < ATNSimulator
     # left-recursion elimination. For efficiency, also check if
     # the context has an empty stack case. If so, it would mean
     # global FOLLOW so we can't perform optimization
-    if (p.getStateType() != ATNState.STAR_LOOP_ENTRY ||
+    if (p.getStateType() != ATNState::STAR_LOOP_ENTRY ||
         !p.isPrecedenceDecision || # Are we the special loop entry/exit state?
         config.context.isEmpty() || # If SLL wildcard
         config.context.hasEmptyPath())
@@ -993,29 +993,29 @@ class ParserATNSimulator < ATNSimulator
   def getEpsilonTarget(config, t, collectPredicates, inContext, fullCtx, treatEofAsEpsilon)
 
     case (t.getSerializationType())
-    when Transition.RULE
+    when Transition::RULE
       return ruleTransition(config, t)
 
-    when Transition.PRECEDENCE
+    when Transition::PRECEDENCE
       return precedenceTransition(config, t, collectPredicates, inContext, fullCtx)
 
-    when Transition.PREDICATE
+    when Transition::PREDICATE
       return predTransition(config, t,
                             collectPredicates,
                             inContext,
                             fullCtx)
 
-    when Transition.ACTION
+    when Transition::ACTION
       return actionTransition(config, t)
 
-    when Transition.EPSILON
+    when Transition::EPSILON
       return ATNConfig.new(config, t.target)
 
-    when Transition.ATOM, Transition.RANGE, Transition.SET
+    when Transition::ATOM, Transition::RANGE, Transition::SET
       # EOF transitions act like epsilon transitions after the first EOF
       # transition is traversed
       if (treatEofAsEpsilon)
-        if (t.matches(Token.EOF, 0, 1))
+        if (t.matches(Token::EOF, 0, 1))
           return ATNConfig.new(config, t.target)
         end
       end
@@ -1151,7 +1151,7 @@ class ParserATNSimulator < ATNSimulator
 
 
   def getTokenName(t)
-    if (t == Token.EOF)
+    if (t == Token::EOF)
       return "EOF"
     end
 

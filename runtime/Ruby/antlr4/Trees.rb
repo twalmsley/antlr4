@@ -198,7 +198,7 @@ class Trees
       range = child.getSourceInterval()
       if (child.is_a? ParserRuleContext && (range.b < startIndex || range.a > stopIndex))
         if (isAncestorOf(child, root)) # replace only if subtree doesn't have displayed root
-          abbrev = CommonToken.new(Token.INVALID_TYPE, "...")
+          abbrev = CommonToken.new(Token::INVALID_TYPE, "...")
           t.children.set(i, TerminalNodeImpl.new(abbrev))
         end
       end

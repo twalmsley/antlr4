@@ -52,10 +52,12 @@ class Parser < Recognizer
     end
   end
 
+  attr_accessor :_ctx
 
   @@bypassAltsAtnCache = Hash.new
 
   def initialize(input)
+    super()
     @_errHandler = DefaultErrorStrategy.new()
     @_input = nil
     @_precedenceStack = []
@@ -91,7 +93,7 @@ class Parser < Recognizer
   def match(ttype)
     t = getCurrentToken()
     if (t.getType() == ttype)
-      if (ttype == Token.EOF)
+      if (ttype == Token::EOF)
         @matchedEOF = true
       end
       @_errHandler.reportMatch(this)
@@ -306,11 +308,11 @@ class Parser < Recognizer
 
   def notifyErrorListeners(offendingToken, msg, e)
 
-    _syntaxErrors += 1
+    @_syntaxErrors += 1
     line = -1
     charPositionInLine = -1
-    line = offendingToken.getLine()
-    charPositionInLine = offendingToken.getCharPositionInLine()
+    line = offendingToken.line
+    charPositionInLine = offendingToken.charPositionInLine
 
     listener = getErrorListenerDispatch()
     listener.syntaxError(self, offendingToken, line, charPositionInLine, msg, e)
@@ -506,11 +508,11 @@ class Parser < Recognizer
       return true
     end
 
-    if (!following.contains(Token.EPSILON))
+    if (!following.contains(Token::EPSILON))
       return false
     end
 
-    while (ctx != nil && ctx.invokingState >= 0 && following.include?(Token.EPSILON))
+    while (ctx != nil && ctx.invokingState >= 0 && following.include?(Token::EPSILON))
       invokingState = atn.states.get(ctx.invokingState)
       rt = invokingState.transition(0)
       following = atn.nextTokens(rt.followState)
@@ -521,7 +523,7 @@ class Parser < Recognizer
       ctx = ctx.parent
     end
 
-    if (following.include?(Token.EPSILON) && symbol == Token.EOF)
+    if (following.include?(Token::EPSILON) && symbol == Token::EOF)
       return true
     end
 
@@ -559,7 +561,7 @@ class Parser < Recognizer
 
 
   def getRuleInvocationStack_1()
-    return getRuleInvocationStack(@_ctx)
+    return getRuleInvocationStack_2(@_ctx)
   end
 
   def getRuleInvocationStack_2(p)

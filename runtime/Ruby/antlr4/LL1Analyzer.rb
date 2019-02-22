@@ -56,20 +56,20 @@ class LL1Analyzer
 
     if (s == stopState)
       if (ctx == nil)
-        look.add(Token.EPSILON)
+        look.add(Token::EPSILON)
         return
       elsif (ctx.isEmpty() && addEOF)
-        look.add(Token.EOF)
+        look.add(Token::EOF)
         return
       end
     end
 
     if (s.is_a? RuleStopState)
       if (ctx == nil)
-        look.add(Token.EPSILON)
+        look.add(Token::EPSILON)
         return
       elsif (ctx.isEmpty() && addEOF)
-        look.add(Token.EOF)
+        look.add(Token::EOF)
         return
       end
 
@@ -121,12 +121,12 @@ class LL1Analyzer
       elsif (t.isEpsilon())
         _LOOK(t.target, stopState, ctx, look, lookBusy, calledRuleStack, seeThruPreds, addEOF)
       elsif (t.getClass() == WildcardTransition.class)
-        look.addAll(IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, atn.maxTokenType))
+        look.addAll(IntervalSet.of(Token::MIN_USER_TOKEN_TYPE, atn.maxTokenType))
       else
         set = t.label()
         if (set != nil)
           if (t.is_a? NotSetTransition)
-            set = set.complement(IntervalSet.of(Token.MIN_USER_TOKEN_TYPE, atn.maxTokenType))
+            set = set.complement(IntervalSet.of(Token::MIN_USER_TOKEN_TYPE, atn.maxTokenType))
           end
           look.addAll(set)
         end

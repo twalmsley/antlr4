@@ -1,4 +1,5 @@
 require '../../antlr4/runtime/Ruby/antlr4/CharStream'
+require '../../antlr4/runtime/Ruby/antlr4/Integer'
 
 class CodePointCharStream < CharStream
 
@@ -12,12 +13,12 @@ class CodePointCharStream < CharStream
 
   def getText(interval)
     startIdx = [interval.a, @size].min
-    len = [interval.b - interval.a + 1, size - startIdx].min
+    len = [interval.b - interval.a + 1, @size - startIdx].min
 
 # We know the maximum code point in byteArray is U+00FF,
 # so we can treat this as if it were ISO-8859-1, aka Latin-1,
 # which shares the same code points up to 0xFF.
-    return String.new(@byteArray, startIdx, len)
+    return @byteArray.slice(startIdx, len).join
   end
 
 
@@ -26,7 +27,7 @@ class CodePointCharStream < CharStream
     when -1
       offset = @position + i
       if (offset < 0)
-        return IntStream.EOF
+        return IntStream::EOF
       end
       return @byteArray[offset] & 0xFF
     when 0
@@ -35,7 +36,7 @@ class CodePointCharStream < CharStream
     when 1
       offset = @position + i - 1
       if (offset >= @size)
-        return IntStream.EOF
+        return IntStream::EOF
       end
       return @byteArray[offset] & 0xFF
     end
@@ -46,4 +47,44 @@ class CodePointCharStream < CharStream
   def getInternalStorage()
     return @byteArray
   end
+
+  def consume()
+    if (@size - @position == 0)
+      raise IllegalStateException, "cannot consume EOF"
+    end
+    @position = @position + 1
+  end
+
+
+  def index()
+    return @position
+  end
+
+
+  def size()
+    return @size
+  end
+
+  def mark()
+    return -1
+  end
+
+
+  def release(marker)
+  end
+
+
+  def seek(index)
+    @position = index
+  end
+
+
+  def getSourceName()
+    if (@name == nil || @name.empty?)
+      return UNKNOWN_SOURCE_NAME
+    end
+
+    return @name
+  end
+
 end
