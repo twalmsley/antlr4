@@ -10,7 +10,7 @@ class OrderedATNConfigSet < ATNConfigSet
   end
 
   def initialize()
-    @configLookup = Set.new()
+    @configLookup = SortedSet.new()
   end
 
 end

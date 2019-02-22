@@ -6,11 +6,13 @@ class ATNConfigSet
 
   attr_accessor :hasSemanticContext
   attr_accessor :readonly
+  attr_accessor :configs
 
   def initialize
     @hasSemanticContext = false
     @readonly = false
     @configLookup = Set.new
+    @configs = []
   end
 
   def add(config, mergeCache = nil)
@@ -50,11 +52,37 @@ class ATNConfigSet
     return true;
   end
 
-  def each
-    @configLookup.each
+  def findFirstRuleStopState
+    result = nil
+    @configLookup.each do |x|
+      if(x.state.is_a? RuleStopState)
+        result = x;
+      end
+    end
+    return result
   end
 
   def empty?
     @configLookup.empty?
   end
+
+  def to_s()
+    buf = ""
+    buf << @configs.to_s
+
+    if (@hasSemanticContext)
+      buf << ",hasSemanticContext=" << @hasSemanticContext
+    end
+    if (@uniqueAlt != ATN.INVALID_ALT_NUMBER)
+      buf << ",uniqueAlt=" << @uniqueAlt
+    end
+    if (@conflictingAlts != nil)
+      buf << ",conflictingAlts=" << @conflictingAlts
+    end
+    if (@dipsIntoOuterContext)
+      buf << ",dipsIntoOuterContext"
+    end
+    return buf
+  end
+
 end

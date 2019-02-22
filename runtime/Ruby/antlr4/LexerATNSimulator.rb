@@ -238,7 +238,7 @@ class LexerATNSimulator < ATNSimulator
 # this is used to skip processing for configs which have a lower priority
 # than a config that already reached an accept state for the same rule
     skipAlt = ATN.INVALID_ALT_NUMBER
-    closure.each do |c|
+    closure.configs.each do |c|
       currentAltReachedAcceptState = (c.alt == skipAlt)
       if (currentAltReachedAcceptState && c.hasPassedThroughNonGreedyDecision())
         next
@@ -511,14 +511,7 @@ class LexerATNSimulator < ATNSimulator
 
 
     proposed = DFAState.new(configs)
-    firstConfigWithRuleStopState = nil
-
-    configs.each do |c|
-      if (c.state.is_a RuleStopState)
-        firstConfigWithRuleStopState = c
-        break
-      end
-    end
+    firstConfigWithRuleStopState = configs.findFirstRuleStopState
 
     if (firstConfigWithRuleStopState != nil)
       proposed.isAcceptState = true

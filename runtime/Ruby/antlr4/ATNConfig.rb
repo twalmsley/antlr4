@@ -58,4 +58,26 @@ class ATNConfig
     return buf
   end
 
+
+  def <=>(other)
+    if (self == other)
+      return true;
+    elsif (other == nil)
+      return false;
+    end
+
+    return @state.stateNumber == other.state.stateNumber && @alt == other.alt && (@context == other.context || (@context != nil && @context.<=>(other.context))) && @semanticContext.<=>(other.semanticContext) && isPrecedenceFilterSuppressed() == other.isPrecedenceFilterSuppressed()
+  end
+
+  def hash()
+    hashCode = 7
+    hashCode = MurmurHash.update_int(hashCode, @state.stateNumber)
+    hashCode = MurmurHash.update_int(hashCode, @alt)
+    hashCode = MurmurHash.update_obj(hashCode, @context)
+    hashCode = MurmurHash.update_obj(hashCode, @semanticContext)
+    hashCode = MurmurHash.finish(hashCode, 4)
+    return hashCode
+  end
+
+
 end

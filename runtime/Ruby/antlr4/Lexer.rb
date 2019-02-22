@@ -2,7 +2,6 @@ require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
 require '../../antlr4/runtime/Ruby/antlr4/Token'
 require '../../antlr4/runtime/Ruby/antlr4/CommonTokenFactory'
 require '../../antlr4/runtime/Ruby/antlr4/LexerNoViableAltException'
-require 'pry'
 
 class Lexer < Recognizer
 

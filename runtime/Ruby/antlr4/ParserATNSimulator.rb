@@ -15,7 +15,7 @@ class ParserATNSimulator < ATNSimulator
 
   def self.getSafeEnv(envName)
     begin
-      return System.getenv(envName)
+      return ENV[envName]
 
     rescue
 # use the default value
