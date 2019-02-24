@@ -1,16 +1,16 @@
 require '../antlr4/ATNConfigSet'
-require 'set'
 
 class OrderedATNConfigSet < ATNConfigSet
 
-  class LexerConfigHashSet
+  class LexerConfigHashSet < AbstractConfigHashSet
     def initialize()
-      super(ObjectEqualityComparator.INSTANCE)
+      super(ObjectEqualityComparator.instance)
     end
   end
 
   def initialize()
-    @configLookup = SortedSet.new()
+    super
+    @configLookup = LexerConfigHashSet.new
   end
 
 end

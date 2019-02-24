@@ -1,6 +1,5 @@
 require '../antlr4/Integer'
 require '../antlr4/RuleContext'
-#require '../antlr4/EmptyPredictionContext'
 
 class PredictionContext
   INITIAL_HASH = 1
@@ -49,10 +48,6 @@ class PredictionContext
 
   def getReturnState(index)
 
-  end
-
-  def isEmpty()
-    return self == EMPTY
   end
 
   def hasEmptyPath()

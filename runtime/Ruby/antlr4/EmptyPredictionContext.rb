@@ -6,6 +6,8 @@ class EmptyPredictionContext < SingletonPredictionContext
     super(nil, returnState)
   end
 
+  EMPTY = EmptyPredictionContext.new(EMPTY_RETURN_STATE)
+
   def isEmpty()
     return true
   end

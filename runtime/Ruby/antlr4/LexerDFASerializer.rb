@@ -1,24 +1,12 @@
+require '../antlr4/DFASerializer'
+
+class LexerDFASerializer < DFASerializer
+  def initialize(dfa)
+    super(dfa, VocabularyImpl::EMPTY_VOCABULARY)
+  end
 
 
-
-
-
-
-
-
-
-
-class LexerDFASerializer extends DFASerializer 
-	public LexerDFASerializer(DFA dfa) 
-		super(dfa, VocabularyImpl.EMPTY_VOCABULARY)
-	end
-
-	
-
-	protected String getEdgeLabel(int i) 
-		return StringBuilder.new("'")
-				.appendCodePoint(i)
-				.append("'")
-				.to_s()
-	end
+  def getEdgeLabel(i)
+    "'" << i << "'"
+  end
 end

@@ -195,11 +195,9 @@ class Lexer < Recognizer
     if token != nil
       @_token = token
     else
-      t = @_factory.create(@_tokenFactorySourcePair, @_type, @_text, @_channel, @_tokenStartCharIndex, getCharIndex() - 1,
+      @_token = @_factory.create(@_tokenFactorySourcePair, @_type, @_text, @_channel, @_tokenStartCharIndex, getCharIndex() - 1,
                            @_tokenStartLine, @_tokenStartCharPositionInLine)
-      @_token = token
     end
-    return t
   end
 
   def emitEOF

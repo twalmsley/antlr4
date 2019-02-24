@@ -119,7 +119,7 @@ class UnbufferedCharStream implements CharStream
 
 	
 	public void consume() 
-		if (LA(1) == IntStream.EOF) 
+		if (LA(1) == IntStream::EOF)
 			throw new IllegalStateException("cannot consume EOF")
 		end
 
@@ -157,13 +157,13 @@ class UnbufferedCharStream implements CharStream
 
 	protected int fill(int n) 
 		for (int i=0 i<n i++) 
-			if (this.n > 0 && data[this.n - 1] == IntStream.EOF) 
+			if (this.n > 0 && data[this.n - 1] == IntStream::EOF)
 				return i
 			end
 
 			try 
 				int c = nextChar()
-				if (c > Character.MAX_VALUE || c == IntStream.EOF) 
+				if (c > Character.MAX_VALUE || c == IntStream::EOF)
 					add(c)
 				end
 				else 
@@ -176,7 +176,7 @@ class UnbufferedCharStream implements CharStream
 						if (lowSurrogate > Character.MAX_VALUE) 
 							throw new RuntimeException("Invalid UTF-16 (high surrogate followed by code point > U+FFFF")
 						end
-						else if (lowSurrogate == IntStream.EOF) 
+						else if (lowSurrogate == IntStream::EOF)
 							throw new RuntimeException("Invalid UTF-16 (dangling high surrogate at end of file)")
 						end
 						else 
@@ -223,7 +223,7 @@ class UnbufferedCharStream implements CharStream
         sync(i)
         int index = p + i - 1
         if ( index < 0 ) throw new IndexOutOfBoundsException()
-		if ( index >= n ) return IntStream.EOF
+		if ( index >= n ) return IntStream::EOF
         return data[index]
     end
 

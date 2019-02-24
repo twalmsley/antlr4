@@ -25,7 +25,7 @@ class SetTransition < Transition
 
 
   def matches(symbol, minVocabSymbol, maxVocabSymbol)
-    return set.contains(symbol)
+    return @set.contains(symbol)
   end
 
 

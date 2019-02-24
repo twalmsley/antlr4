@@ -9,6 +9,7 @@ class LexerATNSimulator < ATNSimulator
   MIN_DFA_EDGE = 0
   MAX_DFA_EDGE = 127 # forces unicode to stay in ATN
 
+  EMPTY = EmptyPredictionContext.new(Integer::MAX)
 
   class SimState
     attr_accessor :index
@@ -160,13 +161,13 @@ class LexerATNSimulator < ATNSimulator
       # capturing the accept state so the input index, line, and char
       # position accurately reflect the state of the interpreter at the
       # end of the token.
-      if (t != IntStream.EOF)
+      if (t != IntStream::EOF)
         consume(input)
       end
 
       if (target.isAcceptState)
         captureSimState(@prevAccept, input, target)
-        if (t == IntStream.EOF)
+        if (t == IntStream::EOF)
           break
         end
       end
@@ -204,7 +205,7 @@ class LexerATNSimulator < ATNSimulator
       if (!reach.hasSemanticContext)
         # we got nowhere on t, don't throw out this knowledge it'd
         # cause a failover from DFA later.
-        addDFAEdge_dfastate(s, t, ERROR)
+        addDFAEdge_dfastate_dfastate(s, t, ERROR)
       end
 
       # stop when we can't match any more char
@@ -212,19 +213,19 @@ class LexerATNSimulator < ATNSimulator
     end
 
 # Add an edge from s to target DFA found/created for reach
-    return addDFAEdge(s, t, reach)
+    return addDFAEdge_dfastate_atnconfigset(s, t, reach)
   end
 
   def failOrAccept(prevAccept, input, reach, t)
 
     if (prevAccept.dfaState != nil)
       lexerActionExecutor = prevAccept.dfaState.lexerActionExecutor
-      accept(input, lexerActionExecutor, startIndex,
+      accept(input, lexerActionExecutor, @startIndex,
              prevAccept.index, prevAccept.line, prevAccept.charPos)
       return prevAccept.dfaState.prediction
     else
 # if no accept and EOF is first char, return EOF
-      if (t == IntStream::EOF && input.index() == startIndex)
+      if (t == IntStream::EOF && input.index() == @startIndex)
         return Token::EOF
       end
 
@@ -239,12 +240,12 @@ class LexerATNSimulator < ATNSimulator
     skipAlt = ATN.INVALID_ALT_NUMBER
     closure.configs.each do |c|
       currentAltReachedAcceptState = (c.alt == skipAlt)
-      if (currentAltReachedAcceptState && c.hasPassedThroughNonGreedyDecision())
+      if (currentAltReachedAcceptState && c.passedThroughNonGreedyDecision)
         next
       end
 
       if (@debug)
-        printf "testing %s at %s\n" % [getTokenName(t), c.to_s(recog, true)]
+        printf "testing %s at %s\n" % [getTokenName(t), c.toString_2(@recog, true)]
       end
 
       n = c.state.getNumberOfTransitions()
@@ -253,13 +254,15 @@ class LexerATNSimulator < ATNSimulator
         trans = c.state.transition(ti)
         target = getReachableTarget(trans, t)
         if (target != nil)
-          lexerActionExecutor = c.getLexerActionExecutor()
+          lexerActionExecutor = c.lexerActionExecutor
           if (lexerActionExecutor != nil)
             lexerActionExecutor = lexerActionExecutor.fixOffsetBeforeMatch(input.index() - startIndex)
           end
 
-          treatEofAsEpsilon = (t == CharStream.EOF)
-          if (closure(input, LexerATNConfig.create_from_config2(c, target, lexerActionExecutor), reach, currentAltReachedAcceptState, true, treatEofAsEpsilon))
+          treatEofAsEpsilon = (t == CharStream::EOF)
+          cfg = LexerATNConfig.new
+          cfg.LexerATNConfig_4(c, target, lexerActionExecutor)
+          if (closure(input, cfg, reach, currentAltReachedAcceptState, true, treatEofAsEpsilon))
             # any remaining configs for this alt have a lower priority than
             # the one that just reached an accept state.
             skipAlt = c.alt
@@ -289,7 +292,7 @@ class LexerATNSimulator < ATNSimulator
 
 
   def getReachableTarget(trans, t)
-    if (trans.matches(t, Lexer.MIN_CHAR_VALUE, Lexer.MAX_CHAR_VALUE))
+    if (trans.matches(t, Lexer::MIN_CHAR_VALUE, Lexer::MAX_CHAR_VALUE))
       return trans.target
     end
 
@@ -298,9 +301,8 @@ class LexerATNSimulator < ATNSimulator
 
 
   def computeStartState(input, p)
-    @@EMPTY = EmptyPredictionContext.new(Integer::MAX)
 
-    initialContext = @@EMPTY
+    initialContext = EMPTY
     configs = ATNConfigSet.new()
     i = 0
     while i < p.getNumberOfTransitions()
@@ -315,14 +317,11 @@ class LexerATNSimulator < ATNSimulator
 
 
   def closure(input, config, configs, currentAltReachedAcceptState, speculative, treatEofAsEpsilon)
-    if (@debug)
-      puts("closure(" + config.toString_2(@recog, true) + ")")
-    end
 
     if (config.state.is_a? RuleStopState)
       if (@debug)
         if (@recog != nil)
-          printf "closure at %s rule stop %s\n" % [recog.getRuleNames()[config.state.ruleIndex], config]
+          printf "closure at %s rule stop %s\n" % [@recog.getRuleNames()[config.state.ruleIndex], config]
         else
           printf "closure at rule stop %s\n" % [config]
         end
@@ -341,10 +340,11 @@ class LexerATNSimulator < ATNSimulator
       if (config.context != nil && !config.context.isEmpty())
         i = 0
         while i < config.context.size()
-          if (config.context.getReturnState(i) != PredictionContext.EMPTY_RETURN_STATE)
+          if (config.context.getReturnState(i) != PredictionContext::EMPTY_RETURN_STATE)
             newContext = config.context.getParent(i) # "pop" return state
-            returnState = atn.states.get(config.context.getReturnState(i))
-            c = LexerATNConfig.create_from_config2(config, returnState, newContext)
+            returnState = atn.states[config.context.getReturnState(i)]
+            c = LexerATNConfig.new
+            c.LexerATNConfig_5(config, returnState, newContext)
             currentAltReachedAcceptState = closure(input, c, configs, currentAltReachedAcceptState, speculative, treatEofAsEpsilon)
           end
           i += 1
@@ -474,12 +474,9 @@ class LexerATNSimulator < ATNSimulator
   end
 
 
-  def addDFAEdge_atnconfigset(from, t, q)
-
-
+  def addDFAEdge_dfastate_atnconfigset(from, t, q)
     suppressEdge = q.hasSemanticContext
     q.hasSemanticContext = false
-
 
     to = addDFAState(q)
 
@@ -487,11 +484,11 @@ class LexerATNSimulator < ATNSimulator
       return to
     end
 
-    addDFAEdge(from, t, to)
+    addDFAEdge_dfastate_dfastate(from, t, to)
     return to
   end
 
-  def addDFAEdge_dfastate(p, t, q)
+  def addDFAEdge_dfastate_dfastate(p, t, q)
     if (t < MIN_DFA_EDGE || t > MAX_DFA_EDGE)
       # Only track edges within the DFA bounds
       return
@@ -518,7 +515,7 @@ class LexerATNSimulator < ATNSimulator
 
     if (firstConfigWithRuleStopState != nil)
       proposed.isAcceptState = true
-      proposed.lexerActionExecutor = firstConfigWithRuleStopState.getLexerActionExecutor()
+      proposed.lexerActionExecutor = firstConfigWithRuleStopState.lexerActionExecutor
       proposed.prediction = atn.ruleToTokenType[firstConfigWithRuleStopState.state.ruleIndex]
     end
 
@@ -582,6 +579,6 @@ class LexerATNSimulator < ATNSimulator
       return "EOF"
     end
     #if ( atn.g!=nil ) return atn.g.getTokenDisplayName(t)
-    return "'" + t + "'"
+    return "'" + t.to_s + "'"
   end
 end

@@ -75,7 +75,7 @@ class ATNConfig
     end
   end
 
-  def toString()
+  def to_s()
     return toString_2(nil, true)
   end
 

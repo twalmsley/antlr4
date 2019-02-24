@@ -111,6 +111,6 @@ class Interval
   end
 
   def to_s
-    return a + ".." + b
+    return a.to_s + ".." + b.to_s
   end
 end

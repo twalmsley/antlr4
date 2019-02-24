@@ -238,7 +238,7 @@ class ParserATNSimulator < ATNSimulator
 
       previousD = d
 
-      if (t != IntStream.EOF)
+      if (t != IntStream::EOF)
         input.consume()
         t = input.LA(1)
       end
@@ -394,7 +394,7 @@ class ParserATNSimulator < ATNSimulator
       end
 
       previous = reach
-      if (t != IntStream.EOF)
+      if (t != IntStream::EOF)
         input.consume()
         t = input.LA(1)
       end
@@ -436,7 +436,7 @@ class ParserATNSimulator < ATNSimulator
       end
 
       if (c.state.is_a? RuleStopState)
-        if (fullCtx || t == IntStream.EOF)
+        if (fullCtx || t == IntStream::EOF)
           if (skippedStopStates == nil)
             skippedStopStates = []
           end
@@ -488,7 +488,7 @@ class ParserATNSimulator < ATNSimulator
       end
     end
 
-    if (t == IntStream.EOF)
+    if (t == IntStream::EOF)
       reach = removeAllConfigsNotInRuleStopState(reach, reach == intermediate)
     end
 

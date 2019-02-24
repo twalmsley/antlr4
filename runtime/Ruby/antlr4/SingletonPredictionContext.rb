@@ -18,16 +18,20 @@ class SingletonPredictionContext < PredictionContext
 
 
   def getParent(index)
-    return parent
+    return @parent
+  end
+
+  def isEmpty()
+    return @returnState == EMPTY_RETURN_STATE
   end
 
 
   def getReturnState(index)
-    return returnState
+    return @returnState
   end
 
   def equals(o)
-    if (this == o)
+    if (self == o)
       return true
     elsif (!(o.is_a? SingletonPredictionContext))
       return false
@@ -38,19 +42,19 @@ class SingletonPredictionContext < PredictionContext
     end
 
     s = o
-    return returnState == s.returnState &&
-        (parent != nil && parent.equals(s.parent))
+    return @returnState == s.returnState &&
+        (@parent != nil && @parent.equals(s.parent))
   end
 
 
   def to_s()
-    up = parent != nil ? parent.to_s() : ""
+    up = @parent != nil ? @parent.to_s() : ""
     if (up.length() == 0)
-      if (returnState == EMPTY_RETURN_STATE)
+      if (@returnState == EMPTY_RETURN_STATE)
         return "$"
       end
-      return returnState.to_s
+      return @returnState.to_s
     end
-    return returnState.to_s + " " + up
+    return @returnState.to_s + " " + up
   end
 end

@@ -1,3 +1,6 @@
+require '../antlr4/LexerDFASerializer'
+require '../antlr4/DFASerializer'
+
 class DFA
 
   attr_accessor :states

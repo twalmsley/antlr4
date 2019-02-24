@@ -30,13 +30,11 @@ class ATNConfigSet
       @dipsIntoOuterContext = true
     end
 
-    if @configLookup.contains config
+    existing = @configLookup.getOrAdd config
+    if existing == config
       @cachedHashCode = -1
-      @configs.add(config)
+      @configs << config
       return true
-    else
-      @configLookup.add(config)
-      existing = config
     end
 
     rootIsWildcard = !@fullCtx
@@ -67,12 +65,16 @@ class ATNConfigSet
   end
 
   def empty?
-    @configLookup.empty?
+    @configLookup.isEmpty
   end
 
   def to_s()
     buf = ""
-    buf << @configs.to_s
+    buf << '<'
+    @configs.each do |c|
+      buf << c.to_s << ' '
+    end
+    buf << '>'
 
     if (@hasSemanticContext)
       buf << ",hasSemanticContext=" << @hasSemanticContext

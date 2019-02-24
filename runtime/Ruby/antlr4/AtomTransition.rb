@@ -17,7 +17,7 @@ class AtomTransition < Transition
 
 
   def label()
-    return IntervalSet.of(label)
+    return IntervalSet.of(@label)
   end
 
 
