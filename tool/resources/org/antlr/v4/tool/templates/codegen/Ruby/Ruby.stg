@@ -40,13 +40,13 @@ rubyTypeInitMap ::= [
 ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-require '../../antlr4/runtime/Ruby/antlr4/PredictionContextCache'
-require '../../antlr4/runtime/Ruby/antlr4/Parser'
-require '../../antlr4/runtime/Ruby/antlr4/ParserATNSimulator'
-require '../../antlr4/runtime/Ruby/antlr4/ParserRuleContext'
-require '../../antlr4/runtime/Ruby/antlr4/RecognitionException'
-require "./<file.grammarName>Listener"
-require "./<file.grammarName>Visitor"
+require '../antlr4/PredictionContextCache'
+require '../antlr4/Parser'
+require '../antlr4/ParserATNSimulator'
+require '../antlr4/ParserRuleContext'
+require '../antlr4/RecognitionException'
+require "../../../../tmp/ruby/<file.grammarName>Listener"
+require "../../../../tmp/ruby/<file.grammarName>Visitor"
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -74,7 +74,7 @@ ListenerFile(file, header, namedActions) ::= <<
 module <file.genPackage>
 <endif>
 <header>
-require '../../antlr4/runtime/Ruby/antlr4/ParseTreeListener'
+require '../antlr4/ParseTreeListener'
 
 class <file.grammarName>Listener \< ParseTreeListener
 	<file.listenerNames:{lname |
@@ -94,10 +94,10 @@ end
 BaseListenerFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 <header>
-require '../../antlr4/runtime/Ruby/antlr4/ParserRuleContext'
-require '../../antlr4/runtime/Ruby/antlr4/ErrorNode'
-require '../../antlr4/runtime/Ruby/antlr4/TerminalNode'
-require './<file.grammarName>Listener'
+require '../antlr4/ParserRuleContext'
+require '../antlr4/ErrorNode'
+require '../antlr4/TerminalNode'
+require '../../../../tmp/ruby/<file.grammarName>Listener'
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -133,7 +133,7 @@ end
 
 VisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
-require '../../antlr4/runtime/Ruby/antlr4/ParseTreeVisitor'
+require '../antlr4/ParseTreeVisitor'
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -154,7 +154,7 @@ end
 BaseVisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-require '../../antlr4/runtime/Ruby/antlr4/AbstractParseTreeVisitor'
+require '../antlr4/AbstractParseTreeVisitor'
 
 
 <if(file.genPackage)>
@@ -826,13 +826,13 @@ end
 LexerFile(lexerFile, lexer, namedActions) ::= <<
 <fileHeader(lexerFile.grammarFileName, lexerFile.ANTLRVersion)>
 <namedActions.header>
-require '../../antlr4/runtime/Ruby/antlr4/ATNDeserializer'
-require '../../antlr4/runtime/Ruby/antlr4/LexerATNSimulator'
-require '../../antlr4/runtime/Ruby/antlr4/DFA'
-require '../../antlr4/runtime/Ruby/antlr4/Token'
-require '../../antlr4/runtime/Ruby/antlr4/PredictionContextCache'
-require '../../antlr4/runtime/Ruby/antlr4/VocabularyImpl'
-require '../../antlr4/runtime/Ruby/antlr4/Lexer'
+require '../antlr4/ATNDeserializer'
+require '../antlr4/LexerATNSimulator'
+require '../antlr4/DFA'
+require '../antlr4/Token'
+require '../antlr4/PredictionContextCache'
+require '../antlr4/VocabularyImpl'
+require '../antlr4/Lexer'
 
 <if(lexerFile.genPackage)>
 module <lexerFile.genPackage>

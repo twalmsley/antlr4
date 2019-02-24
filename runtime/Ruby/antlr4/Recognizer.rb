@@ -1,6 +1,6 @@
 require 'weakref'
-require '../../antlr4/runtime/Ruby/antlr4/ConsoleErrorListener'
-require '../../antlr4/runtime/Ruby/antlr4/ProxyErrorListener'
+require '../antlr4/ConsoleErrorListener'
+require '../antlr4/ProxyErrorListener'
 
 class Recognizer
 

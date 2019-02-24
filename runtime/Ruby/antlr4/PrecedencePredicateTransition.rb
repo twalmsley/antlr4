@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/AbstractPredicateTransition'
+require '../antlr4/AbstractPredicateTransition'
 
 
 class PrecedencePredicateTransition < AbstractPredicateTransition

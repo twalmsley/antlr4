@@ -1,8 +1,8 @@
-require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
-require '../../antlr4/runtime/Ruby/antlr4/ParseTreeListener'
-require '../../antlr4/runtime/Ruby/antlr4/DefaultErrorStrategy'
-require '../../antlr4/runtime/Ruby/antlr4/ATNDeserializer'
-require '../../antlr4/runtime/Ruby/antlr4/VocabularyImpl'
+require '../antlr4/Recognizer'
+require '../antlr4/ParseTreeListener'
+require '../antlr4/DefaultErrorStrategy'
+require '../antlr4/ATNDeserializer'
+require '../antlr4/VocabularyImpl'
 
 class Parser < Recognizer
 

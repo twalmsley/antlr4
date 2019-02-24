@@ -1,7 +1,7 @@
-require '../../antlr4/runtime/Ruby/antlr4/RuleNode'
-require '../../antlr4/runtime/Ruby/antlr4/Interval'
-require '../../antlr4/runtime/Ruby/antlr4/ATN'
-require '../../antlr4/runtime/Ruby/antlr4/Trees'
+require '../antlr4/RuleNode'
+require '../antlr4/Interval'
+require '../antlr4/ATN'
+require '../antlr4/Trees'
 
 class RuleContext < RuleNode
   #EMPTY = ParserRuleContext.new()

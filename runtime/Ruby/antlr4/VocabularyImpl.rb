@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/Vocabulary'
+require '../antlr4/Vocabulary'
 
 class VocabularyImpl < Vocabulary
   @@EMPTY_NAMES = []

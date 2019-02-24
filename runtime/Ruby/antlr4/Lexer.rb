@@ -1,7 +1,7 @@
-require '../../antlr4/runtime/Ruby/antlr4/Recognizer'
-require '../../antlr4/runtime/Ruby/antlr4/Token'
-require '../../antlr4/runtime/Ruby/antlr4/CommonTokenFactory'
-require '../../antlr4/runtime/Ruby/antlr4/LexerNoViableAltException'
+require '../antlr4/Recognizer'
+require '../antlr4/Token'
+require '../antlr4/CommonTokenFactory'
+require '../antlr4/LexerNoViableAltException'
 
 class Lexer < Recognizer
 
@@ -102,7 +102,6 @@ class Lexer < Recognizer
         @_type = Token::INVALID_TYPE
 
         begin
-
           ttype = getInterpreter().match(@_input, @_mode)
         rescue LexerNoViableAltException => e
           notifyListeners(e) # report error
@@ -123,8 +122,8 @@ class Lexer < Recognizer
 
       if (@_token == nil)
         emit()
-        return false
       end
+      return false
     end
   end
 

@@ -13,7 +13,7 @@ class SemanticContext
     attr_accessor :predIndex
     attr_accessor :isCtxDependent # e.g., $i ref in pred
 
-    def initializr(ruleIndex = -1, predIndex = -1, isCtxDependent = false)
+    def initialize(ruleIndex = -1, predIndex = -1, isCtxDependent = false)
       @ruleIndex = ruleIndex
       @predIndex = predIndex
       @isCtxDependent = isCtxDependent
@@ -27,10 +27,10 @@ class SemanticContext
 
 
     def hash()
-      hashCode = MurmurHash.initialize()
-      hashCode = MurmurHash.update(hashCode, @ruleIndex)
-      hashCode = MurmurHash.update(hashCode, @predIndex)
-      hashCode = MurmurHash.update(hashCode, @isCtxDependent ? 1 : 0)
+      hashCode = 0
+      hashCode = MurmurHash.update_int(hashCode, @ruleIndex)
+      hashCode = MurmurHash.update_int(hashCode, @predIndex)
+      hashCode = MurmurHash.update_int(hashCode, @isCtxDependent ? 1 : 0)
       hashCode = MurmurHash.finish(hashCode, 3)
       return hashCode
     end
@@ -70,7 +70,7 @@ class SemanticContext
 
     def evalPrecedence(parser, parserCallStack)
       if (parser.precpred(parserCallStack, @precedence))
-        return SemanticContext.NONE
+        return SemanticContext::NONE
       else
         return nil
       end
@@ -342,9 +342,6 @@ class SemanticContext
     return result
   end
 
-  class << self
-    @@NONE = Predicate.new
-    attr_accessor :NONE
-  end
+  NONE = Predicate.new
 
 end

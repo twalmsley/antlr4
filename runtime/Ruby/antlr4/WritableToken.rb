@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/Token'
+require '../antlr4/Token'
 
 class WritableToken < Token
   def setText(text)

@@ -1,6 +1,6 @@
-require '../../antlr4/runtime/Ruby/antlr4/ANTLRErrorStrategy'
-require '../../antlr4/runtime/Ruby/antlr4/NoViableAltException'
-require '../../antlr4/runtime/Ruby/antlr4/InputMismatchException'
+require '../antlr4/ANTLRErrorStrategy'
+require '../antlr4/NoViableAltException'
+require '../antlr4/InputMismatchException'
 
 class DefaultErrorStrategy < ANTLRErrorStrategy
 

@@ -1,5 +1,5 @@
-require '../../antlr4/runtime/Ruby/antlr4/TokenStream'
-require '../../antlr4/runtime/Ruby/antlr4/WritableToken'
+require '../antlr4/TokenStream'
+require '../antlr4/WritableToken'
 
 class BufferedTokenStream < TokenStream
 

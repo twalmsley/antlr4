@@ -1,6 +1,6 @@
-require '../../antlr4/runtime/Ruby/antlr4/PredictionContext'
-require '../../antlr4/runtime/Ruby/antlr4/SemanticContext'
-require 'set'
+require '../antlr4/PredictionContext'
+require '../antlr4/SemanticContext'
+require '../antlr4/Array2DHashSet'
 
 class ATNConfigSet
 
@@ -11,8 +11,9 @@ class ATNConfigSet
   def initialize
     @hasSemanticContext = false
     @readonly = false
-    @configLookup = Set.new
+    @configLookup = ConfigHashSet.new
     @configs = []
+    @dipsIntoOuterContext = false
   end
 
   def add(config, mergeCache = nil)
@@ -20,7 +21,7 @@ class ATNConfigSet
       raise IllegalStateException, "This set is readonly"
     end
 
-    if (config.semanticContext != SemanticContext.NONE)
+    if (config.semanticContext != SemanticContext::NONE)
       @hasSemanticContext = true
     end
 
@@ -29,7 +30,7 @@ class ATNConfigSet
       @dipsIntoOuterContext = true
     end
 
-    if @configLookup.include? config
+    if @configLookup.contains config
       @cachedHashCode = -1
       @configs.add(config)
       return true
@@ -48,15 +49,18 @@ class ATNConfigSet
       existing.setPrecedenceFilterSuppressed(true)
     end
 
-    existing.context = merged;
-    return true;
+    existing.context = merged
+    return true
   end
 
   def findFirstRuleStopState
     result = nil
-    @configLookup.each do |x|
-      if(x.state.is_a? RuleStopState)
-        result = x;
+    iter = @configLookup.iterator
+    while(iter.hasNext)
+      x = iter.next
+      if (x.state.is_a? RuleStopState)
+        result = x
+        break
       end
     end
     return result
@@ -83,6 +87,41 @@ class ATNConfigSet
       buf << ",dipsIntoOuterContext"
     end
     return buf
+  end
+
+  class AbstractConfigHashSet < Array2DHashSet
+    def initialize(comparator)
+      super(comparator, 16, 16)
+    end
+  end
+
+  class ConfigHashSet < AbstractConfigHashSet
+    def initialize()
+      super(ConfigEqualityComparator.instance)
+    end
+  end
+
+  class ConfigEqualityComparator
+    include Singleton
+
+    def hashCode(o)
+      hashCode = 7
+      hashCode = 31 * hashCode + o.state.stateNumber
+      hashCode = 31 * hashCode + o.alt
+      hashCode = 31 * hashCode + o.semanticContext.hash()
+      return hashCode
+    end
+
+    def equals(a, b)
+      if (a == b)
+        return true
+      end
+      if (a == nil || b == nil)
+        return false
+      end
+
+      return a.state.stateNumber == b.state.stateNumber && a.alt == b.alt && a.semanticContext.equals(b.semanticContext)
+    end
   end
 
 end

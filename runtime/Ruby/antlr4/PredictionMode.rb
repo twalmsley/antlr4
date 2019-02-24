@@ -54,7 +54,7 @@ class PredictionMode
         # dup configs, tossing out semantic predicates
         dup = ATNConfigSet.new()
         configs.each do |c|
-          c = ATNConfig.new(c, SemanticContext.NONE)
+          c = ATNConfig.new(c, SemanticContext::NONE)
           dup.add(c)
         end
         configs = dup

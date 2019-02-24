@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/Transition'
+require '../antlr4/Transition'
 
 
 class AtomTransition < Transition

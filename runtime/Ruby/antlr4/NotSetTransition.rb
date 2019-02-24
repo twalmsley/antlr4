@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/SetTransition'
+require '../antlr4/SetTransition'
 
 
 class NotSetTransition < SetTransition

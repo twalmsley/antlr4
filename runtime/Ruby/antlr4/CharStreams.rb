@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/CodePointCharStream'
+require '../antlr4/CodePointCharStream'
 
 class CharStreams
 

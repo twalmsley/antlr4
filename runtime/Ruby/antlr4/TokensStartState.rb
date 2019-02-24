@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/DecisionState'
+require '../antlr4/DecisionState'
 
 class TokensStartState < DecisionState
   def getStateType()

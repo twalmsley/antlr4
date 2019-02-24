@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/SyntaxTree'
+require '../antlr4/SyntaxTree'
 
 class ParseTree < SyntaxTree
   # the following methods narrow the return type they are not additional methods

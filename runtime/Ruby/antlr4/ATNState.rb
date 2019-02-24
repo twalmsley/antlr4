@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/IntervalSet'
+require '../antlr4/IntervalSet'
 
 class ATNState
   INITIAL_NUM_TRANSITIONS = 4

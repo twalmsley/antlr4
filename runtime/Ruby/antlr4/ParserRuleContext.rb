@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/RuleContext'
+require '../antlr4/RuleContext'
 
 class ParserRuleContext < RuleContext
 

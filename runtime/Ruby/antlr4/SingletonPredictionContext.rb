@@ -1,36 +1,13 @@
-require '../../antlr4/runtime/Ruby/antlr4/PredictionContext'
-require '../../antlr4/runtime/Ruby/antlr4/MurmurHash'
+require '../antlr4/PredictionContext'
+require '../antlr4/MurmurHash'
 
 class SingletonPredictionContext < PredictionContext
-
-  INITIAL_HASH = 1
 
   attr_accessor :parent
   attr_accessor :returnState
 
-  def self.calculateEmptyHashCode()
-    hash = INITIAL_HASH
-    hash = MurmurHash.finish(hash, 0)
-    return hash
-  end
-
-  def self.calculateHashCode(parents, returnStates)
-    hash = MurmurHash.initialize(INITIAL_HASH)
-
-    parents.each do |parent|
-      hash = MurmurHash.update_obj(hash, parent)
-    end
-
-    returnStates.each do |returnState|
-      hash = MurmurHash.update_int(hash, returnState)
-    end
-
-    hash = MurmurHash.finish(hash, 2 * parents.length)
-    return hash
-  end
-
   def initialize(parent, returnState)
-    super(parent != nil ? SingletonPredictionContext.calculateHashCode(parent, returnState) : SingletonPredictionContext.calculateEmptyHashCode())
+    super(parent != nil ? SingletonPredictionContext.calculateHashCode_1(parent, returnState) : SingletonPredictionContext.calculateEmptyHashCode())
     @parent = parent
     @returnState = returnState
   end

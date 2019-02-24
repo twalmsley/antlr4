@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNConfigSet'
+require '../antlr4/ATNConfigSet'
 require 'set'
 
 class OrderedATNConfigSet < ATNConfigSet

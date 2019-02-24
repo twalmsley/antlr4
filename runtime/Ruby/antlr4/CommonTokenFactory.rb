@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/CommonToken'
+require '../antlr4/CommonToken'
 
 class CommonTokenFactory
 

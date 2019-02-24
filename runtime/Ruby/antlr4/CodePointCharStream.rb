@@ -1,5 +1,5 @@
-require '../../antlr4/runtime/Ruby/antlr4/CharStream'
-require '../../antlr4/runtime/Ruby/antlr4/Integer'
+require '../antlr4/CharStream'
+require '../antlr4/Integer'
 
 class CodePointCharStream < CharStream
 

@@ -1,5 +1,5 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNSimulator'
-require '../../antlr4/runtime/Ruby/antlr4/PredictionMode'
+require '../antlr4/ATNSimulator'
+require '../antlr4/PredictionMode'
 
 
 class ParserATNSimulator < ATNSimulator
@@ -615,8 +615,8 @@ class ParserATNSimulator < ATNSimulator
     i = 1
     while i <= nalts
       if (altToPred[i] == nil)
-        altToPred[i] = SemanticContext.NONE
-      elsif (altToPred[i] != SemanticContext.NONE)
+        altToPred[i] = SemanticContext::NONE
+      elsif (altToPred[i] != SemanticContext::NONE)
         nPredAlts += 1
       end
       i += 1
@@ -643,7 +643,7 @@ class ParserATNSimulator < ATNSimulator
       if (ambigAlts != nil && ambigAlts.get(i))
         pairs.add(DFAState.PredPrediction.new(pred, i))
       end
-      if (pred != SemanticContext.NONE)
+      if (pred != SemanticContext::NONE)
         containsPredicate = true
       end
       i += 1
@@ -696,7 +696,7 @@ class ParserATNSimulator < ATNSimulator
     succeeded = ATNConfigSet.new(configs.fullCtx)
     failed = ATNConfigSet.new(configs.fullCtx)
     configs.each do |c|
-      if (c.semanticContext != SemanticContext.NONE)
+      if (c.semanticContext != SemanticContext::NONE)
         predicateEvaluationResult = evalSemanticContext(c.semanticContext, outerContext, c.alt, configs.fullCtx)
         if (predicateEvaluationResult)
           succeeded.add(c)
@@ -719,7 +719,7 @@ class ParserATNSimulator < ATNSimulator
 
     predictions = BitSet.new
     predPredictions.each do |pair|
-      if (pair.pred == SemanticContext.NONE)
+      if (pair.pred == SemanticContext::NONE)
         predictions.set(pair.alt)
         if (!complete)
           break

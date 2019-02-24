@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/SingletonPredictionContext'
+require '../antlr4/SingletonPredictionContext'
 
 class EmptyPredictionContext < SingletonPredictionContext
 
@@ -31,7 +31,7 @@ class EmptyPredictionContext < SingletonPredictionContext
   end
 
 
-  def t_s()
+  def to_s()
     return "$"
   end
 end

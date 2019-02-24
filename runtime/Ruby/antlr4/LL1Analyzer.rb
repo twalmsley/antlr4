@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/Token'
+require '../antlr4/Token'
 
 class LL1Analyzer
   @@HIT_PRED = Token::INVALID_TYPE

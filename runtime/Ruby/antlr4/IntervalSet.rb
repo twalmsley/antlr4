@@ -1,5 +1,5 @@
-require '../../antlr4/runtime/Ruby/antlr4/Lexer'
-require '../../antlr4/runtime/Ruby/antlr4/Interval'
+require '../antlr4/Lexer'
+require '../antlr4/Interval'
 
 class IntervalSet
   @intervals = nil

@@ -20,31 +20,8 @@
 
 
 class Utils 
-    # Seriously: why isn't this built in to java? ugh!
-    def self.join( iter, separator) 
-        StringBuilder buf = StringBuilder.new()
-        while ( iter.hasNext() ) 
-            buf.append(iter.next())
-            if ( iter.hasNext() ) 
-                buf.append(separator)
-            end
-        end
-        return buf.to_s()
-    end
 
-	def self.join( array, separator) 
-		StringBuilder builder = StringBuilder.new()
-		for (int i = 0 i < array.length i++) 
-			builder.append(array[i])
-			if (i < array.length - 1) 
-				builder.append(separator)
-			end
-		end
-
-		return builder.to_s()
-	end
-
-	def self.numNonnull(Object[] data) 
+	def self.numNonnull(data)
 		int n = 0
 		if ( data == null ) return n
 		for (Object o : data) 
@@ -94,12 +71,12 @@ class Utils
 	end
 
 
-	def self.readFile(String fileName) throws IOException 
+	def self.readFile(fileName) throws IOException
 		return readFile(fileName, null)
 	end
 
 
-	def self.readFile(String fileName, encoding) throws IOException 
+	def self.readFile(fileName, encoding) throws IOException
 		File f = new File(fileName)
 		int size = (int)f.length()
 		InputStreamReader isr

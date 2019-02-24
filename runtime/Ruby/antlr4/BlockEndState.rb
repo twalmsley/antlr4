@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNState'
+require '../antlr4/ATNState'
 
 
 class BlockEndState < ATNState

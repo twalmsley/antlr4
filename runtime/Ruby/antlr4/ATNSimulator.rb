@@ -1,7 +1,7 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNDeserializer'
-require '../../antlr4/runtime/Ruby/antlr4/Integer'
-require '../../antlr4/runtime/Ruby/antlr4/DFAState'
-require '../../antlr4/runtime/Ruby/antlr4/ATNConfigSet'
+require '../antlr4/ATNDeserializer'
+require '../antlr4/Integer'
+require '../antlr4/DFAState'
+require '../antlr4/ATNConfigSet'
 
 class ATNSimulator
   SERIALIZED_VERSION = ATNDeserializer.SERIALIZED_VERSION

@@ -1,5 +1,5 @@
 require 'ostruct'
-require '../../antlr4/runtime/Ruby/antlr4/Token'
+require '../antlr4/Token'
 
 class CommonToken
 
@@ -70,8 +70,8 @@ class CommonToken
   end
 
   def getText()
-    if (text != nil)
-      return text
+    if (@text != nil)
+      return @text
     end
 
     input = getInputStream()
@@ -87,11 +87,11 @@ class CommonToken
   end
 
 
-  def to_s(r)
+  def toString_recog(r=nil)
 
     channelStr = ""
     if (@channel > 0)
-      channelStr = ",channel=" + @channel
+      channelStr = ",channel=" + @channel.to_s
     end
     txt = getText()
     if (txt != nil)
@@ -106,6 +106,31 @@ class CommonToken
     if (r != nil)
       typeString = r.getVocabulary().getDisplayName(@type)
     end
-    return "[@" + getTokenIndex() + "," + @start + ":" + @stop + "='" + txt + "',<" + typeString + ">" + channelStr + "," + @line + ":" + getCharPositionInLine() + "]"
+    return "[@" << getTokenIndex().to_s << "," << @start.to_s << ":" << @stop.to_s << "='" << txt << "',<" << typeString << ">" << channelStr << "," << @line.to_s << ":" << getCharPositionInLine().to_s << "]"
   end
+
+  def to_s()
+    return "[@ " << @start.to_s << ":" << @stop.to_s << "," << @line.to_s << ":" << "]"
+  end
+
+  def to_s_old()
+
+    channelStr = ""
+    if (@channel > 0)
+      channelStr = ",channel=" + @channel.to_s
+    end
+    txt = getText()
+    if (txt != nil)
+      txt = txt.sub("\n", "\\n")
+      txt = txt.sub("\r", "\\r")
+      txt = txt.sub("\t", "\\t")
+    else
+      txt = "<no text>"
+    end
+
+    typeString = type.to_s
+
+    return "[@" << getTokenIndex().to_s << "," << @start.to_s << ":" << @stop.to_s << "='" << txt << "',<" << typeString << ">" << channelStr << "," << @line.to_s << ":" << getCharPositionInLine().to_s << "]"
+  end
+
 end

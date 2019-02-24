@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/PredictionContext'
+require '../antlr4/PredictionContext'
 
 class PredictionContextCache
   @cache = Hash.new

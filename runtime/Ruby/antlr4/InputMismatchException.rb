@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/RecognitionException'
+require '../antlr4/RecognitionException'
 
 
 class InputMismatchException < RecognitionException

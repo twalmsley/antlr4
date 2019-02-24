@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/Tree'
+require '../antlr4/Tree'
 class SyntaxTree < Tree
 
   def getSourceInterval()

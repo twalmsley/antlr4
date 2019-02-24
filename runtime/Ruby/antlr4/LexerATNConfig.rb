@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNConfig'
+require '../antlr4/ATNConfig'
 
 
 class LexerATNConfig < ATNConfig
@@ -12,28 +12,38 @@ class LexerATNConfig < ATNConfig
     @lexerActionExecutor = nil
   end
 
-  def self.create_from_target(state, alt, context)
-    config = LexerATNConfig.new
-    config.alt = alt
-    config.state = state
-    config.context = context
-    return config
+  def LexerATNConfig_1(state, alt, context)
+    ATNConfig_2(state, alt, context, SemanticContext::NONE)
+    @passedThroughNonGreedyDecision = false
+    @lexerActionExecutor = nil
   end
 
-  def self.create_from_config(cfg, state)
-    config = LexerATNConfig.new
-    config.alt = cfg.alt
-    config.state = state
-    config.reachesIntoOuterContext = cfg.reachesIntoOuterContext
-    return config
+  def LexerATNConfig_2(state, alt, context, lexerActionExecutor)
+    ATNConfig_7(state, alt, context, SemanticContext::NONE)
+    @lexerActionExecutor = lexerActionExecutor
+    @passedThroughNonGreedyDecision = false
   end
 
-  def self.create_from_config2(cfg, state, context)
-    config = LexerATNConfig.new
-    config.alt = cfg.alt
-    config.state = state
-    config.reachesIntoOuterContext = cfg.reachesIntoOuterContext
-    config.context = context
-    return config
+  def LexerATNConfig_3(c, state)
+    ATNConfig_7(c, state, c.context, c.semanticContext)
+    @lexerActionExecutor = c.lexerActionExecutor
+    @passedThroughNonGreedyDecision = checkNonGreedyDecision(c, state)
   end
+
+  def LexerATNConfig_4(c, state, lexerActionExecutor)
+    ATNConfig_7(c, state, c.context, c.semanticContext)
+    @lexerActionExecutor = lexerActionExecutor
+    @passedThroughNonGreedyDecision = checkNonGreedyDecision(c, state)
+  end
+
+  def LexerATNConfig_5(c, state, context)
+    ATNConfig_7(c, state, context, c.semanticContext)
+    @lexerActionExecutor = c.lexerActionExecutor
+    @passedThroughNonGreedyDecision = checkNonGreedyDecision(c, state)
+  end
+
+  def checkNonGreedyDecision(source, target)
+    return source.passedThroughNonGreedyDecision || target.is_a?(DecisionState) && target.nonGreedy
+  end
+
 end

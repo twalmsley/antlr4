@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/LL1Analyzer'
+require '../antlr4/LL1Analyzer'
 
 class IllegalArgumentException < RuntimeError
 end

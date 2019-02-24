@@ -1,8 +1,8 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNSimulator'
-require '../../antlr4/runtime/Ruby/antlr4/EmptyPredictionContext'
-require '../../antlr4/runtime/Ruby/antlr4/Integer'
-require '../../antlr4/runtime/Ruby/antlr4/LexerATNConfig'
-require '../../antlr4/runtime/Ruby/antlr4/OrderedATNConfigSet'
+require '../antlr4/ATNSimulator'
+require '../antlr4/EmptyPredictionContext'
+require '../antlr4/Integer'
+require '../antlr4/LexerATNConfig'
+require '../antlr4/OrderedATNConfigSet'
 
 class LexerATNSimulator < ATNSimulator
 
@@ -23,7 +23,6 @@ class LexerATNSimulator < ATNSimulator
       @dfaState = nil
     end
   end
-
 
 
   def initialize(recog, atn, decisionToDFA, sharedContextCache)
@@ -306,7 +305,8 @@ class LexerATNSimulator < ATNSimulator
     i = 0
     while i < p.getNumberOfTransitions()
       target = p.transition(i).target
-      c = LexerATNConfig.create_from_target(target, i + 1, initialContext)
+      c = LexerATNConfig.new
+      c.LexerATNConfig_1(target, i + 1, initialContext)
       closure(input, c, configs, false, false, false)
       i += 1
     end
@@ -384,7 +384,8 @@ class LexerATNSimulator < ATNSimulator
     when Transition::RULE
       ruleTransition = t
       newContext = SingletonPredictionContext.new(config.context, ruleTransition.followState.stateNumber)
-      c = LexerATNConfig.create_from_config2(config, t.target, newContext)
+      c = LexerATNConfig.new
+      c.LexerATNConfig_5(config, t.target, newContext)
 
 
     when Transition::PRECEDENCE
@@ -424,7 +425,8 @@ class LexerATNSimulator < ATNSimulator
       end
 
     when Transition::EPSILON
-      c = LexerATNConfig.create_from_config(config, t.target)
+      c = LexerATNConfig.new
+      c.LexerATNConfig_3(config, t.target)
     when Transition::ATOM, Transition::RANGE, Transition::SET
       if (treatEofAsEpsilon)
         if (t.matches(CharStream.EOF, Lexer.MIN_CHAR_VALUE, Lexer.MAX_CHAR_VALUE))
@@ -496,7 +498,8 @@ class LexerATNSimulator < ATNSimulator
     end
 
     if (@debug)
-      puts("EDGE " + p.to_s + " -> " + q.to_s + " upon " + t.to_s)
+      message = "EDGE " << p.to_s << " -> " << q.to_s << " upon " << t
+      puts(message)
     end
 
     if (p.edges == nil)

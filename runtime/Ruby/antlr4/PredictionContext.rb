@@ -1,8 +1,9 @@
-require '../../antlr4/runtime/Ruby/antlr4/Integer'
-require '../../antlr4/runtime/Ruby/antlr4/RuleContext'
-#require '../../antlr4/runtime/Ruby/antlr4/EmptyPredictionContext'
+require '../antlr4/Integer'
+require '../antlr4/RuleContext'
+#require '../antlr4/EmptyPredictionContext'
 
 class PredictionContext
+  INITIAL_HASH = 1
 
   class << self
     @@globalNodeCount = 0
@@ -593,6 +594,36 @@ class PredictionContext
     end
     return false
   end
+
+  def self.calculateEmptyHashCode()
+    hash = INITIAL_HASH
+    hash = MurmurHash.finish(hash, 0)
+    return hash
+  end
+
+  def self.calculateHashCode_1(parent, returnState)
+    hash = INITIAL_HASH
+    hash = MurmurHash.update_obj(hash, parent)
+    hash = MurmurHash.update_int(hash, returnState)
+    hash = MurmurHash.finish(hash, 2)
+    return hash
+  end
+
+  def self.calculateHashCode_2(parents, returnStates)
+    hash = INITIAL_HASH
+
+    parents.each do |parent|
+      hash = MurmurHash.update_obj(hash, parent)
+    end
+
+    returnStates.each do |returnState|
+      hash = MurmurHash.update_int(hash, returnState)
+    end
+
+    hash = MurmurHash.finish(hash, 2 * parents.length)
+    return hash
+  end
+
 
 end
 

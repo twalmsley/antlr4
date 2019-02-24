@@ -1,23 +1,18 @@
-require '../../antlr4/runtime/Ruby/antlr4/ATNConfigSet'
+require '../antlr4/ATNConfigSet'
 class DFAState
   attr_accessor :stateNumber
 
-
   attr_accessor :configs
-
 
   attr_accessor :edges
 
   attr_accessor :isAcceptState
 
-
   attr_accessor :prediction
 
   attr_accessor :lexerActionExecutor
 
-
   attr_accessor :requiresFullContext
-
 
   attr_accessor :predicates
 
@@ -38,7 +33,7 @@ class DFAState
 
   class PredPrediction
 
-    attr_accessor :pred # never null at least SemanticContext.NONE
+    attr_accessor :pred # never null at least SemanticContext::NONE
     attr_accessor :alt
 
     def initiailize(pred, alt)
@@ -47,7 +42,7 @@ class DFAState
     end
 
     def to_s()
-      return "(" + pred + ", " + alt + ")"
+      return "(" + @pred.to_s + ", " + @alt.to_s + ")"
     end
   end
 
@@ -84,7 +79,7 @@ class DFAState
 
   def equals?(o)
 # compare set of ATN configurations in this set with other
-    if (this == o)
+    if (self == o)
       return true
     end
     if (!(o.is_a? DFAState))
@@ -98,14 +93,14 @@ class DFAState
 
 
   def to_s()
-    buf = String.new
+    buf = ""
     buf << @stateNumber.to_s << ":" << @configs.to_s
     if (@isAcceptState)
       buf << "=>"
       if (@predicates != nil)
         buf << @predicates.to_s
       else
-        buf << prediction
+        buf << @prediction.to_s
       end
     end
 

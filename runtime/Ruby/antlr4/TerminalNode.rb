@@ -1,4 +1,4 @@
-require '../../antlr4/runtime/Ruby/antlr4/TerminalNode'
+require '../antlr4/TerminalNode'
 
 
 class TerminalNode < ParseTree
