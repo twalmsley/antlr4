@@ -4,11 +4,11 @@ require '../antlr4/Token'
 class CommonTokenStream < BufferedTokenStream
 
 
-  @channel = Token::DEFAULT_CHANNEL
 
 
   def initialize(tokenSource, channel = nil)
     super(tokenSource)
+    @channel = Token::DEFAULT_CHANNEL
     if channel != nil
       @channel = channel
     end
@@ -36,7 +36,7 @@ class CommonTokenStream < BufferedTokenStream
     if (i < 0)
       return nil
     end
-    return @tokens.get(i)
+    return @tokens[i]
   end
 
 

@@ -1,26 +1,12 @@
+require '../antlr4/TerminalNodeImpl'
+
+class ErrorNodeImpl < TerminalNodeImpl
+  def initialize(token)
+    super(token)
+  end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class ErrorNodeImpl extends TerminalNodeImpl implements ErrorNode 
-	public ErrorNodeImpl(Token token) 
-		super(token)
-	end
-
-	
-	public <T> T accept(ParseTreeVisitor<? extends T> visitor) 
-		return visitor.visitErrorNode(this)
-	end
+  def accept(visitor)
+    return visitor.visitErrorNode(self)
+  end
 end

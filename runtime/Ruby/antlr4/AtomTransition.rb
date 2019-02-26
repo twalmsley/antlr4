@@ -22,11 +22,11 @@ class AtomTransition < Transition
 
 
   def matches(symbol, minVocabSymbol, maxVocabSymbol)
-    return label == symbol
+    return @label == symbol
   end
 
 
   def to_s()
-    return "" + label
+    return "" + @label
   end
 end

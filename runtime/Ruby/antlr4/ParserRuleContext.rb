@@ -50,7 +50,7 @@ class ParserRuleContext < RuleContext
     if (@children == nil)
       @children = []
     end
-    @children.add(t)
+    @children << t
     return t
   end
 
@@ -93,7 +93,7 @@ class ParserRuleContext < RuleContext
     end
 
     j = -1 # what element have we found with ctxType?
-    children.each do |o|
+    @children.each do |o|
       if (ctxType.isInstance(o))
         j += 1
         if (j == i)

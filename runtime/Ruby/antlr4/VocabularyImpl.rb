@@ -75,7 +75,7 @@ class VocabularyImpl < Vocabulary
       return "EOF"
     end
 
-    return nil
+    return tokenType.to_s
   end
 
 

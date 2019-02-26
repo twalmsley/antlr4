@@ -313,7 +313,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
       if (getSymbolType(t) == Token::EOF)
         s = "<EOF>"
       else
-        s = "<" + getSymbolType(t) + ">"
+        s = "<" << getSymbolType(t).to_s << ">"
       end
     end
 
@@ -358,7 +358,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   def consumeUntil(recognizer, set)
 #		System.err.println("consumeUntil("+set.to_s(recognizer.getTokenNames())+")")
     ttype = recognizer.getInputStream().LA(1)
-    while (ttype != Token::EOF && !set.include?(ttype))
+    while (ttype != Token::EOF && !set.contains(ttype))
       recognizer.consume()
       ttype = recognizer.getInputStream().LA(1)
     end

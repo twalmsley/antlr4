@@ -3,6 +3,7 @@ require '../antlr4/ParseTreeListener'
 require '../antlr4/DefaultErrorStrategy'
 require '../antlr4/ATNDeserializer'
 require '../antlr4/VocabularyImpl'
+require '../antlr4/ErrorNodeImpl'
 
 class Parser < Recognizer
 
@@ -321,7 +322,7 @@ class Parser < Recognizer
 
   def consume()
     o = getCurrentToken()
-    if (o.getType() != EOF)
+    if (o.type != EOF)
       getInputStream().consume()
     end
     hasListener = @_parseListeners != nil && !@_parseListeners.isEmpty()

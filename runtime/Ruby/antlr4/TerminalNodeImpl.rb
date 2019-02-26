@@ -1,71 +1,61 @@
+require '../antlr4/TerminalNode'
 
 
+class TerminalNodeImpl < TerminalNode
+  attr_accessor :symbol
+  attr_accessor :parent
+
+  def initialize(symbol)
+    @symbol = symbol
+  end
 
 
+  def getChild(i)
+    return nil
+  end
 
 
+  def getPayload()
+    return @symbol
+  end
 
 
+  def getSourceInterval()
+    if (@symbol == nil)
+      return Interval.INVALID
+    end
+
+    tokenIndex = @symbol.getTokenIndex()
+    return Interval.new(tokenIndex, tokenIndex)
+  end
 
 
+  def getChildCount()
+    return 0
+  end
 
 
+  def accept(visitor)
+    return visitor.visitTerminal(self)
+  end
 
-class TerminalNodeImpl implements TerminalNode 
-	public Token symbol
-	public ParseTree parent
 
-	public TerminalNodeImpl(Token symbol) 	this.symbol = symbol	end
+  def getText()
+    return @symbol.getText()
+  end
 
-	
-	public ParseTree getChild(int i) return nullend
 
-	
-	public Token getSymbol() return symbolend
+  def toStringTree(parser = nil)
+    return to_s()
+  end
 
-	
-	public ParseTree getParent()  return parent end
 
-	
-	public void setParent(RuleContext parent) 
-		this.parent = parent
-	end
+  def to_s()
+    if (@symbol.getType() == Token::EOF)
+      return "<EOF>"
+    end
+    return @symbol.getText()
+  end
 
-	
-	public Token getPayload()  return symbol end
 
-	
-	public Interval getSourceInterval() 
-		if ( symbol ==null ) return Interval.INVALID
-
-		int tokenIndex = symbol.getTokenIndex()
-		return new Interval(tokenIndex, tokenIndex)
-	end
-
-	
-	public int getChildCount()  return 0 end
-
-	
-	public <T> T accept(ParseTreeVisitor<? extends T> visitor) 
-		return visitor.visitTerminal(this)
-	end
-
-	
-	public String getText()  return symbol.getText() end
-
-	
-	public String toStringTree(Parser parser) 
-		return toString()
-	end
-
-	
-	public String toString() 
-			if ( symbol.getType() == Token::EOF ) return "<EOF>"
-			return symbol.getText()
-	end
-
-	
-	public String toStringTree() 
-		return toString()
-	end
 end

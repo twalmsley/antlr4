@@ -7,6 +7,6 @@ class LexerDFASerializer < DFASerializer
 
 
   def getEdgeLabel(i)
-    "'" << i << "'"
+    "'" << i.to_s << "'"
   end
 end

@@ -30,6 +30,6 @@ class SetTransition < Transition
 
 
   def to_s()
-    return set.to_s()
+    return @set.to_s()
   end
 end

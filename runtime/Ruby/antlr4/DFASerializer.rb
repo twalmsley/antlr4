@@ -54,9 +54,9 @@ class DFASerializer
           preds << p.to_s
         end
 
-        return baseStateStr + "=>" << preds
+        return baseStateStr << "=>" << preds
       else
-        return baseStateStr + "=>" + s.prediction.to_s
+        return baseStateStr << "=>" << @vocabulary.getSymbolicName(s.prediction)
       end
     else
       return baseStateStr
