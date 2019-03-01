@@ -1,26 +1,28 @@
-require '../antlr4/PredictionContext'
+require '../antlr4/EmptyPredictionContext'
 
 class PredictionContextCache
-  @cache = Hash.new
 
+  def initialize
+    @cache = Hash.new
+  end
 
   def add(ctx)
-    if (ctx == PredictionContext.EMPTY)
-      return PredictionContext.EMPTY
+    if (ctx == EmptyPredictionContext::EMPTY)
+      return EmptyPredictionContext::EMPTY
     end
-    existing = @cache.get(ctx)
+    existing = @cache[ctx]
     if (existing != nil)
       return existing
     end
-    @cache.put(ctx, ctx)
+    @cache[ctx] = ctx
     return ctx
   end
 
   def get(ctx)
-    return @cache.get(ctx)
+    return @cache[ctx]
   end
 
   def size()
-    return @cache.size()
+    return @cache.size
   end
 end

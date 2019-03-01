@@ -1,17 +1,11 @@
 require '../antlr4/RuleContext'
 
 class ParserRuleContext < RuleContext
-
+  EMPTY = ParserRuleContext.new()
 
   attr_accessor :children
-
-
-#	public List<Integer> states
-
   attr_accessor :start
   attr_accessor :stop
-
-
   attr_accessor :exception
 
   def copyFrom(ctx)
@@ -33,7 +27,7 @@ class ParserRuleContext < RuleContext
     end
   end
 
-  def initialize(parent, invokingStateNumber)
+  def initialize(parent = nil, invokingStateNumber = nil)
     super(parent, invokingStateNumber)
   end
 

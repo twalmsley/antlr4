@@ -28,8 +28,8 @@ class LexerATNSimulator < ATNSimulator
 
   def initialize(recog, atn, decisionToDFA, sharedContextCache)
     super(atn, sharedContextCache)
-    @debug = true
-    @dfa_debug = true
+    @debug = false
+    @dfa_debug = false
 
     @decisionToDFA = decisionToDFA
     @recog = recog
@@ -237,7 +237,7 @@ class LexerATNSimulator < ATNSimulator
   def getReachableConfigSet(input, closure, reach, t)
 # this is used to skip processing for configs which have a lower priority
 # than a config that already reached an accept state for the same rule
-    skipAlt = ATN.INVALID_ALT_NUMBER
+    skipAlt = ATN::INVALID_ALT_NUMBER
     closure.configs.each do |c|
       currentAltReachedAcceptState = (c.alt == skipAlt)
       if (currentAltReachedAcceptState && c.passedThroughNonGreedyDecision)
@@ -332,7 +332,7 @@ class LexerATNSimulator < ATNSimulator
           configs.add(config)
           return true
         else
-          configs.add(LexerATNConfig.create_from_config2(config, config.state, PredictionContext.EMPTY))
+          configs.add(LexerATNConfig.create_from_config2(config, config.state, EmptyPredictionContext::EMPTY))
           currentAltReachedAcceptState = true
         end
       end

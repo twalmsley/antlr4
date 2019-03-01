@@ -1,26 +1,27 @@
+require 'singleton'
+require '../antlr4/FlexibleHashMap'
+require '../antlr4/BitSet'
+
 class PredictionMode
   SLL = 0
   LL = 1
   LL_EXACT_AMBIG_DETECTION = 2
 
 
-  class AltAndContextMap
+  class AltAndContextMap < FlexibleHashMap
+
     def initialize()
-      super(AltAndContextConfigEqualityComparator.INSTANCE)
+      super(AltAndContextConfigEqualityComparator.instance)
     end
   end
 
   class AltAndContextConfigEqualityComparator
-    INSTANCE = AltAndContextConfigEqualityComparator.new()
+    include Singleton
 
-    def initialize()
-    end
-
-
-    def hascode(o)
-      hashCode = MurmurHash.initialize(7)
-      hashCode = MurmurHash.update(hashCode, o.state.stateNumber)
-      hashCode = MurmurHash.update(hashCode, o.context)
+    def hashCode(o)
+      hashCode = 7
+      hashCode = MurmurHash.update_int(hashCode, o.state.stateNumber)
+      hashCode = MurmurHash.update_obj(hashCode, o.context)
       hashCode = MurmurHash.finish(hashCode, 2)
       return hashCode
     end
@@ -38,7 +39,7 @@ class PredictionMode
   end
 
 
-  def hasSLLConflictTerminatingPrediction(mode, configs)
+  def self.hasSLLConflictTerminatingPrediction(mode, configs)
 
 
     if (allConfigsInRuleStopStates(configs))
@@ -46,7 +47,7 @@ class PredictionMode
     end
 
 # pure SLL mode parsing
-    if (mode == PredictionMode.SLL)
+    if (mode == PredictionMode::SLL)
       # Don't bother with combining configs from different semantic
       # contexts if we can fail over to full LL costs more time
       # since we'll often fail over anyway.
@@ -54,7 +55,8 @@ class PredictionMode
         # dup configs, tossing out semantic predicates
         dup = ATNConfigSet.new()
         configs.each do |c|
-          c = ATNConfig.new(c, SemanticContext::NONE)
+          c = ATNConfig.new
+          c.ATNConfig_5(c, SemanticContext::NONE)
           dup.add(c)
         end
         configs = dup
@@ -81,8 +83,8 @@ class PredictionMode
   end
 
 
-  def allConfigsInRuleStopStates(configs)
-    configs.each do |config|
+  def self.allConfigsInRuleStopStates(configs)
+    configs.configs.each do |config|
       if (!(config.state.is_a? RuleStopState))
         return false
       end
@@ -97,12 +99,12 @@ class PredictionMode
   end
 
 
-  def allSubsetsConflict(altsets)
+  def self.allSubsetsConflict(altsets)
     return !hasNonConflictingAltSet(altsets)
   end
 
 
-  def hasNonConflictingAltSet(altsets)
+  def self.hasNonConflictingAltSet(altsets)
     altsets.each do |alts|
       if (alts.cardinality() == 1)
         return true
@@ -112,7 +114,7 @@ class PredictionMode
   end
 
 
-  def hasConflictingAltSet(altsets)
+  def self.hasConflictingAltSet(altsets)
     altsets.each do |alts|
       if (alts.cardinality() > 1)
         return true
@@ -168,7 +170,7 @@ class PredictionMode
 
   def self.getConflictingAltSubsets(configs)
     configToAlts = AltAndContextMap.new()
-    configs.each do |c|
+    configs.configs.each do |c|
       alts = configToAlts.get(c)
       if (alts == nil)
         alts = BitSet.new()
@@ -209,7 +211,7 @@ class PredictionMode
       minAlt = alts.nextSetBit(0)
       viableAlts.set(minAlt)
       if (viableAlts.cardinality() > 1) # more than 1 viable alt
-        return ATN.INVALID_ALT_NUMBER
+        return ATN::INVALID_ALT_NUMBER
       end
     end
     return viableAlts.nextSetBit(0)

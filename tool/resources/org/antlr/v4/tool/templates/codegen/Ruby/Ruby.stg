@@ -188,7 +188,9 @@ Parser_(parser, funcs, atn, sempredFuncs, ctor, superClass) ::= <<
 
 class <parser.name> \< <superClass; null="Parser">
 
-	@@_decisionToDFA = nil
+	class \<\< self
+		@@_decisionToDFA = []
+	end
 	@@_sharedContextCache = PredictionContextCache.new()
 	<if(parser.tokens)>
 		<parser.tokens:{k | <k>=<parser.tokens.(k)>}; separator="\n", wrap, anchor>
@@ -280,6 +282,12 @@ end
 parser_ctor(p) ::= <<
 def initialize( input)
 	super(input)
+	i = 0
+	while i \< @@_ATN.getNumberOfDecisions()
+		@@_decisionToDFA[i] = DFA.new(@@_ATN.getDecisionState(i), i)
+		i+=1
+	end
+
 	@_interp =  ParserATNSimulator.new(self,@@_ATN,@@_decisionToDFA,@@_sharedContextCache)
 end
 >>
@@ -387,7 +395,7 @@ end
 >>
 
 CodeBlockForOuterMostAlt(currentOuterMostAltCodeBlock, locals, preamble, ops) ::= <<
-<if(currentOuterMostAltCodeBlock.altLabel)>@_localctx =  <currentOuterMostAltCodeBlock.altLabel; format="cap">Context.new(_localctx)<endif>
+<if(currentOuterMostAltCodeBlock.altLabel)>@_localctx =  <currentOuterMostAltCodeBlock.altLabel; format="cap">Context.new(@_localctx)<endif>
 enterOuterAlt(@_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
 <CodeBlockForAlt(currentAltCodeBlock=currentOuterMostAltCodeBlock, ...)>
 >>
@@ -402,11 +410,11 @@ CodeBlockForAlt(currentAltCodeBlock, locals, preamble, ops) ::= <<
 LL1AltBlock(choice, preamble, alts, error) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self)
-<if(choice.label)><labelref(choice.label)> = _input.LT(1)<endif>
+<if(choice.label)><labelref(choice.label)> = @_input.LT(1)<endif>
 <preamble; separator="\n">
-case (_input.LA(1))
+case (@_input.LA(1))
 <if(choice.altLook && alts)>
-<choice.altLook, alts:{look, alt | when <look:{l | <parser.name><l>}; separator=", ">
+<choice.altLook, alts:{look, alt | when <look:{l | <parser.name>::<l>}; separator=", ">
 	<alt>}; separator="\n\n">
 <endif>
 else
@@ -417,7 +425,7 @@ end
 LL1OptionalBlock(choice, alts, error) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self)
-case (_input.LA(1))
+case (@_input.LA(1))
 <choice.altLook,alts:{look,alt| <cases(ttypes=look)>
 	<alt>
 	}; separator="\n">
@@ -465,9 +473,9 @@ end
 AltBlock(choice, preamble, alts, error) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self)
-<if(choice.label)><labelref(choice.label)> = _input.LT(1)<endif>
+<if(choice.label)><labelref(choice.label)> = @_input.LT(1)<endif>
 <preamble; separator="\n">
-case ( getInterpreter().adaptivePredict(_input,<choice.decision>,_ctx) )
+case ( getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx) )
 <alts:{alt |
 when <i>
 	<alt>
@@ -478,7 +486,7 @@ end
 OptionalBlock(choice, alts, error) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self)
-case ( getInterpreter().adaptivePredict(_input,<choice.decision>,_ctx) )
+case ( getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx) )
 <alts:{alt |
 when <i><if(!choice.ast.greedy)>+1<endif>
 	<alt>
@@ -489,7 +497,7 @@ end
 StarBlock(choice, alts, sync, iteration) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self);
-@_alt = getInterpreter().adaptivePredict(_input,<choice.decision>,_ctx)
+@_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
 while ( _alt!=<choice.exitAlt> && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER )
 	if ( _alt==1<if(!choice.ast.greedy)>+1<endif> )
 		<iteration>
@@ -497,7 +505,7 @@ while ( _alt!=<choice.exitAlt> && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT
 	end
 	setState(<choice.loopBackStateNumber>)
 	@_errHandler.sync(self)
-	@_alt = getInterpreter().adaptivePredict(_input,<choice.decision>,_ctx)
+	@_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
 end
 >>
 
@@ -516,7 +524,7 @@ when <i><if(!choice.ast.greedy)>+1<endif>
 	end
 	setState(<choice.loopBackStateNumber>) <! loopback/exit decision !>
 	@_errHandler.sync(self)
-	@_alt = getInterpreter().adaptivePredict(_input,<choice.decision>,_ctx)
+	@_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
     break if !( _alt!=<choice.exitAlt> && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER )
 end
 >>
@@ -573,13 +581,13 @@ MatchNotSet(m, expr, capture) ::= "<CommonSetStuff(m, expr, capture, true)>"
 
 CommonSetStuff(m, expr, capture, invert) ::= <<
 setState(<m.stateNumber>)
-<if(m.labels)><m.labels:{l | <labelref(l)> = }>_input.LT(1)<endif>
+<if(m.labels)><m.labels:{l | <labelref(l)> = }>@_input.LT(1)<endif>
 <capture>
 if ( <if(invert)><m.varName> \<= 0 || <else>!<endif>(<expr>) )
 	<if(m.labels)><m.labels:{l | <labelref(l)> = (Token)}><endif>_errHandler.recoverInline(self)
 
 else
-	if ( _input.LA(1)==Token.EOF )
+	if ( @_input.LA(1)==Token::EOF )
 	  @matchedEOF = true
 	end
 	@_errHandler.reportMatch(self)
@@ -624,9 +632,9 @@ LexerPushModeCommand(arg, grammar)  ::= "pushMode(<arg>)"
 
 ActionText(t) ::= "<t.text>"
 ActionTemplate(t) ::= "<t.st>"
-ArgRef(a) ::= "_localctx.<a.name>"
-LocalRef(a) ::= "_localctx.<a.name>"
-RetValueRef(a) ::= "_localctx.<a.name>"
+ArgRef(a) ::= "@_localctx.<a.name>"
+LocalRef(a) ::= "@_localctx.<a.name>"
+RetValueRef(a) ::= "@_localctx.<a.name>"
 QRetValueRef(a) ::= "<ctx(a)>.<a.dict>.<a.name>"
 /** How to translate $tokenLabel */
 TokenRef(t) ::= "<ctx(t)>.<t.name>"
@@ -647,13 +655,13 @@ TokenPropertyRef_int(t) ::= "(<ctx(t)>.<t.label>!=nil?Integer.valueOf(<ctx(t)>.<
 
 RulePropertyRef_start(r) ::= "(<ctx(r)>.<r.label>!=nil?(<ctx(r)>.<r.label>.start):nil)"
 RulePropertyRef_stop(r)	 ::= "(<ctx(r)>.<r.label>!=nil?(<ctx(r)>.<r.label>.stop):nil)"
-RulePropertyRef_text(r)	 ::= "(<ctx(r)>.<r.label>!=nil?_input.getText(<ctx(r)>.<r.label>.start,<ctx(r)>.<r.label>.stop):nil)"
+RulePropertyRef_text(r)	 ::= "(<ctx(r)>.<r.label>!=nil?@_input.getText(<ctx(r)>.<r.label>.start,<ctx(r)>.<r.label>.stop):nil)"
 RulePropertyRef_ctx(r)	 ::= "<ctx(r)>.<r.label>"
 RulePropertyRef_parser(r)	 ::= "self"
 
 ThisRulePropertyRef_start(r) ::= "@_localctx.start"
 ThisRulePropertyRef_stop(r)	 ::= "@_localctx.stop"
-ThisRulePropertyRef_text(r)	 ::= "@_input.getText(_localctx.start, _input.LT(-1))"
+ThisRulePropertyRef_text(r)	 ::= "@_input.getText(@_localctx.start, @_input.LT(-1))"
 ThisRulePropertyRef_ctx(r)	 ::= "@_localctx"
 ThisRulePropertyRef_parser(r)	 ::= "self"
 
@@ -712,8 +720,8 @@ ImplicitRuleLabel(ruleName)	  ::= "<ruleName>"
 ImplicitSetLabel(id)		  ::= "_tset<id>"
 ListLabelName(label)		  ::= "<label>"
 
-CaptureNextToken(d) ::= "<d.varName> = _input.LT(1)"
-CaptureNextTokenType(d) ::= "<d.varName> = _input.LA(1)"
+CaptureNextToken(d) ::= "<d.varName> = @_input.LT(1)"
+CaptureNextTokenType(d) ::= "<d.varName> = @_input.LA(1)"
 
 StructDecl(struct,ctorAttrs,attrs,getters,dispatchMethods,interfaces,extensionMembers)
 	::= <<
@@ -774,15 +782,15 @@ end
 AttributeDecl(d) ::= "<d.type> <d.name><if(d.initValue)> = <d.initValue><endif>"
 
 /** If we don't know location of label def x, use this template */
-labelref(x) ::= "<if(!x.isLocal)>((<x.ctx.name>)_localctx).<endif><x.name>"
+labelref(x) ::= "<if(!x.isLocal)>((<x.ctx.name>)@_localctx).<endif><x.name>"
 
 /** For any action chunk, what is correctly-typed context struct ptr? */
 ctx(actionChunk) ::= "((<actionChunk.ctx.name>)_localctx)"
 
 // used for left-recursive rules
-recRuleAltPredicate(ruleName,opPrec)  ::= "precpred(_ctx, <opPrec>)"
+recRuleAltPredicate(ruleName,opPrec)  ::= "precpred(@_ctx, <opPrec>)"
 recRuleSetReturnAction(src,name)	  ::= "$<name>=$<src>.<name>"
-recRuleSetStopToken()                 ::= "@_ctx.stop = _input.LT(-1)"
+recRuleSetStopToken()                 ::= "@_ctx.stop = @_input.LT(-1)"
 
 recRuleAltStartAction(ruleName, ctxName, label, isListLabel) ::= <<
 @_localctx =  <ctxName>Context.new(@_parentctx, @_parentState)

@@ -36,7 +36,7 @@ class SemanticContext
     end
 
 
-    def eql?(obj)
+    def equals(obj)
       if (!(obj.is_a? Predicate))
         return false
       end

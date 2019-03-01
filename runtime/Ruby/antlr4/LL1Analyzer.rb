@@ -1,4 +1,5 @@
 require '../antlr4/Token'
+require 'set'
 
 class LL1Analyzer
   @@HIT_PRED = Token::INVALID_TYPE
@@ -19,8 +20,8 @@ class LL1Analyzer
       look[alt] = new IntervalSet()
       lookBusy = Set.new
       seeThruPreds = false # fail to get lookahead upon pred
-      _LOOK(s.transition(alt).target, nil, PredictionContext.EMPTY,
-            look[alt], lookBusy, BitSet.new, seeThruPreds, false)
+      _LOOK(s.transition(alt).target, nil, EmptyPredictionContext::EMPTY,
+            look[alt], lookBusy, Set.new, seeThruPreds, false)
       # Wipe out lookahead for this alternative if we found nothing
       # or we had a predicate when we !seeThruPreds
       if (look[alt].size() == 0 || look[alt].include?(HIT_PRED))
@@ -36,7 +37,7 @@ class LL1Analyzer
     seeThruPreds = true # ignore preds get all lookahead
     lookContext = ctx != nil ? PredictionContext.fromRuleContext(s.atn, ctx) : nil
     _LOOK(s, stopState, lookContext,
-          r, Set.new, BitSet.new, seeThruPreds, true)
+          r, Set.new, Set.new, seeThruPreds, true)
     return r
   end
 
@@ -49,7 +50,8 @@ class LL1Analyzer
             seeThruPreds, addEOF)
 
 #		System.out.println("_LOOK("+s.stateNumber+", ctx="+ctx)
-    c = ATNConfig.new(s, 0, ctx)
+    c = ATNConfig.new
+    c.ATNConfig_1(s, 0, ctx)
     if (!lookBusy.add(c))
       return
     end
@@ -73,7 +75,7 @@ class LL1Analyzer
         return
       end
 
-      if (ctx != PredictionContext.EMPTY)
+      if (ctx != EmptyPredictionContext::EMPTY)
         # run thru all possible stack tops in ctx
         removed = calledRuleStack.get(s.ruleIndex)
         begin
@@ -98,7 +100,7 @@ class LL1Analyzer
     i = 0
     while i < n
       t = s.transition(i)
-      if (t.instance_of? RuleTransition.class)
+      if (t.is_a? RuleTransition.class)
         if calledRuleStack.get(t.target.ruleIndex)
           next
         end
@@ -120,7 +122,7 @@ class LL1Analyzer
         end
       elsif (t.isEpsilon())
         _LOOK(t.target, stopState, ctx, look, lookBusy, calledRuleStack, seeThruPreds, addEOF)
-      elsif (t.getClass() == WildcardTransition.class)
+      elsif (t.is_a? WildcardTransition)
         look.addAll(IntervalSet.of(Token::MIN_USER_TOKEN_TYPE, atn.maxTokenType))
       else
         set = t.label()

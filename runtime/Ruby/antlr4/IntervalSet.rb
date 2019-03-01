@@ -2,20 +2,12 @@ require '../antlr4/Lexer'
 require '../antlr4/Interval'
 
 class IntervalSet
-  @intervals = nil
+  attr_accessor :intervals
 
   def initialize(a = nil, b = nil)
     @readonly = false
-    if (a == nil)
-      @intervals = []
-    elsif a.is_a? Array
-      @intervals = a
-    else
-      @intervals = [a]
-      if (b != nil)
-        @intervals << b
-      end
-    end
+    @intervals = []
+    add(a,b) if a != nil
   end
 
   def self.of(a, b = nil)
@@ -40,7 +32,7 @@ class IntervalSet
     if (el1.is_a? Interval)
       addInterval(el1)
     elsif el2 == nil
-      add(el1, el1)
+      addInterval(Interval.of(el1, el1))
     else
       addInterval(Interval.of(el1, el2))
     end
@@ -118,7 +110,7 @@ class IntervalSet
       set.toList.each {|v| add(v)}
     end
 
-    return this
+    return self
   end
 
   def complement(minElement, maxElement)

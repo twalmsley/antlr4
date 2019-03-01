@@ -42,7 +42,7 @@ class Trees
         ruleIndex = t.getRuleContext().getRuleIndex()
         ruleName = ruleNames[ruleIndex]
         altNumber = t.getAltNumber()
-        if (altNumber != ATN.INVALID_ALT_NUMBER)
+        if (altNumber != ATN::INVALID_ALT_NUMBER)
           return ruleName + ":" + altNumber
         end
         return ruleName

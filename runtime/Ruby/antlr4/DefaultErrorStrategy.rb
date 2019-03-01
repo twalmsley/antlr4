@@ -4,20 +4,13 @@ require '../antlr4/InputMismatchException'
 
 class DefaultErrorStrategy < ANTLRErrorStrategy
 
-
-  @errorRecoveryMode = false
-
-
-  @lastErrorIndex = -1
-
-  @lastErrorStates = nil
-
-
-  @nextTokensContext = nil
-
-
-  @nextTokensState = nil
-
+  def initialize
+    @errorRecoveryMode = false
+    @lastErrorIndex = -1
+    @lastErrorStates = nil
+    @nextTokensContext = nil
+    @nextTokensState = nil
+  end
 
   def reset(recognizer)
     endErrorCondition(recognizer)
@@ -107,7 +100,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     if (nextTokens.contains(la))
       # We are sure the token matches
       @nextTokensContext = nil
-      @nextTokensState = ATNState::INVALID_STATE_NUMBER
+      @nextTokensState = ATNState.INVALID_STATE_NUMBER
       return
     end
 

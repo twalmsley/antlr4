@@ -66,7 +66,7 @@ class CommonToken
   end
 
   def getInputStream
-
+    @source.b
   end
 
   def getText()

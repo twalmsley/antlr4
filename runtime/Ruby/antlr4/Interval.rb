@@ -89,18 +89,18 @@ class Interval
   end
 
   def union(other)
-    return Interval.of(Math.min(a, other.a), Math.max(b, other.b))
+    return Interval.of([a, other.a].min, [b, other.b].max)
   end
 
   def intersection(other)
-    return Interval.of(Math.max(a, other.a), Math.min(b, other.b))
+    return Interval.of([a, other.a].max, [b, other.b].min)
   end
 
   def differenceNotProperlyContained(other)
     diff = null
     if (other.startsBeforeNonDisjoint(this))
 
-      diff = Interval.of(Math.max(@a, other.b + 1),
+      diff = Interval.of([@a, other.b + 1].max,
                          @b)
 
     elsif (other.startsAfterNonDisjoint(this))

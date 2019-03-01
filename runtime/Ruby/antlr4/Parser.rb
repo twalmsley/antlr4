@@ -8,16 +8,19 @@ require '../antlr4/ErrorNodeImpl'
 class Parser < Recognizer
 
   class TraceListener < ParseTreeListener
-
+    def initialize(parser, input)
+      @parser = parser
+      @_input = input
+    end
     def enterEveryRule(ctx)
-      puts("enter   " + getRuleNames()[ctx.getRuleIndex()] +
-               ", LT(1)=" + @_input.LT(1).getText())
+      puts("enter   "  <<  @parser.getRuleNames()[ctx.getRuleIndex()]  <<
+               ", LT(1)="  <<  @_input.LT(1).getText())
     end
 
 
-    def visitTerminal(node)
-      puts("consume " + node.getSymbol() + " rule " +
-               getRuleNames()[_ctx.getRuleIndex()])
+    def visitTerminal(node, ctx)
+      puts("consume "  <<  node.getSymbol().to_s  <<  " rule "  <<
+               @parser.getRuleNames()[ctx.getRuleIndex()].to_s)
     end
 
 
@@ -25,8 +28,8 @@ class Parser < Recognizer
     end
 
     def exitEveryRule(ctx)
-      puts("exit    " + getRuleNames()[ctx.getRuleIndex()] +
-               ", LT(1)=" + @_input.LT(1).getText())
+      puts("exit    "  <<  @parser.getRuleNames()[ctx.getRuleIndex()]  <<
+               ", LT(1)="  <<  @_input.LT(1).getText())
     end
   end
 
@@ -38,7 +41,7 @@ class Parser < Recognizer
     end
 
 
-    def visitTerminal(node)
+    def visitTerminal(node, ctx)
     end
 
 
@@ -93,11 +96,11 @@ class Parser < Recognizer
 
   def match(ttype)
     t = getCurrentToken()
-    if (t.getType() == ttype)
+    if (t.type == ttype)
       if (ttype == Token::EOF)
         @matchedEOF = true
       end
-      @_errHandler.reportMatch(this)
+      @_errHandler.reportMatch(self)
       consume()
     else
       t = @_errHandler.recoverInline(this)
@@ -176,7 +179,7 @@ class Parser < Recognizer
       @_parseListeners = []
     end
 
-    @_parseListeners.add(listener)
+    @_parseListeners << listener
   end
 
 
@@ -212,7 +215,7 @@ class Parser < Recognizer
       listener = @_parseListeners[i]
       @_ctx.exitRule(listener)
       listener.exitEveryRule(@_ctx)
-      i += 1
+      i -= 1
     end
   end
 
@@ -325,7 +328,7 @@ class Parser < Recognizer
     if (o.type != EOF)
       getInputStream().consume()
     end
-    hasListener = @_parseListeners != nil && !@_parseListeners.isEmpty()
+    hasListener = @_parseListeners != nil && !@_parseListeners.empty?
     if (@_buildParseTrees || hasListener)
       if (@_errHandler.inErrorRecoveryMode(self))
         node = @_ctx.addErrorNode(createErrorNode(@_ctx, o))
@@ -335,10 +338,10 @@ class Parser < Recognizer
           end
         end
       else
-        node = @_ctx.addChild(createTerminalNode(@_ctx, o))
+        node = @_ctx.addChild_terminalnode(createTerminalNode(@_ctx, o))
         if (@_parseListeners != nil)
           @_parseListeners.each do |listener|
-            listener.visitTerminal(node)
+            listener.visitTerminal(node, @_ctx)
           end
         end
       end
@@ -361,7 +364,7 @@ class Parser < Recognizer
     parent = @_ctx.parent
 # add current context to parent if we have a parent
     if (parent != nil)
-      parent.addChild(@_ctx)
+      parent.addChild_ruleinvocation(@_ctx)
     end
   end
 
@@ -603,7 +606,7 @@ class Parser < Recognizer
         if (seenOne)
           System.out.println()
         end
-        System.out.println("Decision " + dfa.decision + ":")
+        System.out.println("Decision "  <<  dfa.decision  <<  ":")
         System.out.print(dfa.to_s(getVocabulary()))
         seenOne = true
       end

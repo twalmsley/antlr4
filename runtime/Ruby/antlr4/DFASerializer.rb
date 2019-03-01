@@ -2,11 +2,14 @@ require '../antlr4/Integer'
 
 class DFASerializer
 
-  def initialize(dfa, vocabulary)
+  def initFromTokenNames(dfa, tokenNames)
+    initFromVocabulary(dfa, VocabularyImpl.fromTokenNames(tokenNames))
+  end
+
+  def initFromVocabulary(dfa, vocabulary)
     @dfa = dfa
     @vocabulary = vocabulary
   end
-
 
   def to_s()
     if (@dfa.s0 == nil)

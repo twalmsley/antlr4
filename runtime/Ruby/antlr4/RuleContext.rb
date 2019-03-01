@@ -4,16 +4,12 @@ require '../antlr4/ATN'
 require '../antlr4/Trees'
 
 class RuleContext < RuleNode
-  #EMPTY = ParserRuleContext.new()
-
 
   attr_accessor :parent
-
-
   attr_accessor :invokingState
-  @invokingState = -1
 
-  def initialize(parent, invokingState)
+  def initialize(parent = nil, invokingState = nil)
+    @invokingState = -1
     @parent = parent
     @invokingState = invokingState
   end
@@ -77,7 +73,7 @@ class RuleContext < RuleNode
 
 
   def getAltNumber()
-    return ATN.INVALID_ALT_NUMBER
+    return ATN::INVALID_ALT_NUMBER
   end
 
 
@@ -125,7 +121,7 @@ class RuleContext < RuleNode
   end
 
   def to_s_recog(recog)
-    return to_s_recog_ctx(recog, ParserRuleContext.EMPTY)
+    return to_s_recog_ctx(recog, ParserRuleContext::EMPTY)
   end
 
   def to_s_list(ruleNames)
@@ -141,7 +137,7 @@ class RuleContext < RuleNode
 
   def to_s_list_ctx(ruleNames, stop)
     buf = ""
-     p = this
+     p = self
     buf << "["
     while (p != nil && p != stop)
       if (ruleNames == nil)
@@ -150,7 +146,7 @@ class RuleContext < RuleNode
         end
       else
         ruleIndex = p.getRuleIndex()
-        ruleName = ruleIndex >= 0 && ruleIndex < ruleNames.size() ? ruleNames.get(ruleIndex) : ruleIndex
+        ruleName = ruleIndex >= 0 && ruleIndex < ruleNames.size() ? ruleNames[ruleIndex] : ruleIndex
         buf << ruleName
       end
 

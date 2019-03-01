@@ -7,13 +7,16 @@ class ATNConfigSet
   attr_accessor :hasSemanticContext
   attr_accessor :readonly
   attr_accessor :configs
+  attr_accessor :uniqueAlt
 
-  def initialize
+  def initialize(fullCtx = true)
+    @fullCtx = fullCtx
     @hasSemanticContext = false
     @readonly = false
     @configLookup = ConfigHashSet.new
     @configs = []
     @dipsIntoOuterContext = false
+    @uniqueAlt = ATN::INVALID_ALT_NUMBER
   end
 
   def add(config, mergeCache = nil)
@@ -54,7 +57,7 @@ class ATNConfigSet
   def findFirstRuleStopState
     result = nil
     iter = @configLookup.iterator
-    while(iter.hasNext)
+    while (iter.hasNext)
       x = iter.next
       if (x.state.is_a? RuleStopState)
         result = x
@@ -79,7 +82,7 @@ class ATNConfigSet
     if (@hasSemanticContext)
       buf << ",hasSemanticContext=" << @hasSemanticContext
     end
-    if (@uniqueAlt != ATN.INVALID_ALT_NUMBER)
+    if (@uniqueAlt != ATN::INVALID_ALT_NUMBER)
       buf << ",uniqueAlt=" << @uniqueAlt
     end
     if (@conflictingAlts != nil)
@@ -100,6 +103,19 @@ class ATNConfigSet
   class ConfigHashSet < AbstractConfigHashSet
     def initialize()
       super(ConfigEqualityComparator.instance)
+    end
+  end
+
+  def optimizeConfigs(interpreter)
+    if (@readonly)
+      raise IllegalStateException, "This set is readonly"
+    end
+    if (@configLookup.isEmpty)
+      return
+    end
+
+    @configs.each do |config|
+      config.context = interpreter.getCachedContext(config.context);
     end
   end
 

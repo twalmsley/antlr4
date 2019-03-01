@@ -23,6 +23,10 @@ class Recognizer
     return nil
   end
 
+  def getRuleNames()
+
+  end
+
   def getTokenTypeMap()
     vocabulary = getVocabulary()
     result = @tokenTypeMapCache[vocabulary]

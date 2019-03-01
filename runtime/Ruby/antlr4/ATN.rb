@@ -4,11 +4,7 @@ class IllegalArgumentException < RuntimeError
 end
 
 class ATN
-
-  class << self
-    attr_accessor :INVALID_ALT_NUMBER
-    @@INVALID_ALT_NUMBER = 0
-  end
+  INVALID_ALT_NUMBER = 0
 
   attr_accessor :states
   attr_accessor :grammarType
@@ -19,6 +15,7 @@ class ATN
   attr_accessor :modeToStartState
   attr_accessor :decisionToState
   attr_accessor :lexerActions
+  attr_accessor :maxTokenType
 
   def initialize(grammarType, maxTokenType)
     @states = []
@@ -34,7 +31,7 @@ class ATN
   end
 
   def nextTokens_ctx(s, ctx)
-    LL1Analyzer.new(self).LOOK(s, ctx)
+    LL1Analyzer.new(self).LOOK(s, nil, ctx)
   end
 
   def nextTokens(s)

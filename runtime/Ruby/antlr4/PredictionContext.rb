@@ -1,5 +1,6 @@
 require '../antlr4/Integer'
 require '../antlr4/RuleContext'
+require '../antlr4/ArrayPredictionContext'
 
 class PredictionContext
   INITIAL_HASH = 1
@@ -22,20 +23,20 @@ class PredictionContext
   def self.fromRuleContext(atn, outerContext)
     if (outerContext == nil)
       outerContext = RuleContext.EMPTY
-
-      # if we are in RuleContext of start rule, s, then PredictionContext
-      # is EMPTY. Nobody called us. (if we are empty, return empty)
-      if (outerContext.parent == nil || outerContext == RuleContext.EMPTY)
-        return PredictionContext.EMPTY
-      end
-
-      # If we have a parent, convert it to a PredictionContext graph
-      parent = PredictionContext.fromRuleContext(atn, outerContext.parent)
-
-      state = atn.states.get(outerContext.invokingState)
-      transition = state.transition(0)
-      return SingletonPredictionContext.create(parent, transition.followState.stateNumber)
     end
+
+    # if we are in RuleContext of start rule, s, then PredictionContext
+    # is EMPTY. Nobody called us. (if we are empty, return empty)
+    if (outerContext.parent == nil || outerContext == RuleContext.EMPTY)
+      return EmptyPredictionContext::EMPTY
+    end
+
+    # If we have a parent, convert it to a PredictionContext graph
+    parent = PredictionContext.fromRuleContext(atn, outerContext.parent)
+
+    state = atn.states.get(outerContext.invokingState)
+    transition = state.transition(0)
+    return SingletonPredictionContext.create(parent, transition.followState.stateNumber)
   end
 
   def size()
@@ -73,7 +74,7 @@ class PredictionContext
       return a
     end
 
-    if (a.is_a? SingletonPredictionContext && b.is_a?(SingletonPredictionContext))
+    if (a.class.name == "SingletonPredictionContext" && b.class.name == "SingletonPredictionContext")
       return mergeSingletons(a, b, rootIsWildcard, mergeCache)
     end
 
@@ -162,7 +163,7 @@ class PredictionContext
       # into array can't merge.
       # ax + by = [ax,by]
       payloads = [a.returnState, b.returnState]
-      parents = a.parent, b.parentend
+      parents = [a.parent, b.parent]
       if (a.returnState > b.returnState) # sort by payload
         payloads[0] = b.returnState
         payloads[1] = a.returnState
@@ -180,10 +181,10 @@ class PredictionContext
   def self.mergeRoot(a, b, rootIsWildcard)
 
     if (rootIsWildcard)
-      if (a == EMPTY)
+      if (a.returnState == EMPTY_RETURN_STATE)
         return EMPTY # * + b = *
       end
-      if (b == EMPTY)
+      if (b.returnState == EMPTY_RETURN_STATE)
         return EMPTY # a + * = *
       end
     else
@@ -419,7 +420,7 @@ class PredictionContext
       return existing
     end
 
-    existing = contextCache[context]
+    existing = contextCache.get(context)
     if (existing != nil)
       visited[context] = existing
       return existing

@@ -20,6 +20,10 @@ class ATNState
 
   @@INVALID_STATE_NUMBER = -1
 
+  class << self
+    attr_accessor :INVALID_STATE_NUMBER
+  end
+
   attr_accessor :nextTokenWithinRule
   attr_accessor :atn
   attr_accessor :stateNumber
@@ -31,7 +35,7 @@ class ATNState
     @ruleIndex = 0
     @epsilonOnlyTransitions = false
     @transitions = []
-    @nextTokenWithinRule = IntervalSet.new
+    @nextTokenWithinRule = nil
   end
 
   def hash
