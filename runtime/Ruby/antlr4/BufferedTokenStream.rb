@@ -398,7 +398,7 @@ class BufferedTokenStream < TokenStream
 
   def getText_4(start, stop)
     if (start != nil && stop != nil)
-      return getText_2(Interval.of(start.getTokenIndex(), stop.getTokenIndex()))
+      return getText_2(Interval.of(start.index, stop.index))
     end
 
     return ""

@@ -1,3 +1,4 @@
+require '../antlr4/PredictionContextUtils'
 require '../antlr4/PredictionContext'
 require '../antlr4/MurmurHash'
 
@@ -7,7 +8,7 @@ class SingletonPredictionContext < PredictionContext
   attr_accessor :returnState
 
   def initialize(parent, returnState)
-    super(parent != nil ? SingletonPredictionContext.calculateHashCode_1(parent, returnState) : SingletonPredictionContext.calculateEmptyHashCode())
+    super(parent != nil ? PredictionContextUtils.calculateHashCode_1(parent, returnState) : PredictionContextUtils.calculateEmptyHashCode())
     @parent = parent
     @returnState = returnState
   end

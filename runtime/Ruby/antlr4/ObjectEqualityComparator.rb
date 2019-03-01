@@ -3,7 +3,7 @@ require 'singleton'
 class ObjectEqualityComparator
   include Singleton
 
-  def hashCode(obj)
+  def hash(obj)
     if (obj == nil)
       return 0
     end

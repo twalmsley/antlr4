@@ -18,7 +18,7 @@ class PredictionMode
   class AltAndContextConfigEqualityComparator
     include Singleton
 
-    def hashCode(o)
+    def hash(o)
       hashCode = 7
       hashCode = MurmurHash.update_int(hashCode, o.state.stateNumber)
       hashCode = MurmurHash.update_obj(hashCode, o.context)

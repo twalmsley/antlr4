@@ -11,7 +11,7 @@ class ArrayPredictionContext < PredictionContext
       parents = [parents.parent]
     end
 
-    super(calculateHashCode(parents, returnStates))
+    super(PredictionContextUtils.calculateHashCode_2(parents, returnStates))
     @parents = parents
     @returnStates = returnStates
 
@@ -45,7 +45,7 @@ class ArrayPredictionContext < PredictionContext
       return false
     end
 
-    if (self.hashCode() != o.hashCode())
+    if (self.hash() != o.hash())
       return false # can't be same if hash is different
     end
 
@@ -67,6 +67,7 @@ class ArrayPredictionContext < PredictionContext
       end
       if (returnStates[i] == EMPTY_RETURN_STATE)
         buf << "$"
+        i+=1
         next
       end
       buf << @returnStates[i]
@@ -76,6 +77,7 @@ class ArrayPredictionContext < PredictionContext
       else
         buf << "nil"
       end
+      i+=1
     end
 
     buf << "]"

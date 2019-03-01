@@ -143,16 +143,16 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
     tokens = recognizer.getInputStream()
     if (tokens != nil)
-      if (e.getStartToken().getType() == Token::EOF)
+      if (e.startToken.type == Token::EOF)
         input = "<EOF>"
       else
-        input = tokens.getText(e.getStartToken(), e.getOffendingToken())
+        input = tokens.getText_4(e.startToken(), e.offendingToken)
       end
     else
       input = "<unknown input>"
     end
     msg = "no viable alternative at input " + escapeWSAndQuote(input)
-    recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e)
+    recognizer.notifyErrorListeners(e.offendingToken, msg, e)
   end
 
 
@@ -237,12 +237,12 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 # if current token is consistent with what could come after current
 # ATN state, then we know we're missing a token error recovery
 # is free to conjure up and insert the missing token
-    currentState = recognizer.getInterpreter().atn.states.get(recognizer.getState())
+    currentState = recognizer.getInterpreter().atn.states[recognizer.getState()]
     nextt = currentState.transition(0).target
     atn = recognizer.getInterpreter().atn
-    expectingAtLL2 = atn.nextTokens(nextt, recognizer._ctx)
+    expectingAtLL2 = atn.nextTokens_ctx(nextt, recognizer._ctx)
 #		System.out.println("LT(2) set="+expectingAtLL2.to_s(recognizer.getTokenNames()))
-    if (expectingAtLL2.include?(currentSymbolType))
+    if (expectingAtLL2.contains(currentSymbolType))
       reportMissingToken(recognizer)
       return true
     end
@@ -281,14 +281,14 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     end
     current = currentSymbol
     lookback = recognizer.getInputStream().LT(-1)
-    if (current.getType() == Token::EOF && lookback != nil)
+    if (current.type == Token::EOF && lookback != nil)
       current = lookback
     end
 
     pair = OpenStruct.new
-    pair.a = current.getTokenSource()
-    pair.b = current.getTokenSource().getInputStream()
-    return recognizer.getTokenFactory().create(pair, expectedTokenType, tokenText, Token::DEFAULT_CHANNEL, -1, -1, current.getLine(), current.getCharPositionInLine())
+    pair.a = current.source
+    pair.b = current.source.getInputStream()
+    return recognizer.getTokenFactory().create(pair, expectedTokenType, tokenText, Token::DEFAULT_CHANNEL, -1, -1, current.line, current.charPositionInLine)
   end
 
 
@@ -337,7 +337,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     recoverSet = IntervalSet.new()
     while (ctx != nil && ctx.invokingState >= 0)
       # compute what follows who invoked us
-      invokingState = atn.states.get(ctx.invokingState)
+      invokingState = atn.states[ctx.invokingState]
       rt = invokingState.transition(0)
       follow = atn.nextTokens(rt.followState)
       recoverSet.addAll(follow)

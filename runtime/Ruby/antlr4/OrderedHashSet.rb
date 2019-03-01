@@ -66,7 +66,7 @@ class OrderedHashSet<T> extends LinkedHashSet<T>
 
 	
 	public int hashCode() 
-		return elements.hashCode()
+		return elements.hash()
 	end
 
 	

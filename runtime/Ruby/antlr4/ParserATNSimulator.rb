@@ -1,5 +1,7 @@
 require '../antlr4/ATNSimulator'
 require '../antlr4/PredictionMode'
+require '../antlr4/PredictionContextUtils'
+require '../antlr4/RuleStopState'
 
 
 class ParserATNSimulator < ATNSimulator
@@ -90,7 +92,7 @@ class ParserATNSimulator < ATNSimulator
         if (@debug || @debug_list_atn_decisions)
           puts("predictATN decision " << dfa.decision.to_s <<
                    " exec LA(1)==" << getLookaheadName(input) <<
-                   ", outerContext="  <<  outerContext.to_s_recog(@parser))
+                   ", outerContext=" << outerContext.to_s_recog(@parser))
         end
 
         fullCtx = false
@@ -112,7 +114,7 @@ class ParserATNSimulator < ATNSimulator
 
       alt = execATN(dfa, s0, input, index, outerContext)
       if (@debug)
-        puts("DFA after predictATN: "  <<  dfa.toString(@parser.getVocabulary()))
+        puts("DFA after predictATN: " << dfa.toString(@parser.getVocabulary()))
       end
       return alt
     ensure
@@ -134,7 +136,7 @@ class ParserATNSimulator < ATNSimulator
     previousD = s0
 
     if (@debug)
-      puts("s0 = "  <<  s0.to_s)
+      puts("s0 = " << s0.to_s)
     end
 
     t = input.LA(1)
@@ -160,7 +162,14 @@ class ParserATNSimulator < ATNSimulator
         if (alt != ATN::INVALID_ALT_NUMBER)
           return alt
         end
-        raise NoViableAltException, input, outerContext, previousD.configs, startIndex
+        exc = NoViableAltException.new
+        exc.recognizer = @parser
+        exc.input = input
+        exc.context = outerContext
+        exc.startToken = input.get(startIndex)
+        exc.offendingToken = input.LT(1)
+        exc.deadEndConfigs = previousD.configs
+        raise exc
       end
 
       if (d.requiresFullContext && @mode != PredictionMode::SLL)
@@ -191,7 +200,7 @@ class ParserATNSimulator < ATNSimulator
         end
 
         if (@dfa_debug)
-          puts("ctx sensitive state "  <<  outerContext  <<  " in "  <<  d)
+          puts("ctx sensitive state " << outerContext << " in " << d)
         end
         fullCtx = true
         s0_closure =
@@ -266,10 +275,10 @@ class ParserATNSimulator < ATNSimulator
         altSubSetsStr << x.to_s
       end
       altSubSetsStr << "]"
-      puts("SLL altSubSets="  <<  altSubSetsStr  <<
-               ", configs="  <<  reach.to_s  <<
-               ", predict="  <<  predictedAlt.to_s  <<  ", allSubsetsConflict="  <<
-               PredictionMode.allSubsetsConflict(altSubSets).to_s  <<  ", conflictingAlts="  <<
+      puts("SLL altSubSets=" << altSubSetsStr <<
+               ", configs=" << reach.to_s <<
+               ", predict=" << predictedAlt.to_s << ", allSubsetsConflict=" <<
+               PredictionMode.allSubsetsConflict(altSubSets).to_s << ", conflictingAlts=" <<
                getConflictingAlts(reach).to_s)
     end
 
@@ -322,7 +331,7 @@ class ParserATNSimulator < ATNSimulator
   def execATNWithFullContext(dfa, d, s0, input, startIndex, outerContext)
 
     if (@debug || @debug_list_atn_decisions)
-      puts("execATNWithFullContext "  <<  s0)
+      puts("execATNWithFullContext " << s0)
     end
     fullCtx = true
     foundExactAmbig = false
@@ -355,9 +364,9 @@ class ParserATNSimulator < ATNSimulator
 
       altSubSets = PredictionMode.getConflictingAltSubsets(reach)
       if (@debug)
-        puts("LL altSubSets="  <<  altSubSets  <<
-                 ", predict="  <<  PredictionMode.getUniqueAlt(altSubSets)  <<
-                 ", resolvesToJustOneViableAlt="  <<
+        puts("LL altSubSets=" << altSubSets <<
+                 ", predict=" << PredictionMode.getUniqueAlt(altSubSets) <<
+                 ", resolvesToJustOneViableAlt=" <<
                  PredictionMode.resolvesToJustOneViableAlt(altSubSets))
       end
 
@@ -413,7 +422,7 @@ class ParserATNSimulator < ATNSimulator
   def computeReachSet(closure, t, fullCtx)
 
     if (@debug)
-      puts("in computeReachSet, starting closure: "  <<  closure.to_s)
+      puts("in computeReachSet, starting closure: " << closure.to_s)
     end
 
     if (@mergeCache == nil)
@@ -534,7 +543,7 @@ class ParserATNSimulator < ATNSimulator
   def computeStartState(p, ctx, fullCtx)
 
     # always at least the implicit call to start rule
-    initialContext = PredictionContext.fromRuleContext(@atn, ctx)
+    initialContext = PredictionContextUtils.fromRuleContext(@atn, ctx)
     configs = ATNConfigSet.new(fullCtx)
 
     i = 0
@@ -630,7 +639,7 @@ class ParserATNSimulator < ATNSimulator
       altToPred = nil
     end
     if (@debug)
-      puts("getPredsForAmbigAlts result "  <<  altToPred.to_s)
+      puts("getPredsForAmbigAlts result " << altToPred.to_s)
     end
     altToPred
   end
@@ -682,8 +691,8 @@ class ParserATNSimulator < ATNSimulator
 
   def getAltThatFinishedDecisionEntryRule(configs)
     alts = IntervalSet.new
-    configs.each do |c|
-      if (c.getOuterContextDepth() > 0 || (c.state.is_a? RuleStopState && c.context.hasEmptyPath()))
+    configs.configs.each do |c|
+      if (c.getOuterContextDepth() > 0 || (c.state.class.name == "RuleStopState" && c.context.hasEmptyPath()))
         alts.add(c.alt)
       end
     end
@@ -698,7 +707,7 @@ class ParserATNSimulator < ATNSimulator
 
     succeeded = ATNConfigSet.new(configs.fullCtx)
     failed = ATNConfigSet.new(configs.fullCtx)
-    configs.each do |c|
+    configs.configs.each do |c|
       if (c.semanticContext != SemanticContext::NONE)
         predicateEvaluationResult = evalSemanticContext(c.semanticContext, outerContext, c.alt, configs.fullCtx)
         if (predicateEvaluationResult)
@@ -733,12 +742,12 @@ class ParserATNSimulator < ATNSimulator
       fullCtx = false # in dfa
       predicateEvaluationResult = evalSemanticContext(pair.pred, outerContext, pair.alt, fullCtx)
       if (@debug || @dfa_debug)
-        puts("eval pred "  <<  pair  <<  "="  <<  predicateEvaluationResult)
+        puts("eval pred " << pair << "=" << predicateEvaluationResult)
       end
 
       if (predicateEvaluationResult)
         if (@debug || @dfa_debug)
-          puts("PREDICT "  <<  pair.alt)
+          puts("PREDICT " << pair.alt)
         end
         predictions.set(pair.alt)
         if (!complete)
@@ -776,7 +785,7 @@ class ParserATNSimulator < ATNSimulator
       if (!config.context.isEmpty())
         i = 0
         while i < config.context.size()
-          if (config.context.getReturnState(i) == PredictionContext.EMPTY_RETURN_STATE)
+          if (config.context.getReturnState(i) == PredictionContext::EMPTY_RETURN_STATE)
             if (fullCtx)
               atncfg = ATNConfig.new
               atncfg.ATNConfig_6(config, config.state, EmptyPredictionContext::EMPTY)
@@ -786,7 +795,7 @@ class ParserATNSimulator < ATNSimulator
             else
               # we have no context info, just chase follow links (if greedy)
               if (@debug)
-                puts("FALLING off rule "  <<
+                puts("FALLING off rule " <<
                          getRuleName(config.state.ruleIndex))
               end
               closure_(config, configs, closureBusy, collectPredicates,
@@ -795,7 +804,7 @@ class ParserATNSimulator < ATNSimulator
             i += 1
             next
           end
-          returnState = atn.states.get(config.context.getReturnState(i))
+          returnState = atn.states[config.context.getReturnState(i)]
           newContext = config.context.getParent(i) # "pop" return state
           c = ATNConfig.new
           c.ATNConfig_2(returnState, config.alt, newContext,
@@ -815,12 +824,12 @@ class ParserATNSimulator < ATNSimulator
         return
       elsif (fullCtx)
         # reached end of start rule
-        configs.add(config, mergeCache)
+        configs.add(config, @mergeCache)
         return
       else
         # else if we have no context info, just chase follow links (if greedy)
         if (@debug)
-          puts("FALLING off rule "  <<
+          puts("FALLING off rule " <<
                    getRuleName(config.state.ruleIndex))
         end
       end
@@ -871,19 +880,29 @@ class ParserATNSimulator < ATNSimulator
 
           c.reachesIntoOuterContext += 1
 
-          if (!closureBusy.add(c))
+          added = false
+          if (!closureBusy.include? c)
+            closureBusy.add(c)
+            added = true
+          end
+          if (added)
             # avoid infinite recursion for right-recursive rules
-            i  += 1
+            i += 1
             next
           end
 
           configs.dipsIntoOuterContext = true # TODO: can remove? only care when we add to set per middle of this method
           newDepth -= 1
           if (@debug)
-            puts("dips into outer ctx: " + c)
+            puts("dips into outer ctx: " << c.to_s)
           end
         else
-          if (!t.isEpsilon() && !closureBusy.add(c))
+          added = false
+          if (!closureBusy.include? c)
+            closureBusy.add(c)
+            added = true
+          end
+          if (!t.isEpsilon() && added)
             # avoid infinite recursion for EOF* and EOF+
             i += 1
             next
@@ -992,7 +1011,7 @@ class ParserATNSimulator < ATNSimulator
     if (@parser != nil && index >= 0)
       return @parser.getRuleNames()[index]
     end
-    "<rule "  <<  index  <<  ">"
+    "<rule " << index << ">"
   end
 
 
@@ -1040,7 +1059,7 @@ class ParserATNSimulator < ATNSimulator
 
   def actionTransition(config, t)
     if (@debug)
-      puts("ACTION edge "  <<  t.ruleIndex  <<  ":"  <<  t.actionIndex)
+      puts("ACTION edge " << t.ruleIndex << ":" << t.actionIndex)
     end
     c = ATNConfig.new
     c.ATNConfig_3(config, t.target)
@@ -1051,11 +1070,11 @@ class ParserATNSimulator < ATNSimulator
   def precedenceTransition(config, pt, collectPredicates, inContext, fullCtx)
 
     if (@debug)
-      puts("PRED (collectPredicates="  <<  collectPredicates  <<  ") "  <<
-               pt.precedence  <<  ">=_p"  <<
+      puts("PRED (collectPredicates=" << collectPredicates << ") " <<
+               pt.precedence << ">=_p" <<
                ", ctx dependent=true")
       if (@parser != nil)
-        puts("context surrounding pred is "  <<
+        puts("context surrounding pred is " <<
                  @parser.getRuleInvocationStack())
       end
     end
@@ -1086,7 +1105,7 @@ class ParserATNSimulator < ATNSimulator
     end
 
     if (@debug)
-      puts("config from pred transition="  <<  c)
+      puts("config from pred transition=" << c)
     end
     c
   end
@@ -1095,11 +1114,11 @@ class ParserATNSimulator < ATNSimulator
   def predTransition(config, pt, collectPredicates, inContext, fullCtx)
 
     if (@debug)
-      puts("PRED (collectPredicates="  <<  collectPredicates  <<  ") "  <<
-               pt.ruleIndex  <<  ":"  <<  pt.predIndex  <<
-               ", ctx dependent="  <<  pt.isCtxDependent)
+      puts("PRED (collectPredicates=" << collectPredicates << ") " <<
+               pt.ruleIndex << ":" << pt.predIndex <<
+               ", ctx dependent=" << pt.isCtxDependent)
       if (@parser != nil)
-        puts("context surrounding pred is "  <<
+        puts("context surrounding pred is " <<
                  @parser.getRuleInvocationStack())
       end
     end
@@ -1132,7 +1151,7 @@ class ParserATNSimulator < ATNSimulator
     end
 
     if (debug)
-      puts("config from pred transition="  <<  c)
+      puts("config from pred transition=" << c)
     end
     c
   end
@@ -1181,7 +1200,7 @@ class ParserATNSimulator < ATNSimulator
       return displayName
     end
 
-    displayName  <<  "<"  <<  t  <<  ">"
+    displayName << "<" << t << ">"
   end
 
   def getLookaheadName(input)
@@ -1197,14 +1216,14 @@ class ParserATNSimulator < ATNSimulator
         t = c.state.transition(0)
         if (t.is_a? AtomTransition)
           at = t
-          trans = "Atom "  <<  getTokenName(at.label)
+          trans = "Atom " << getTokenName(at.label)
         elsif (t.is_a? SetTransition)
           st = t
           nott = st.is_a? NotSetTransition
-          trans = (nott ? "~" : "")  <<  "Set "  <<  st.set.to_s()
+          trans = (nott ? "~" : "") << "Set " << st.set.to_s()
         end
       end
-      STDERR.puts(c.to_s(@parser, true)  <<  ":"  <<  trans)
+      STDERR.puts(c.to_s(@parser, true) << ":" << trans)
     end
   end
 
@@ -1224,7 +1243,7 @@ class ParserATNSimulator < ATNSimulator
   def addDFAEdge(dfa, from, t, to)
 
     if (@debug)
-      puts("EDGE "  <<  from.to_s  <<  " -> "  <<  to.to_s  <<  " upon "  <<  getTokenName(t))
+      puts("EDGE " << from.to_s << " -> " << to.to_s << " upon " << getTokenName(t))
     end
 
     if (to == nil)
@@ -1243,7 +1262,7 @@ class ParserATNSimulator < ATNSimulator
     from.edges[t + 1] = to # connect
 
     if (@debug)
-      puts("DFA=\n"  <<  dfa.toString(@parser != nil ? @parser.getVocabulary() : VocabularyImpl.EMPTY_VOCABULARY))
+      puts("DFA=\n" << dfa.toString(@parser != nil ? @parser.getVocabulary() : VocabularyImpl.EMPTY_VOCABULARY))
     end
 
     to
@@ -1275,8 +1294,8 @@ class ParserATNSimulator < ATNSimulator
   def reportAttemptingFullContext(dfa, conflictingAlts, configs, startIndex, stopIndex)
     if (@debug || @retry_debug)
       interval = Interval.of(startIndex, stopIndex)
-      puts("reportAttemptingFullContext decision="  <<  dfa.decision  <<  ":"  <<  configs  <<
-               ", input="  <<  @parser.getTokenStream().getText(interval))
+      puts("reportAttemptingFullContext decision=" << dfa.decision << ":" << configs <<
+               ", input=" << @parser.getTokenStream().getText(interval))
     end
     if (@parser != nil)
       @parser.getErrorListenerDispatch().reportAttemptingFullContext(@parser, dfa, startIndex, stopIndex, conflictingAlts, configs)
@@ -1286,8 +1305,8 @@ class ParserATNSimulator < ATNSimulator
   def reportContextSensitivity(dfa, prediction, configs, startIndex, stopIndex)
     if (@debug || @retry_debug)
       interval = Interval.of(startIndex, stopIndex)
-      puts("reportContextSensitivity decision="  <<  dfa.decision  <<  ":"  <<  configs  <<
-               ", input="  <<  @parser.getTokenStream().getText(interval))
+      puts("reportContextSensitivity decision=" << dfa.decision << ":" << configs <<
+               ", input=" << @parser.getTokenStream().getText(interval))
     end
     if (@parser != nil)
       @parser.getErrorListenerDispatch().reportContextSensitivity(@parser, dfa, startIndex, stopIndex, prediction, configs)
@@ -1300,9 +1319,9 @@ class ParserATNSimulator < ATNSimulator
 
     if (@debug || @retry_debug)
       interval = Interval.of(startIndex, stopIndex)
-      puts("reportAmbiguity "  <<
-               ambigAlts  <<  ":"  <<  configs  <<
-               ", input="  <<  @parser.getTokenStream().getText(interval))
+      puts("reportAmbiguity " <<
+               ambigAlts << ":" << configs <<
+               ", input=" << @parser.getTokenStream().getText(interval))
     end
     if (@parser != nil)
       @parser.getErrorListenerDispatch().reportAmbiguity(@parser, dfa, startIndex, stopIndex,

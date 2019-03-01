@@ -8,6 +8,8 @@ class ATNConfigSet
   attr_accessor :readonly
   attr_accessor :configs
   attr_accessor :uniqueAlt
+  attr_accessor :dipsIntoOuterContext
+  attr_accessor :fullCtx
 
   def initialize(fullCtx = true)
     @fullCtx = fullCtx
@@ -42,7 +44,7 @@ class ATNConfigSet
 
     rootIsWildcard = !@fullCtx
 
-    merged = PredictionContext.merge(existing.context, config.context, rootIsWildcard, mergeCache)
+    merged = PredictionContextUtils.merge(existing.context, config.context, rootIsWildcard, mergeCache)
 
     existing.reachesIntoOuterContext = [existing.reachesIntoOuterContext, config.reachesIntoOuterContext].max
 
@@ -122,7 +124,7 @@ class ATNConfigSet
   class ConfigEqualityComparator
     include Singleton
 
-    def hashCode(o)
+    def hash(o)
       hashCode = 7
       hashCode = 31 * hashCode + o.state.stateNumber
       hashCode = 31 * hashCode + o.alt
@@ -142,4 +144,7 @@ class ATNConfigSet
     end
   end
 
+  def size
+    @configs.length
+  end
 end

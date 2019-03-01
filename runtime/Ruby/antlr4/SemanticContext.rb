@@ -155,7 +155,7 @@ class SemanticContext
 
 
     def hash()
-      return MurmurHash.hashCode(@opnds, AND.hash)
+      return MurmurHash.hash(@opnds, AND.hash)
     end
 
 
@@ -249,7 +249,7 @@ class SemanticContext
 
 
     def hash()
-      return MurmurHash.hashCode(@opnds, OR.hash())
+      return MurmurHash.hash(@opnds, OR.hash())
     end
 
 

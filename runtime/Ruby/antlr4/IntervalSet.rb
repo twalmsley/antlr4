@@ -61,7 +61,7 @@ class IntervalSet
         bigger = addition.union(r)
         @intervals[i] = bigger
 
-        while i < @intervals.length
+        while i < (@intervals.length-1)
           i += 1
           nextInterval = @intervals[i]
           if !bigger.adjacent(nextInterval) && bigger.disjoint(nextInterval)
@@ -71,7 +71,6 @@ class IntervalSet
           @intervals.delete_at i
           i -= 1
           @intervals[i] = bigger.union(nextInterval)
-          i += 1
         end
         return
       end

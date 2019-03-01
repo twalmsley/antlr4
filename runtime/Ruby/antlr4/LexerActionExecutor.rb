@@ -46,7 +46,7 @@ class LexerActionExecutor
 			hash = MurmurHash.update(hash, lexerAction)
 		end
 
-		this.hashCode = MurmurHash.finish(hash, lexerActions.length)
+		this.hash = MurmurHash.finish(hash, lexerActions.length)
 	end
 
 
@@ -177,7 +177,7 @@ class LexerActionExecutor
 
 	
 	public int hashCode() 
-		return this.hashCode
+		return this.hash
 	end
 
 	
@@ -190,7 +190,7 @@ class LexerActionExecutor
 		end
 
 		LexerActionExecutor other = (LexerActionExecutor)obj
-		return hashCode == other.hashCode
+		return hashCode == other.hash
 			&& Arrays.equals(lexerActions, other.lexerActions)
 	end
 end

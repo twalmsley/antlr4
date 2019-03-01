@@ -34,7 +34,7 @@ class ATNSimulator
     end
 
     visited = Hash.new
-    return PredictionContext.getCachedContext(context, @sharedContextCache, visited)
+    return PredictionContextUtils.getCachedContext(context, @sharedContextCache, visited)
   end
 
 

@@ -82,13 +82,13 @@ class Array2DHashSet
   end
 
   def getBucket(o)
-    hash = @comparator.hashCode(o)
+    hash = @comparator.hash(o)
     b = hash & (@buckets.length - 1) # assumes len is power of 2
     return b
   end
 
 
-  def hashCode()
+  def hash()
     hash = 0
     @buckets.each do |bucket|
       if (bucket != nil)
@@ -96,7 +96,7 @@ class Array2DHashSet
           if (o == nil)
             break
           end
-          hash = MurmurHash.update_int(hash, @comparator.hashCode(o))
+          hash = MurmurHash.update_int(hash, @comparator.hash(o))
         end
       end
     end

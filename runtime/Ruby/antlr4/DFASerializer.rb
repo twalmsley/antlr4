@@ -36,7 +36,7 @@ class DFASerializer
 
     output = buf
     if (output.length() == 0)
-      return nil
+      return ""
     end
     #return Utils.sortLinesInString(output)
     return output

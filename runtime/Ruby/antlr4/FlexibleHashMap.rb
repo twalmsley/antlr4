@@ -41,7 +41,7 @@ class FlexibleHashMap
   end
 
   def getBucket(key)
-    hash = @comparator.hashCode(key)
+    hash = @comparator.hash(key)
     b = hash & (@buckets.length - 1) # assumes len is power of 2
     return b
   end
@@ -147,7 +147,7 @@ class FlexibleHashMap
         if (e == nil)
           break
         end
-        hash = MurmurHash.update(hash, @comparator.hashCode(e.key))
+        hash = MurmurHash.update(hash, @comparator.hash(e.key))
       end
     end
 

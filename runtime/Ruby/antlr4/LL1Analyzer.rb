@@ -35,7 +35,7 @@ class LL1Analyzer
   def LOOK(s, stopState, ctx)
     r = IntervalSet.new()
     seeThruPreds = true # ignore preds get all lookahead
-    lookContext = ctx != nil ? PredictionContext.fromRuleContext(s.atn, ctx) : nil
+    lookContext = ctx != nil ? PredictionContextUtils.fromRuleContext(s.atn, ctx) : nil
     _LOOK(s, stopState, lookContext,
           r, Set.new, Set.new, seeThruPreds, true)
     return r
@@ -52,7 +52,12 @@ class LL1Analyzer
 #		System.out.println("_LOOK("+s.stateNumber+", ctx="+ctx)
     c = ATNConfig.new
     c.ATNConfig_1(s, 0, ctx)
-    if (!lookBusy.add(c))
+    added = false
+    if (!lookBusy.include? c)
+      lookBusy.add(c)
+      added = true
+    end
+    if (added)
       return
     end
 

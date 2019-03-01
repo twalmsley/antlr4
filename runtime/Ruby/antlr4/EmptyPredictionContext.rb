@@ -1,4 +1,5 @@
 require '../antlr4/SingletonPredictionContext'
+require '../antlr4/PredictionContextUtils'
 
 class EmptyPredictionContext < SingletonPredictionContext
 
@@ -6,7 +7,7 @@ class EmptyPredictionContext < SingletonPredictionContext
     super(nil, returnState)
   end
 
-  EMPTY = EmptyPredictionContext.new(EMPTY_RETURN_STATE)
+  EMPTY = EmptyPredictionContext.new(PredictionContextUtils::EMPTY_RETURN_STATE)
 
   def isEmpty()
     return true

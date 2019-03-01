@@ -103,8 +103,8 @@ class Parser < Recognizer
       @_errHandler.reportMatch(self)
       consume()
     else
-      t = @_errHandler.recoverInline(this)
-      if (@_buildParseTrees && t.getTokenIndex() == -1)
+      t = @_errHandler.recoverInline(self)
+      if (@_buildParseTrees && t.index == -1)
         # we must have conjured up a new token during single token insertion
         # if it's not the current symbol
         @_ctx.addErrorNode(createErrorNode(@_ctx, t))
