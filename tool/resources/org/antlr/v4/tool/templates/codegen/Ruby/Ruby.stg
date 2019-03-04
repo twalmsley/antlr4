@@ -250,6 +250,9 @@ vocabulary(literalNames, symbolicNames) ::= <<
 
 @@VOCABULARY =  VocabularyImpl.new(@@_LITERAL_NAMES, @@_SYMBOLIC_NAMES)
 
+def getVocabulary
+	@@VOCABULARY
+end
 >>
 
 dumpActions(recog, argFuncs, actionFuncs, sempredFuncs) ::= <<
@@ -326,8 +329,8 @@ RuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,namedActions,fina
 <altLabelCtxs:{l | <altLabelCtxs.(l)>}; separator="\n">
 
 def <currentRule.name>(<args; separator=",">)
-	@_localctx =  <currentRule.ctxType>.new(@_ctx, getState()<currentRule.args:{a | , <a.name>}>)
-	enterRule(@_localctx, <currentRule.startState>, RULE_<currentRule.name>)
+	_localctx =  <currentRule.ctxType>.new(@_ctx, getState()<currentRule.args:{a | , <a.name>}>)
+	enterRule(_localctx, <currentRule.startState>, RULE_<currentRule.name>)
 	<namedActions.init>
 	<locals; separator="\n">
 	begin
@@ -341,7 +344,7 @@ def <currentRule.name>(<args; separator=",">)
 	<exceptions; separator="\n">
 	<else>
 	rescue RecognitionException => re
-		@_localctx.exception = re
+		_localctx.exception = re
 		@_errHandler.reportError(self, re)
 		@_errHandler.recover(self, re)
 	<endif>
@@ -349,7 +352,7 @@ def <currentRule.name>(<args; separator=",">)
 		<finallyAction>
 		exitRule()
 	end
-	return @_localctx
+	return _localctx
 end
 >>
 
@@ -365,12 +368,12 @@ def<currentRule.name>(<args; separator=", ">)
 end
 
 def <currentRule.name>( _p<args:{a | , <a>}>)
-	 @_parentctx = _ctx
-	 @_parentState = getState()
-	@_localctx =  <currentRule.ctxType>.new(_ctx, _parentState<currentRule.args:{a | , <a.name>}>)
-	 @_prevctx = @_localctx
+	 _parentctx = _ctx
+	 _parentState = getState()
+	_localctx =  <currentRule.ctxType>.new(_ctx, _parentState<currentRule.args:{a | , <a.name>}>)
+	 @_prevctx = _localctx
 	 _startState = <currentRule.startState>
-	enterRecursionRule(@_localctx, <currentRule.startState>, RULE_<currentRule.name>, _p)
+	enterRecursionRule(_localctx, <currentRule.startState>, RULE_<currentRule.name>, _p)
 	<namedActions.init>
 	<locals; separator="\n">
 	begin
@@ -382,7 +385,7 @@ def <currentRule.name>( _p<args:{a | , <a>}>)
 		<namedActions.after>
 
 	rescue RecognitionException => re
-		@_localctx.exception = re
+		_localctx.exception = re
 		@_errHandler.reportError(self, re)
 		@_errHandler.recover(self, re)
 
@@ -390,13 +393,13 @@ def <currentRule.name>( _p<args:{a | , <a>}>)
 		<finallyAction>
 		unrollRecursionContexts(_parentctx)
 	end
-	return @_localctx
+	return _localctx
 end
 >>
 
 CodeBlockForOuterMostAlt(currentOuterMostAltCodeBlock, locals, preamble, ops) ::= <<
-<if(currentOuterMostAltCodeBlock.altLabel)>@_localctx =  <currentOuterMostAltCodeBlock.altLabel; format="cap">Context.new(@_localctx)<endif>
-enterOuterAlt(@_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
+<if(currentOuterMostAltCodeBlock.altLabel)>_localctx =  <currentOuterMostAltCodeBlock.altLabel; format="cap">Context.new(_localctx)<endif>
+enterOuterAlt(_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
 <CodeBlockForAlt(currentAltCodeBlock=currentOuterMostAltCodeBlock, ...)>
 >>
 
@@ -464,7 +467,7 @@ loop do
 	setState(<choice.stateNumber>) <! loopback/exit decision !>
 	@_errHandler.sync(self)
 	<iteration>
- break if (! <loopExpr> )
+ break if (!( <loopExpr>) )
 end
 >>
 
@@ -497,24 +500,24 @@ end
 StarBlock(choice, alts, sync, iteration) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self);
-@_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
-while ( _alt!=<choice.exitAlt> && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER )
+_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
+while ( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 	if ( _alt==1<if(!choice.ast.greedy)>+1<endif> )
 		<iteration>
 		<alts> <! should only be one !>
 	end
 	setState(<choice.loopBackStateNumber>)
 	@_errHandler.sync(self)
-	@_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
+	_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
 end
 >>
 
 PlusBlock(choice, alts, error) ::= <<
 setState(<choice.blockStartStateNumber>) <! alt block decision !>
 @_errHandler.sync(self)
-@_alt = 1<if(!choice.ast.greedy)>+1<endif>
+_alt = 1<if(!choice.ast.greedy)>+1<endif>
 loop do
-	case (@_alt)
+	case (_alt)
 	<alts:{alt|
 when <i><if(!choice.ast.greedy)>+1<endif>
 	<alt>
@@ -524,8 +527,8 @@ when <i><if(!choice.ast.greedy)>+1<endif>
 	end
 	setState(<choice.loopBackStateNumber>) <! loopback/exit decision !>
 	@_errHandler.sync(self)
-	@_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
-    break if !( _alt!=<choice.exitAlt> && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER )
+	_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
+    break if !( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 end
 >>
 
@@ -632,9 +635,9 @@ LexerPushModeCommand(arg, grammar)  ::= "pushMode(<arg>)"
 
 ActionText(t) ::= "<t.text>"
 ActionTemplate(t) ::= "<t.st>"
-ArgRef(a) ::= "@_localctx.<a.name>"
-LocalRef(a) ::= "@_localctx.<a.name>"
-RetValueRef(a) ::= "@_localctx.<a.name>"
+ArgRef(a) ::= "_localctx.<a.name>"
+LocalRef(a) ::= "_localctx.<a.name>"
+RetValueRef(a) ::= "_localctx.<a.name>"
 QRetValueRef(a) ::= "<ctx(a)>.<a.dict>.<a.name>"
 /** How to translate $tokenLabel */
 TokenRef(t) ::= "<ctx(t)>.<t.name>"
@@ -659,10 +662,10 @@ RulePropertyRef_text(r)	 ::= "(<ctx(r)>.<r.label>!=nil?@_input.getText(<ctx(r)>.
 RulePropertyRef_ctx(r)	 ::= "<ctx(r)>.<r.label>"
 RulePropertyRef_parser(r)	 ::= "self"
 
-ThisRulePropertyRef_start(r) ::= "@_localctx.start"
-ThisRulePropertyRef_stop(r)	 ::= "@_localctx.stop"
-ThisRulePropertyRef_text(r)	 ::= "@_input.getText(@_localctx.start, @_input.LT(-1))"
-ThisRulePropertyRef_ctx(r)	 ::= "@_localctx"
+ThisRulePropertyRef_start(r) ::= "_localctx.start"
+ThisRulePropertyRef_stop(r)	 ::= "_localctx.stop"
+ThisRulePropertyRef_text(r)	 ::= "@_input.getText(_localctx.start, @_input.LT(-1))"
+ThisRulePropertyRef_ctx(r)	 ::= "_localctx"
 ThisRulePropertyRef_parser(r)	 ::= "self"
 
 NonLocalAttrRef(s)		 ::= "((<s.ruleName; format=\"cap\">Context)getInvokingContext(<s.ruleIndex>)).<s.name>"
@@ -782,7 +785,7 @@ end
 AttributeDecl(d) ::= "<d.type> <d.name><if(d.initValue)> = <d.initValue><endif>"
 
 /** If we don't know location of label def x, use this template */
-labelref(x) ::= "<if(!x.isLocal)>((<x.ctx.name>)@_localctx).<endif><x.name>"
+labelref(x) ::= "<if(!x.isLocal)>((<x.ctx.name>)_localctx).<endif><x.name>"
 
 /** For any action chunk, what is correctly-typed context struct ptr? */
 ctx(actionChunk) ::= "((<actionChunk.ctx.name>)_localctx)"
@@ -793,41 +796,41 @@ recRuleSetReturnAction(src,name)	  ::= "$<name>=$<src>.<name>"
 recRuleSetStopToken()                 ::= "@_ctx.stop = @_input.LT(-1)"
 
 recRuleAltStartAction(ruleName, ctxName, label, isListLabel) ::= <<
-@_localctx =  <ctxName>Context.new(@_parentctx, @_parentState)
+_localctx =  <ctxName>Context.new(_parentctx, _parentState)
 <if(label)>
 <if(isListLabel)>
-@_localctx.<label>.push(@_prevctx)
+_localctx.<label>.push(@_prevctx)
 <else>
-@_localctx.<label> = @_prevctx
+_localctx.<label> = @_prevctx
 <endif>
 <endif>
-<if(label)>@_localctx.<label> = @_prevctx<endif>
-pushNewRecursionContext(@_localctx,@ _startState, RULE_<ruleName>)
+<if(label)>_localctx.<label> = @_prevctx<endif>
+pushNewRecursionContext(_localctx,@ _startState, RULE_<ruleName>)
 >>
 
 recRuleLabeledAltStartAction(ruleName, currentAltLabel, label, isListLabel) ::= <<
-@_localctx =  <currentAltLabel; format="cap">Context.new( <ruleName; format="cap">Context.new(@_parentctx, @_parentState))
+_localctx =  <currentAltLabel; format="cap">Context.new( <ruleName; format="cap">Context.new(_parentctx, _parentState))
 <if(label)>
 <if(isListLabel)>
-@_localctx.<label>.push(@_prevctx)
+_localctx.<label>.push(@_prevctx)
 <else>
-@_localctx.<label> = @_prevctx
+_localctx.<label> = @_prevctx
 <endif>
 <endif>
-pushNewRecursionContext(@_localctx, @_startState, RULE_<ruleName>)
+pushNewRecursionContext(_localctx, @_startState, RULE_<ruleName>)
 >>
 
 recRuleReplaceContext(ctxName) ::= <<
-@_localctx = <ctxName>Context.new(@_localctx)
-@_ctx = @_localctx
-@_prevctx = @_localctx
+_localctx = <ctxName>Context.new(_localctx)
+@_ctx = _localctx
+@_prevctx = _localctx
 >>
 
 recRuleSetPrevCtx() ::= <<
 if ( @_parseListeners!=nil )
  triggerExitRuleEvent()
 end
-@_prevctx = @_localctx
+@_prevctx = _localctx
 >>
 
 

@@ -181,7 +181,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
     tokenName = getTokenErrorDisplay(t)
     expecting = getExpectedTokens(recognizer)
     msg = "extraneous input " + tokenName + " expecting " +
-        expecting.to_s(recognizer.getVocabulary())
+        expecting.toString_from_Vocabulary(recognizer.getVocabulary())
     recognizer.notifyErrorListeners(t, msg, nil)
   end
 
@@ -195,7 +195,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
     t = recognizer.getCurrentToken()
     expecting = getExpectedTokens(recognizer)
-    msg = "missing " + expecting.to_s(recognizer.getVocabulary()) +
+    msg = "missing " + expecting.toString_from_Vocabulary(recognizer.getVocabulary()) +
         " at " + getTokenErrorDisplay(t)
 
     recognizer.notifyErrorListeners(t, msg, nil)

@@ -57,7 +57,7 @@ class LL1Analyzer
       lookBusy.add(c)
       added = true
     end
-    if (added)
+    if (!added)
       return
     end
 
@@ -107,6 +107,7 @@ class LL1Analyzer
       t = s.transition(i)
       if (t.is_a? RuleTransition.class)
         if calledRuleStack.get(t.target.ruleIndex)
+          i+=1
           next
         end
 

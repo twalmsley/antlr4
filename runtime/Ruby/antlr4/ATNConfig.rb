@@ -104,14 +104,15 @@ class ATNConfig
   end
 
 
-  def <=>(other)
+  def eql?(other)
     if (self == other)
       return true
     elsif (other == nil)
       return false
     end
 
-    return @state.stateNumber == other.state.stateNumber && @alt == other.alt && (@context == other.context || (@context != nil && @context.<=>(other.context))) && @semanticContext.<=>(other.semanticContext) && isPrecedenceFilterSuppressed() == other.isPrecedenceFilterSuppressed()
+    same = @state.stateNumber == other.state.stateNumber && @alt == other.alt && (@context == other.context || (@context != nil && @context.<=>(other.context))) && @semanticContext.<=>(other.semanticContext) && isPrecedenceFilterSuppressed() == other.isPrecedenceFilterSuppressed()
+    return same
   end
 
   def hash()

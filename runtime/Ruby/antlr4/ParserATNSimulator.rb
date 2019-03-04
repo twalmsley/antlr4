@@ -36,9 +36,9 @@ class ParserATNSimulator < ATNSimulator
     @_outerContext = nil
     @_dfa = nil
 
-    @debug = true
+    @debug = false
     @debug_list_atn_decisions = true
-    @dfa_debug = true
+    @dfa_debug = false
     @retry_debug = true
 
   end
@@ -885,7 +885,7 @@ class ParserATNSimulator < ATNSimulator
             closureBusy.add(c)
             added = true
           end
-          if (added)
+          if (!added)
             # avoid infinite recursion for right-recursive rules
             i += 1
             next
@@ -902,7 +902,7 @@ class ParserATNSimulator < ATNSimulator
             closureBusy.add(c)
             added = true
           end
-          if (!t.isEpsilon() && added)
+          if (!t.isEpsilon() && !added)
             # avoid infinite recursion for EOF* and EOF+
             i += 1
             next
@@ -1200,7 +1200,9 @@ class ParserATNSimulator < ATNSimulator
       return displayName
     end
 
-    displayName << "<" << t << ">"
+    result = ""
+    result << displayName
+    result << "<" << t.to_s << ">"
   end
 
   def getLookaheadName(input)

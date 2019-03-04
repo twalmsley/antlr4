@@ -418,6 +418,7 @@ class IntervalSet
       if (i < @intervals.length)
         buf << ", "
       end
+      i+=1
     end
     if (size() > 1)
       buf << "end"
