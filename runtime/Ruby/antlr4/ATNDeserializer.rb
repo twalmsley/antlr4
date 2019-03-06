@@ -31,6 +31,15 @@ require '../antlr4/ActionTransition'
 require '../antlr4/SetTransition'
 require '../antlr4/NotSetTransition'
 require '../antlr4/WildcardTransition'
+require '../antlr4/LexerActionType'
+require '../antlr4/LexerChannelAction'
+require '../antlr4/LexerCustomAction'
+require '../antlr4/LexerModeAction'
+require '../antlr4/LexerMoreAction'
+require '../antlr4/LexerPopModeAction'
+require '../antlr4/LexerPushModeAction'
+require '../antlr4/LexerSkipAction'
+require '../antlr4/LexerTypeAction'
 
 class UnsupportedOperationException < StandardError
 end
@@ -348,11 +357,11 @@ class ATNDeserializer
 
     if (atn.grammarType == ATNType::LEXER)
       if (supportsLexerActions)
-        atn.lexerActions = []
+        atn.lexerActions = Array.new(data[p])
         p += 1
         i = 0
         while i < atn.lexerActions.length
-          actionType = LexerActionType.values()[data[p]]
+          actionType = data[p]
           p += 1
           data1 = data[p]
           p += 1
@@ -710,16 +719,16 @@ class ATNDeserializer
       return LexerModeAction.new(data1)
 
     when LexerActionType::MORE
-      return LexerMoreAction.INSTANCE
+      return LexerMoreAction.instance
 
     when LexerActionType::POP_MODE
-      return LexerPopModeAction.INSTANCE
+      return LexerPopModeAction.instance
 
     when LexerActionType::PUSH_MODE
       return LexerPushModeAction.new(data1)
 
     when LexerActionType::SKIP
-      return LexerSkipAction.INSTANCE
+      return LexerSkipAction.instance
 
     when LexerActionType::TYPE
       return LexerTypeAction.new(data1)

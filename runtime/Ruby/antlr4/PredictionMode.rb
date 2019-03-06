@@ -184,18 +184,18 @@ class PredictionMode
 
   def self.getStateToAltMap(configs)
     m = Hash.new
-    configs.each do |c|
-      alts = m.get(c.state)
+    configs.configs.each do |c|
+      alts = m[c.state]
       if (alts == nil)
         alts = BitSet.new()
-        m.put(c.state, alts)
+        m[c.state] = alts
       end
       alts.set(c.alt)
     end
     return m
   end
 
-  def hasStateAssociatedWithOneAlt(configs)
+  def self.hasStateAssociatedWithOneAlt(configs)
     x = getStateToAltMap(configs)
     x.values().each do |alts|
       if (alts.cardinality() == 1)

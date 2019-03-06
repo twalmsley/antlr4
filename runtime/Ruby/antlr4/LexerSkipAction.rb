@@ -1,78 +1,38 @@
+require '../antlr4/LexerAction'
+require 'singleton'
+
+class LexerSkipAction < LexerAction
+
+  include Singleton
+
+  def getActionType()
+    return LexerActionType::SKIP
+  end
 
 
+  def isPositionDependent()
+    return false
+  end
 
 
+  def execute(lexer)
+    lexer.skip()
+  end
 
 
+  def hash()
+    hashcode = 0
+    hashcode = MurmurHash.update_int(hashcode, getActionType())
+    return MurmurHash.finish(hashcode, 1)
+  end
 
 
+  def eql?(obj)
+    return obj == self
+  end
 
 
-
-
-
-
-
-
-
-
-
-
-public final class LexerSkipAction implements LexerAction 
-
-
-
-	public static final LexerSkipAction INSTANCE = new LexerSkipAction()
-
-
-
-
-	private LexerSkipAction() 
-	end
-
-
-
-
-
-	
-	public LexerActionType getActionType() 
-		return LexerActionType.SKIP
-	end
-
-
-
-
-
-	
-	public boolean isPositionDependent() 
-		return false
-	end
-
-
-
-
-
-
-	
-	public void execute(Lexer lexer) 
-		lexer.skip()
-	end
-
-	
-	public int hashCode() 
-		int hash = MurmurHash.initialize()
-		hash = MurmurHash.update(hash, getActionType().ordinal())
-		return MurmurHash.finish(hash, 1)
-	end
-
-	
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) 
-		return obj == this
-	end
-
-	
-	public String toString() 
-		return "skip"
-	end
+  def to_s()
+    return "skip"
+  end
 end

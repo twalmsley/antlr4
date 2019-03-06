@@ -1,6 +1,7 @@
+require '../antlr4/BaseErrorListener'
 require 'singleton'
 
-class ConsoleErrorListener
+class ConsoleErrorListener < BaseErrorListener
   include Singleton
 
   def syntaxError(recognizer,

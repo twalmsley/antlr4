@@ -1,53 +1,17 @@
+class LexerAction
 
 
+  def getActionType
+
+  end
 
 
+  def isPositionDependent
+
+  end
 
 
+  def execute(lexer)
 
-
-
-
-
-
-
-
-
-
-
-
-
-class LexerAction 
-
-
-
-
-
-	LexerActionType getActionType()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	boolean isPositionDependent()
-
-
-
-
-
-
-
-
-
-	void execute(Lexer lexer)
+  end
 end

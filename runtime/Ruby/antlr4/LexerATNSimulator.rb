@@ -3,6 +3,7 @@ require '../antlr4/EmptyPredictionContext'
 require '../antlr4/Integer'
 require '../antlr4/LexerATNConfig'
 require '../antlr4/OrderedATNConfigSet'
+require '../antlr4/LexerActionExecutor'
 
 class LexerATNSimulator < ATNSimulator
 
@@ -356,7 +357,7 @@ class LexerATNSimulator < ATNSimulator
 
 # optimization
     if (!config.state.onlyHasEpsilonTransitions())
-      if (!currentAltReachedAcceptState || !config.hasPassedThroughNonGreedyDecision())
+      if (!currentAltReachedAcceptState || !config.passedThroughNonGreedyDecision)
         configs.add(config)
       end
     end
@@ -417,11 +418,13 @@ class LexerATNSimulator < ATNSimulator
         # getEpsilonTarget to return two configurations, so
         # additional modifications are needed before we can support
         # the split operation.
-        lexerActionExecutor = LexerActionExecutor.append(config.getLexerActionExecutor(), atn.lexerActions[t.actionIndex])
-        c = new LexerATNConfig(config, t.target, lexerActionExecutor)
+        lexerActionExecutor = LexerActionExecutor.append(config.lexerActionExecutor, @atn.lexerActions[t.actionIndex])
+        c =  LexerATNConfig.new
+        c.LexerATNConfig_4(config, t.target, lexerActionExecutor)
       else
         # ignore actions in referenced rules
-        c = new LexerATNConfig(config, t.target)
+        c =  LexerATNConfig.new
+        c.LexerATNConfig_3(config, t.target)
       end
 
     when Transition::EPSILON

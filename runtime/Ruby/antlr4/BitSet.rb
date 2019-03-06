@@ -26,6 +26,19 @@ class BitSet
     end
   end
 
+  def nextSetBit(bit)
+    result = -1
+    i = bit
+    while (i < @bits.length)
+      if (get(i))
+        result = i
+        break
+      end
+      i += 1
+    end
+    return result
+  end
+
   def to_s
     v = Array.new(@bits.size, 0)
     @bits.each do |bit|

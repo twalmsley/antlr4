@@ -1,55 +1,50 @@
-public final class LexerPushModeAction
-               implements LexerAction
-               private final int mode
+require '../antlr4/LexerAction'
+
+class LexerPushModeAction < LexerAction
+  attr_reader :mode
 
 
-               public LexerPushModeAction(int mode)
-               this.mode = mode
-             end
+  def initialize(mode)
+    @mode = mode
+  end
+
+  def getActionType()
+    return LexerActionType::PUSH_MODE
+  end
 
 
-public int getMode()
-return mode
-end
+  def isPositionDependent()
+    return false
+  end
 
 
-public LexerActionType getActionType()
-return LexerActionType.PUSH_MODE
-end
+  def execute(lexer)
+    lexer.pushMode(@mode)
+  end
 
 
-public boolean isPositionDependent()
-return false
-end
+  def hash()
+    hashcode = 0
+    hashcode = MurmurHash.update_int(hashcode, getActionType())
+    hashcode = MurmurHash.update_int(hashcode, mode)
+    return MurmurHash.finish(hashcode, 2)
+  end
 
 
-public void execute(Lexer lexer)
-lexer.pushMode(mode)
-end
+  def eql?(obj)
+    if (obj == self)
+      return true
+    else
+      if (!(obj.is_a? LexerPushModeAction))
+        return false
+      end
+    end
+
+    return @mode == obj.mode
+  end
 
 
-public int hashCode()
-int hash = MurmurHash.initialize()
-hash = MurmurHash.update(hash, getActionType().ordinal())
-hash = MurmurHash.update(hash, mode)
-return MurmurHash.finish(hash, 2)
-end
-
-
-public boolean equals(Object obj)
-if (obj == this)
-  return true
-end
-else
-if (!(obj instanceof LexerPushModeAction))
-  return false
-end
-
-return mode == ((LexerPushModeAction) obj).mode
-end
-
-
-public String toString()
-return String.format("pushMode(%d)", mode)
-end
+  def to_s()
+    return "pushMode(" << @mode << ")"
+  end
 end

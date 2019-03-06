@@ -10,6 +10,7 @@ class ATNConfigSet
   attr_accessor :uniqueAlt
   attr_accessor :dipsIntoOuterContext
   attr_accessor :fullCtx
+  attr_accessor :conflictingAlts
 
   def initialize(fullCtx = true)
     @fullCtx = fullCtx
@@ -20,6 +21,15 @@ class ATNConfigSet
     @dipsIntoOuterContext = false
     @uniqueAlt = ATN::INVALID_ALT_NUMBER
   end
+
+  def getAlts()
+    alts = BitSet.new()
+    @configs.each do |config|
+      alts.set(config.alt)
+    end
+    return alts
+  end
+
 
   def add(config, mergeCache = nil)
     if (@readonly)
@@ -82,13 +92,13 @@ class ATNConfigSet
     buf << '>'
 
     if (@hasSemanticContext)
-      buf << ",hasSemanticContext=" << @hasSemanticContext
+      buf << ",hasSemanticContext=" << @hasSemanticContext.to_s
     end
     if (@uniqueAlt != ATN::INVALID_ALT_NUMBER)
       buf << ",uniqueAlt=" << @uniqueAlt
     end
     if (@conflictingAlts != nil)
-      buf << ",conflictingAlts=" << @conflictingAlts
+      buf << ",conflictingAlts=" << @conflictingAlts.to_s
     end
     if (@dipsIntoOuterContext)
       buf << ",dipsIntoOuterContext"

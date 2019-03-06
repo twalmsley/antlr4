@@ -1,196 +1,91 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class LexerActionExecutor 
-
-	private final LexerAction[] lexerActions
-
-
-
-
-	private final int hashCode
-
-
-
-
-
-	public LexerActionExecutor(LexerAction[] lexerActions) 
-		this.lexerActions = lexerActions
-
-		int hash = MurmurHash.initialize()
-		for (LexerAction lexerAction : lexerActions) 
-			hash = MurmurHash.update(hash, lexerAction)
-		end
-
-		this.hash = MurmurHash.finish(hash, lexerActions.length)
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public static LexerActionExecutor append(LexerActionExecutor lexerActionExecutor, LexerAction lexerAction) 
-		if (lexerActionExecutor == null) 
-			return new LexerActionExecutor(new LexerAction[]  lexerAction end)
-		end
-
-		LexerAction[] lexerActions = Arrays.copyOf(lexerActionExecutor.lexerActions, lexerActionExecutor.lexerActions.length + 1)
-		lexerActions[lexerActions.length - 1] = lexerAction
-		return new LexerActionExecutor(lexerActions)
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public LexerActionExecutor fixOffsetBeforeMatch(int offset) 
-		LexerAction[] updatedLexerActions = null
-		for (int i = 0 i < lexerActions.length i++) 
-			if (lexerActions[i].isPositionDependent() && !(lexerActions[i] instanceof LexerIndexedCustomAction)) 
-				if (updatedLexerActions == null) 
-					updatedLexerActions = lexerActions.clone()
-				end
-
-				updatedLexerActions[i] = new LexerIndexedCustomAction(offset, lexerActions[i])
-			end
-		end
-
-		if (updatedLexerActions == null) 
-			return this
-		end
-
-		return new LexerActionExecutor(updatedLexerActions)
-	end
-
-
-
-
-
-	public LexerAction[] getLexerActions() 
-		return lexerActions
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public void execute(Lexer lexer, CharStream input, int startIndex) 
-		boolean requiresSeek = false
-		int stopIndex = input.index()
-		try 
-			for (LexerAction lexerAction : lexerActions) 
-				if (lexerAction instanceof LexerIndexedCustomAction) 
-					int offset = ((LexerIndexedCustomAction)lexerAction).getOffset()
-					input.seek(startIndex + offset)
-					lexerAction = ((LexerIndexedCustomAction)lexerAction).getAction()
-					requiresSeek = (startIndex + offset) != stopIndex
-				end
-				else if (lexerAction.isPositionDependent()) 
-					input.seek(stopIndex)
-					requiresSeek = false
-				end
-
-				lexerAction.execute(lexer)
-			end
-		end
-		finally 
-			if (requiresSeek) 
-				input.seek(stopIndex)
-			end
-		end
-	end
-
-	
-	public int hashCode() 
-		return this.hash
-	end
-
-	
-	public boolean equals(Object obj) 
-		if (obj == this) 
-			return true
-		end
-		else if (!(obj instanceof LexerActionExecutor)) 
-			return false
-		end
-
-		LexerActionExecutor other = (LexerActionExecutor)obj
-		return hashCode == other.hash
-			&& Arrays.equals(lexerActions, other.lexerActions)
-	end
+require '../antlr4/LexerIndexedCustomAction'
+
+class LexerActionExecutor
+
+  attr_reader :lexerActions
+  attr_reader :hashCode
+
+  def initialize(lexerActions)
+    @lexerActions = lexerActions
+
+    @hashCode = 7
+    lexerActions.each do |lexerAction|
+      @hashCode = MurmurHash.update_obj(@hashCode, lexerAction)
+    end
+
+    @hashCode = MurmurHash.finish(@hashCode, lexerActions.length)
+  end
+
+
+  def self.append(lexerActionExecutor, lexerAction)
+    if (lexerActionExecutor == nil)
+      return LexerActionExecutor.new([lexerAction])
+    end
+
+    lexerActions = lexerActionExecutor.lexerActions.dup
+    lexerActions << lexerAction
+    return LexerActionExecutor.new(lexerActions)
+  end
+
+
+  def fixOffsetBeforeMatch(offset)
+    updatedLexerActions = nil
+    i = 0
+    while i < @lexerActions.length
+      if (@lexerActions[i].isPositionDependent() && !(@lexerActions[i].is_a? LexerIndexedCustomAction))
+        if (updatedLexerActions == nil)
+          updatedLexerActions = @lexerActions.dup()
+        end
+
+        updatedLexerActions[i] = LexerIndexedCustomAction.new(offset, @lexerActions[i])
+      end
+      i += 1
+    end
+
+    if (updatedLexerActions == nil)
+      return self
+    end
+
+    return LexerActionExecutor.new(updatedLexerActions)
+  end
+
+
+  def execute(lexer, input, startIndex)
+    requiresSeek = false
+    stopIndex = input.index()
+    begin
+      @lexerActions.each do |lexerAction|
+        if (lexerAction.is_a? LexerIndexedCustomAction)
+          offset = lexerAction.getOffset()
+          input.seek(startIndex + offset)
+          lexerAction = lexerAction.getAction()
+          requiresSeek = ((startIndex + offset) != stopIndex)
+        else
+          if (lexerAction.isPositionDependent())
+            input.seek(stopIndex)
+            requiresSeek = false
+          end
+
+          lexerAction.execute(lexer)
+        end
+      end
+    ensure
+      if (requiresSeek)
+        input.seek(stopIndex)
+      end
+    end
+  end
+
+
+  def eql?(obj)
+    if (obj == self)
+      return true
+    else
+      if (!(obj.is_a? LexerActionExecutor))
+        return false
+      end
+    end
+
+    return @hashCode == obj.hashCode && (@lexerActions == obj.lexerActions)
+  end
 end

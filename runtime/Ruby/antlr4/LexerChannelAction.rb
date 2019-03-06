@@ -1,93 +1,51 @@
+require '../antlr4/LexerAction'
+require '../antlr4/LexerActionType'
+
+class LexerChannelAction < LexerAction
+  attr_reader :channel
+
+  def initialize(channel)
+    @channel = channel
+  end
 
 
+  def getActionType()
+    return LexerActionType::CHANNEL
+  end
 
 
+  def isPositionDependent()
+    return false
+  end
 
 
+  def execute(lexer)
+    lexer.setChannel(@channel)
+  end
 
 
+  def hash()
+    hashCode = 0
+    hashCode = MurmurHash.update_int(hashCode, getActionType().ordinal())
+    hashCode = MurmurHash.update_int(hashCode, channel)
+    return MurmurHash.finish(hashCode, 2)
+  end
 
 
+  def eql?(obj)
+    if (obj == self)
+      return true
+    else
+      if (!(obj.is_a? LexerChannelAction))
+        return false
+      end
+    end
+
+    return @channel == obj.channel
+  end
 
 
-
-
-
-
-
-
-
-public final class LexerChannelAction implements LexerAction 
-	private final int channel
-
-
-
-
-
-	public LexerChannelAction(int channel) 
-		this.channel = channel
-	end
-
-
-
-
-
-
-	public int getChannel() 
-		return channel
-	end
-
-
-
-
-
-	
-	public LexerActionType getActionType() 
-		return LexerActionType.CHANNEL
-	end
-
-
-
-
-
-	
-	public boolean isPositionDependent() 
-		return false
-	end
-
-
-
-
-
-
-
-	
-	public void execute(Lexer lexer) 
-		lexer.setChannel(channel)
-	end
-
-	
-	public int hashCode() 
-		int hash = MurmurHash.initialize()
-		hash = MurmurHash.update(hash, getActionType().ordinal())
-		hash = MurmurHash.update(hash, channel)
-		return MurmurHash.finish(hash, 2)
-	end
-
-	
-	public boolean equals(Object obj) 
-		if (obj == this) 
-			return true
-		end
-		else if (!(obj instanceof LexerChannelAction)) 
-			return false
-		end
-
-		return channel == ((LexerChannelAction)obj).channel
-	end
-
-	
-	public String toString() 
-		return String.format("channel(%d)", channel)
-	end
+  def to_s()
+    return "channel(" << @channel.to_s << ")"
+  end
 end

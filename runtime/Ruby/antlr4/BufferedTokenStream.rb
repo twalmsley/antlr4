@@ -381,13 +381,14 @@ class BufferedTokenStream < TokenStream
     i = start
     while i <= stop
       t = @tokens[i]
-      if (t.getType() == Token::EOF)
+      if (t.type == Token::EOF)
         break
       end
       buf << t.getText()
+      buf <<
       i += 1
     end
-    return buf.to_s()
+    return buf
   end
 
 

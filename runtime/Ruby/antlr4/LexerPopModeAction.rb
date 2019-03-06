@@ -1,78 +1,38 @@
+require '../antlr4/LexerAction'
+require 'singleton'
+
+class LexerPopModeAction < LexerAction
+
+  include Singleton
+
+  def getActionType()
+    return LexerActionType::POP_MODE
+  end
 
 
+  def isPositionDependent()
+    return false
+  end
 
 
+  def execute(lexer)
+    lexer.popMode()
+  end
 
 
+  def hash()
+    hashcode = 0
+    hashcode = MurmurHash.update_int(hashcode, getActionType())
+    return MurmurHash.finish(hashcode, 1)
+  end
 
 
+  def equals(obj)
+    return obj == self
+  end
 
 
-
-
-
-
-
-
-
-
-
-
-public final class LexerPopModeAction implements LexerAction 
-
-
-
-	public static final LexerPopModeAction INSTANCE = new LexerPopModeAction()
-
-
-
-
-	private LexerPopModeAction() 
-	end
-
-
-
-
-
-	
-	public LexerActionType getActionType() 
-		return LexerActionType.POP_MODE
-	end
-
-
-
-
-
-	
-	public boolean isPositionDependent() 
-		return false
-	end
-
-
-
-
-
-
-	
-	public void execute(Lexer lexer) 
-		lexer.popMode()
-	end
-
-	
-	public int hashCode() 
-		int hash = MurmurHash.initialize()
-		hash = MurmurHash.update(hash, getActionType().ordinal())
-		return MurmurHash.finish(hash, 1)
-	end
-
-	
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) 
-		return obj == this
-	end
-
-	
-	public String toString() 
-		return "popMode"
-	end
+  def to_s()
+    return "popMode"
+  end
 end

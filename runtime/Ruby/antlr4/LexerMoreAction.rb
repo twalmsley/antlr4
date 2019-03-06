@@ -1,78 +1,38 @@
+require '../antlr4/LexerAction'
+require 'singleton'
+
+class LexerMoreAction < LexerAction
+
+  include Singleton
+
+  def getActionType()
+    return LexerActionType::MORE
+  end
 
 
+  def isPositionDependent()
+    return false
+  end
 
 
+  def execute(lexer)
+    lexer.more()
+  end
 
 
+  def hash()
+    hashcode = 0
+    hashcode = MurmurHash.update_int(hashcode, getActionType())
+    return MurmurHash.finish(hashcode, 1)
+  end
 
 
+  def eql?(obj)
+    return obj == self
+  end
 
 
-
-
-
-
-
-
-
-
-
-
-public final class LexerMoreAction implements LexerAction 
-
-
-
-	public static final LexerMoreAction INSTANCE = new LexerMoreAction()
-
-
-
-
-	private LexerMoreAction() 
-	end
-
-
-
-
-
-	
-	public LexerActionType getActionType() 
-		return LexerActionType.MORE
-	end
-
-
-
-
-
-	
-	public boolean isPositionDependent() 
-		return false
-	end
-
-
-
-
-
-
-	
-	public void execute(Lexer lexer) 
-		lexer.more()
-	end
-
-	
-	public int hashCode() 
-		int hash = MurmurHash.initialize()
-		hash = MurmurHash.update(hash, getActionType().ordinal())
-		return MurmurHash.finish(hash, 1)
-	end
-
-	
-	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	public boolean equals(Object obj) 
-		return obj == this
-	end
-
-	
-	public String toString() 
-		return "more"
-	end
+  def to_s()
+    return "more"
+  end
 end

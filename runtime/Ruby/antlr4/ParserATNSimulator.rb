@@ -331,7 +331,7 @@ class ParserATNSimulator < ATNSimulator
   def execATNWithFullContext(dfa, d, s0, input, startIndex, outerContext)
 
     if (@debug || @debug_list_atn_decisions)
-      puts("execATNWithFullContext " << s0)
+      puts("execATNWithFullContext " << s0.to_s)
     end
     fullCtx = true
     foundExactAmbig = false
@@ -378,7 +378,7 @@ class ParserATNSimulator < ATNSimulator
         predictedAlt = reach.uniqueAlt
         break
       end
-      if (@mode != PredictionMode.LL_EXACT_AMBIG_DETECTION)
+      if (@mode != PredictionMode::LL_EXACT_AMBIG_DETECTION)
         predictedAlt = PredictionMode.resolvesToJustOneViableAlt(altSubSets)
         if (predictedAlt != ATN::INVALID_ALT_NUMBER)
           break
@@ -776,7 +776,7 @@ class ParserATNSimulator < ATNSimulator
   def closureCheckingStopState(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon)
 
     if (@debug)
-      puts("closure("  <<  config.toString_2(@parser, true)  <<  ")")
+      puts("closure(" << config.toString_2(@parser, true) << ")")
     end
 
     if (config.state.is_a? RuleStopState)
@@ -1296,8 +1296,8 @@ class ParserATNSimulator < ATNSimulator
   def reportAttemptingFullContext(dfa, conflictingAlts, configs, startIndex, stopIndex)
     if (@debug || @retry_debug)
       interval = Interval.of(startIndex, stopIndex)
-      puts("reportAttemptingFullContext decision=" << dfa.decision << ":" << configs <<
-               ", input=" << @parser.getTokenStream().getText(interval))
+      puts("reportAttemptingFullContext decision=" << dfa.decision.to_s << ":" << configs.to_s <<
+               ", input=" << @parser.getTokenStream().getText_2(interval).to_s)
     end
     if (@parser != nil)
       @parser.getErrorListenerDispatch().reportAttemptingFullContext(@parser, dfa, startIndex, stopIndex, conflictingAlts, configs)
@@ -1307,8 +1307,8 @@ class ParserATNSimulator < ATNSimulator
   def reportContextSensitivity(dfa, prediction, configs, startIndex, stopIndex)
     if (@debug || @retry_debug)
       interval = Interval.of(startIndex, stopIndex)
-      puts("reportContextSensitivity decision=" << dfa.decision << ":" << configs <<
-               ", input=" << @parser.getTokenStream().getText(interval))
+      puts("reportContextSensitivity decision=" << dfa.decision.to_s << ":" << configs.to_s <<
+               ", input=" << @parser.getTokenStream().getText_2(interval).to_s)
     end
     if (@parser != nil)
       @parser.getErrorListenerDispatch().reportContextSensitivity(@parser, dfa, startIndex, stopIndex, prediction, configs)
@@ -1322,8 +1322,8 @@ class ParserATNSimulator < ATNSimulator
     if (@debug || @retry_debug)
       interval = Interval.of(startIndex, stopIndex)
       puts("reportAmbiguity " <<
-               ambigAlts << ":" << configs <<
-               ", input=" << @parser.getTokenStream().getText(interval))
+               ambigAlts.to_s << ":" << configs.to_s <<
+               ", input=" << @parser.getTokenStream().getText_2(interval).to_s)
     end
     if (@parser != nil)
       @parser.getErrorListenerDispatch().reportAmbiguity(@parser, dfa, startIndex, stopIndex,

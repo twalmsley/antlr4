@@ -1,6 +1,7 @@
 require '../antlr4/Transition'
 
 class ActionTransition < Transition
+  attr_reader :actionIndex
 
   def initialize(target, ruleIndex, actionIndex, isCtxDependent)
     super(target)

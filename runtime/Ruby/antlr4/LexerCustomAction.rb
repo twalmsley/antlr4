@@ -1,122 +1,48 @@
+require '../antlr4/LexerAction'
+require '../antlr4/LexerActionType'
 
+class LexerCustomAction < LexerAction
+  attr_reader :ruleIndex
+  attr_reader :actionIndex
 
+  def initialize(ruleIndex, actionIndex)
+    @ruleIndex = ruleIndex
+    @actionIndex = actionIndex
+  end
 
+  def getActionType()
+    return LexerActionType::CUSTOM
+  end
 
 
+  def isPositionDependent()
+    return true
+  end
 
 
+  def execute(lexer)
+    lexer.action(nil, @ruleIndex, @actionIndex)
+  end
 
 
+  def hash()
+    hashCode = 0
+    hashCode = MurmurHash.update_int(hashCode, getActionType())
+    hashCode = MurmurHash.update_int(hashCode, ruleIndex)
+    hashCode = MurmurHash.update_(hashCode, actionIndex)
+    return MurmurHash.finish(hashCode, 3)
+  end
 
 
+  def eql?(obj)
+    if (obj == self)
+      return true
+    else
+      if (!(obj.is_a? LexerCustomAction))
+        return false
+      end
+    end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-public final class LexerCustomAction implements LexerAction 
-	private final int ruleIndex
-	private final int actionIndex
-
-
-
-
-
-
-
-
-
-
-	public LexerCustomAction(int ruleIndex, int actionIndex) 
-		this.ruleIndex = ruleIndex
-		this.actionIndex = actionIndex
-	end
-
-
-
-
-
-
-	public int getRuleIndex() 
-		return ruleIndex
-	end
-
-
-
-
-
-
-	public int getActionIndex() 
-		return actionIndex
-	end
-
-
-
-
-
-
-	
-	public LexerActionType getActionType() 
-		return LexerActionType.CUSTOM
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	public boolean isPositionDependent() 
-		return true
-	end
-
-
-
-
-
-
-
-	
-	public void execute(Lexer lexer) 
-		lexer.action(null, ruleIndex, actionIndex)
-	end
-
-	
-	public int hashCode() 
-		int hash = MurmurHash.initialize()
-		hash = MurmurHash.update(hash, getActionType().ordinal())
-		hash = MurmurHash.update(hash, ruleIndex)
-		hash = MurmurHash.update(hash, actionIndex)
-		return MurmurHash.finish(hash, 3)
-	end
-
-	
-	public boolean equals(Object obj) 
-		if (obj == this) 
-			return true
-		end
-		else if (!(obj instanceof LexerCustomAction)) 
-			return false
-		end
-
-		LexerCustomAction other = (LexerCustomAction)obj
-		return ruleIndex == other.ruleIndex
-			&& actionIndex == other.actionIndex
-	end
+    return @ruleIndex == obj.ruleIndex && @actionIndex == obj.actionIndex
+  end
 end

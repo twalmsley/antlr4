@@ -18,7 +18,12 @@ class CodePointCharStream < CharStream
 # We know the maximum code point in byteArray is U+00FF,
 # so we can treat this as if it were ISO-8859-1, aka Latin-1,
 # which shares the same code points up to 0xFF.
-    return @byteArray.slice(startIdx, len).join
+    chars = @byteArray.slice(startIdx, len)
+    result = ""
+    chars.each do |c|
+      result << c
+    end
+    return result
   end
 
 
