@@ -1,48 +1,7 @@
+class ErrorInfo < DecisionEventInfo
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class ErrorInfo extends DecisionEventInfo 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public ErrorInfo(int decision,
-					 ATNConfigSet configs,
-					 TokenStream input, int startIndex, int stopIndex,
-					 boolean fullCtx)
-	
-		super(decision, configs, input, startIndex, stopIndex, fullCtx)
-	end
+  def initialize(decision, configs, input, startIndex, stopIndex, fullCtx)
+    super(decision, configs, input, startIndex, stopIndex, fullCtx)
+  end
 end

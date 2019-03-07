@@ -1,11 +1,4 @@
-
-
-
-
-
-
-
-
-class Predicate<T> 
-	boolean test(T t)
+class Predicate < T >
+    boolean
+  test(T t)
 end

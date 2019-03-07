@@ -14,7 +14,7 @@ class InputMismatchException < RecognitionException
     end
 
     result.offendingToken = recog.getCurrentToken
-    if(state != nil)
+    if (state != nil)
       result.offendingState = state
     end
     result

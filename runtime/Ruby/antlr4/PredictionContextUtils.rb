@@ -62,11 +62,11 @@ class PredictionContextUtils
   def self.mergeSingletons(a, b, rootIsWildcard, mergeCache)
 
     if (mergeCache != nil)
-      previous = mergeCache.get(a, b)
+      previous = mergeCache.get2(a, b)
       if (previous != nil)
         return previous
       end
-      previous = mergeCache.get(b, a)
+      previous = mergeCache.get2(b, a)
       if (previous != nil)
         return previous
       end
@@ -169,11 +169,11 @@ class PredictionContextUtils
 
   def self.mergeArrays(a, b, rootIsWildcard, mergeCache)
     if (mergeCache != nil)
-      previous = mergeCache.get(a, b)
+      previous = mergeCache.get2(a, b)
       if (previous != nil)
         return previous
       end
-      previous = mergeCache.get(b, a)
+      previous = mergeCache.get2(b, a)
       if (previous != nil)
         return previous
       end

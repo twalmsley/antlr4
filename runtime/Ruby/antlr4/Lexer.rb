@@ -196,7 +196,7 @@ class Lexer < Recognizer
       @_token = token
     else
       @_token = @_factory.create(@_tokenFactorySourcePair, @_type, @_text, @_channel, @_tokenStartCharIndex, getCharIndex() - 1,
-                           @_tokenStartLine, @_tokenStartCharPositionInLine)
+                                 @_tokenStartLine, @_tokenStartCharPositionInLine)
     end
   end
 

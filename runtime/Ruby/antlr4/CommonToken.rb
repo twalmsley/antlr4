@@ -87,7 +87,7 @@ class CommonToken
   end
 
 
-  def toString_recog(r=nil)
+  def toString_recog(r = nil)
 
     channelStr = ""
     if (@channel > 0)

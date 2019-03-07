@@ -1,4 +1,3 @@
-
 class ProxyErrorListener
 
   def initialize(delegates)

@@ -386,7 +386,7 @@ class BufferedTokenStream < TokenStream
       end
       buf << t.getText()
       buf <<
-      i += 1
+          i += 1
     end
     return buf
   end

@@ -7,7 +7,7 @@ class IntervalSet
   def initialize(a = nil, b = nil)
     @readonly = false
     @intervals = []
-    add(a,b) if a != nil
+    add(a, b) if a != nil
   end
 
   def self.of(a, b = nil)
@@ -61,7 +61,7 @@ class IntervalSet
         bigger = addition.union(r)
         @intervals[i] = bigger
 
-        while i < (@intervals.length-1)
+        while i < (@intervals.length - 1)
           i += 1
           nextInterval = @intervals[i]
           if !bigger.adjacent(nextInterval) && bigger.disjoint(nextInterval)
@@ -418,7 +418,7 @@ class IntervalSet
       if (i < @intervals.length)
         buf << ", "
       end
-      i+=1
+      i += 1
     end
     if (size() > 1)
       buf << "end"

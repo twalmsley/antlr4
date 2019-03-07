@@ -419,11 +419,11 @@ class LexerATNSimulator < ATNSimulator
         # additional modifications are needed before we can support
         # the split operation.
         lexerActionExecutor = LexerActionExecutor.append(config.lexerActionExecutor, @atn.lexerActions[t.actionIndex])
-        c =  LexerATNConfig.new
+        c = LexerATNConfig.new
         c.LexerATNConfig_4(config, t.target, lexerActionExecutor)
       else
         # ignore actions in referenced rules
-        c =  LexerATNConfig.new
+        c = LexerATNConfig.new
         c.LexerATNConfig_3(config, t.target)
       end
 

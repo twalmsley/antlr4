@@ -1,49 +1,12 @@
+class LookaheadEventInfo < DecisionEventInfo
 
 
+  attr_reader :predictedAlt
 
 
+  def initialize(decision, configs, predictedAlt, input, startIndex, stopIndex, fullCtx)
 
-
-
-
-
-
-
-
-
-
-
-
-class LookaheadEventInfo extends DecisionEventInfo 
-
-
-
-
-
-	public int predictedAlt
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public LookaheadEventInfo(int decision,
-							  ATNConfigSet configs,
-							  int predictedAlt,
-							  TokenStream input, int startIndex, int stopIndex,
-							  boolean fullCtx)
-	
-		super(decision, configs, input, startIndex, stopIndex, fullCtx)
-		this.predictedAlt = predictedAlt
-	end
+    super(decision, configs, input, startIndex, stopIndex, fullCtx)
+    @predictedAlt = predictedAlt
+  end
 end

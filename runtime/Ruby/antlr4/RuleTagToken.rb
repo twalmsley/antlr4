@@ -1,206 +1,77 @@
+require '../antlr4/Token'
 
+class RuleTagToken < Token
 
+  attr_reader :ruleName
+  attr_reader :bypassTokenType
+  attr_reader :label
 
+  def initialize(ruleName, bypassTokenType, label = nil)
+    if (ruleName == nil || ruleName.isEmpty())
+      raise IllegalArgumentException, "ruleName cannot be nil or empty."
+    end
 
+    @ruleName = ruleName
+    @bypassTokenType = bypassTokenType
+    @label = label
+  end
 
+  def getChannel()
+    return DEFAULT_CHANNEL
+  end
 
 
+  def getText()
+    if (@label != nil)
+      return "<" + @label + ":" + @ruleName + ">"
+    end
 
+    return "<" + @ruleName + ">"
+  end
 
 
+  def getType()
+    return @bypassTokenType
+  end
 
 
+  def getLine()
+    return 0
+  end
 
 
+  def getCharPositionInLine()
+    return -1
+  end
 
 
+  def getTokenIndex()
+    return -1
+  end
 
-class RuleTagToken implements Token 
 
+  def getStartIndex()
+    return -1
+  end
 
 
-	private final String ruleName
+  def getStopIndex()
+    return -1
+  end
 
 
+  def getTokenSource()
+    return nil
+  end
 
 
-	private final int bypassTokenType
+  def getInputStream()
+    return nil
+  end
 
 
+  def to_s()
+    return @ruleName + ":" + @bypassTokenType
+  end
 
-	private final String label
-
-
-
-
-
-
-
-
-
-
-
-	public RuleTagToken(String ruleName, int bypassTokenType) 
-		this(ruleName, bypassTokenType, null)
-	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public RuleTagToken(String ruleName, int bypassTokenType, label) 
-		if (ruleName == null || ruleName.isEmpty()) 
-			throw new IllegalArgumentException("ruleName cannot be null or empty.")
-		end
-
-		this.ruleName = ruleName
-		this.bypassTokenType = bypassTokenType
-		this.label = label
-	end
-
-
-
-
-
-
-
-	public final String getRuleName() 
-		return ruleName
-	end
-
-
-
-
-
-
-
-
-	public final String getLabel() 
-		return label
-	end
-
-
-
-
-
-
-	
-	public int getChannel() 
-		return DEFAULT_CHANNEL
-	end
-
-
-
-
-
-
-
-	
-	public String getText() 
-		if (label != null) 
-			return "<" + label + ":" + ruleName + ">"
-		end
-
-		return "<" + ruleName + ">"
-	end
-
-
-
-
-
-
-
-	
-	public int getType() 
-		return bypassTokenType
-	end
-
-
-
-
-
-
-	
-	public int getLine() 
-		return 0
-	end
-
-
-
-
-
-
-	
-	public int getCharPositionInLine() 
-		return -1
-	end
-
-
-
-
-
-
-	
-	public int getTokenIndex() 
-		return -1
-	end
-
-
-
-
-
-
-	
-	public int getStartIndex() 
-		return -1
-	end
-
-
-
-
-
-
-	
-	public int getStopIndex() 
-		return -1
-	end
-
-
-
-
-
-
-	
-	public TokenSource getTokenSource() 
-		return null
-	end
-
-
-
-
-
-
-	
-	public CharStream getInputStream() 
-		return null
-	end
-
-
-
-
-
-
-
-	
-	public String toString() 
-		return ruleName + ":" + bypassTokenType
-	end
 end

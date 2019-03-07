@@ -12,14 +12,15 @@ class Parser < Recognizer
       @parser = parser
       @_input = input
     end
+
     def enterEveryRule(ctx)
-      puts("enter   "  <<  @parser.getRuleNames()[ctx.getRuleIndex()]  <<
-               ", LT(1)="  <<  @_input.LT(1).getText())
+      puts("enter   " << @parser.getRuleNames()[ctx.getRuleIndex()] <<
+               ", LT(1)=" << @_input.LT(1).getText())
     end
 
 
     def visitTerminal(node, ctx)
-      puts("consume "  <<  node.getSymbol().to_s  <<  " rule "  <<
+      puts("consume " << node.getSymbol().to_s << " rule " <<
                @parser.getRuleNames()[ctx.getRuleIndex()].to_s)
     end
 
@@ -28,8 +29,8 @@ class Parser < Recognizer
     end
 
     def exitEveryRule(ctx)
-      puts("exit    "  <<  @parser.getRuleNames()[ctx.getRuleIndex()]  <<
-               ", LT(1)="  <<  @_input.LT(1).getText())
+      puts("exit    " << @parser.getRuleNames()[ctx.getRuleIndex()] <<
+               ", LT(1)=" << @_input.LT(1).getText())
     end
   end
 
@@ -606,7 +607,7 @@ class Parser < Recognizer
         if (seenOne)
           System.out.println()
         end
-        System.out.println("Decision "  <<  dfa.decision  <<  ":")
+        System.out.println("Decision " << dfa.decision << ":")
         System.out.print(dfa.to_s(getVocabulary()))
         seenOne = true
       end

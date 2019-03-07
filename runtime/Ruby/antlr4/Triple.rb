@@ -1,48 +1,36 @@
+class Triple
+  attr_accessor :a
+  attr_accessor :b
+  attr_accessor :c
+
+  def initialize(a, b, c)
+    @a = a
+    @b = b
+    @c = c
+  end
 
 
+  def eql?(obj)
+    if (obj == self)
+      return true
+    else
+      if (!(obj.is_a? Triple))
+        return false
+      end
+    end
 
+    return ObjectEqualityComparator.instance.equals(a, obj.a) && ObjectEqualityComparator.instance.equals(b, obj.b) && ObjectEqualityComparator.instance.equals(c, obj.c)
+  end
 
+  def hash()
+    hashcode = 0
+    hashcode = MurmurHash.update_obj(hashcode, a)
+    hashcode = MurmurHash.update_obj(hashcode, b)
+    hashcode = MurmurHash.update_obj(hashcode, c)
+    return MurmurHash.finish(hashcode, 3)
+  end
 
-
-
-
-class Triple<A,B,C> 
-	public final A a
-	public final B b
-	public final C c
-
-	public Triple(A a, B b, C c) 
-		this.a = a
-		this.b = b
-		this.c = c
-	end
-
-	
-	public boolean equals(Object obj) 
-		if (obj == this) 
-			return true
-		end
-		else if (!(obj instanceof Triple<?, ?, ?>)) 
-			return false
-		end
-
-		Triple<?, ?, ?> other = (Triple<?, ?, ?>)obj
-		return ObjectEqualityComparator.INSTANCE.equals(a, other.a)
-			&& ObjectEqualityComparator.INSTANCE.equals(b, other.b)
-			&& ObjectEqualityComparator.INSTANCE.equals(c, other.c)
-	end
-
-	
-	public int hashCode() 
-		int hash = MurmurHash.initialize()
-		hash = MurmurHash.update(hash, a)
-		hash = MurmurHash.update(hash, b)
-		hash = MurmurHash.update(hash, c)
-		return MurmurHash.finish(hash, 3)
-	end
-
-	
-	public String toString() 
-		return String.format("(%s, %s, %s)", a, b, c)
-	end
+  def to_s()
+    return "(" << @a.to_s << "," << @b.to_s << ", " << @c.to_s << ")"
+  end
 end

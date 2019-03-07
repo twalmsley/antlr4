@@ -1,72 +1,32 @@
+require '../antlr4/DefaultErrorStrategy'
+
+class BailErrorStrategy < DefaultErrorStrategy
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class BailErrorStrategy extends DefaultErrorStrategy 
-
-
-
-
-
-    
-    public void recover(Parser recognizer, RecognitionException e) 
-		for (ParserRuleContext context = recognizer.getContext() context != null context = context.getParent()) 
-			context.exception = e
-		end
-
-        throw new ParseCancellationException(e)
+  def recover(recognizer, e)
+    context = recognizer.getContext()
+    while context != nil
+      context = context.getParent()
+      context.exception = e
     end
 
+    raise ParseCancellationException(e)
+  end
 
 
+  def recoverInline(recognizer)
 
-    
-    public Token recoverInline(Parser recognizer)
-        throws RecognitionException
-    
-		InputMismatchException e = new InputMismatchException(recognizer)
-		for (ParserRuleContext context = recognizer.getContext() context != null context = context.getParent()) 
-			context.exception = e
-		end
-
-        throw new ParseCancellationException(e)
+    e = InputMismatchException.new (recognizer)
+    context = recognizer.getContext()
+    while context != nil
+      context = context.getParent()
+      context.exception = e
     end
 
+    raise ParseCancellationException(e)
+  end
 
-    
-    public void sync(Parser recognizer)  end
+
+  def sync(recognizer)
+  end
 end

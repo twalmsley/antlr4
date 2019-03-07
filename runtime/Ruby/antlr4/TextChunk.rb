@@ -1,54 +1,22 @@
+require '../antlr4/Chunk'
 
+class TextChunk < Chunk
 
+  attr_reader :text
 
+  def initialize(text)
+    if (text == nil)
+      raise IllegalArgumentException, "text cannot be null"
+    end
 
+    @text = text
+  end
 
+  def getText()
+    return @text
+  end
 
-
-
-
-
-
-
-class TextChunk extends Chunk 
-
-
-
-
-	private final String text
-
-
-
-
-
-
-
-	public TextChunk(String text) 
-		if (text == null) 
-			throw new IllegalArgumentException("text cannot be null")
-		end
-
-		this.text = text
-	end
-
-
-
-
-
-
-
-	public final String getText() 
-		return text
-	end
-
-
-
-
-
-
-
-	
-	public String toString() 
-		return "'"+text+"'"
-	end
+  def to_s()
+    return "'" + @text + "'"
+  end
 end

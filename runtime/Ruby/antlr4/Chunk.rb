@@ -1,21 +1,2 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-abstract class Chunk 
+class Chunk
 end

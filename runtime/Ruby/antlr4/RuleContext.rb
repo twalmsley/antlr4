@@ -137,7 +137,7 @@ class RuleContext < RuleNode
 
   def to_s_list_ctx(ruleNames, stop)
     buf = ""
-     p = self
+    p = self
     buf << "["
     while (p != nil && p != stop)
       if (ruleNames == nil)

@@ -107,7 +107,7 @@ class LL1Analyzer
       t = s.transition(i)
       if (t.is_a? RuleTransition.class)
         if calledRuleStack.get(t.target.ruleIndex)
-          i+=1
+          i += 1
           next
         end
 

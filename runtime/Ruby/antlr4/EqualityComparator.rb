@@ -1,35 +1,10 @@
+class EqualityComparator < T >
 
 
+    int
+  hashCode(T obj)
 
 
-
-
-
-
-
-
-
-
-
-
-
-class EqualityComparator<T> 
-
-
-
-
-
-
-
-	int hashCode(T obj)
-
-
-
-
-
-
-
-
-	boolean equals(T a, T b)
+  boolean equals(T a, T b)
 
 end

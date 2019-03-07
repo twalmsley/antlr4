@@ -2,6 +2,7 @@ require '../antlr4/ATNSimulator'
 require '../antlr4/PredictionMode'
 require '../antlr4/PredictionContextUtils'
 require '../antlr4/RuleStopState'
+require '../antlr4/DoubleKeyMap'
 
 
 class ParserATNSimulator < ATNSimulator
@@ -426,7 +427,7 @@ class ParserATNSimulator < ATNSimulator
     end
 
     if (@mergeCache == nil)
-      mergeCache = Hash.new
+      @mergeCache = DoubleKeyMap.new
     end
 
     intermediate = ATNConfigSet.new(fullCtx)
@@ -460,7 +461,7 @@ class ParserATNSimulator < ATNSimulator
         if (target != nil)
           atncfg = ATNConfig.new
           atncfg.ATNConfig_3(c, target)
-          intermediate.add(atncfg, mergeCache)
+          intermediate.add(atncfg, @mergeCache)
         end
         ti += 1
       end

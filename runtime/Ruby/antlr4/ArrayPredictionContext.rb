@@ -67,7 +67,7 @@ class ArrayPredictionContext < PredictionContext
       end
       if (returnStates[i] == EMPTY_RETURN_STATE)
         buf << "$"
-        i+=1
+        i += 1
         next
       end
       buf << @returnStates[i]
@@ -77,7 +77,7 @@ class ArrayPredictionContext < PredictionContext
       else
         buf << "nil"
       end
-      i+=1
+      i += 1
     end
 
     buf << "]"
