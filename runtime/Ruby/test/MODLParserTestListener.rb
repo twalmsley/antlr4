@@ -47,6 +47,12 @@ class MODLParserTestListener < MODL::MODLParserBaseListener
   end
 
   def enterModl_pair(ctx)
+    if !ctx.QUOTED.nil?
+      puts "QUOTED:"+ctx.QUOTED.to_s
+    end
+    if !ctx.STRING.nil?
+      puts "STRING:"+ctx.STRING.to_s
+    end
     ctx.modl_value_item.enterRule(self) if ctx.modl_value_item != nil
     ctx.modl_map.enterRule(self) if ctx.modl_map != nil
     ctx.modl_array.enterRule(self) if ctx.modl_array != nil
@@ -213,6 +219,25 @@ class MODLParserTestListener < MODL::MODLParserBaseListener
     ctx.modl_map.enterRule(self) if ctx.modl_map != nil
     ctx.modl_pair.enterRule(self) if ctx.modl_pair != nil
     ctx.modl_array.enterRule(self) if ctx.modl_array != nil
+
+    if !ctx.QUOTED.nil?
+      puts "QUOTED:"+ctx.QUOTED.to_s
+    end
+    if !ctx.NUMBER.nil?
+      puts "NUMBER:"+ctx.NUMBER.to_s
+    end
+    if !ctx.STRING.nil?
+      puts "STRING:"+ctx.STRING.to_s
+    end
+    if !ctx.TRUE.nil?
+      puts "TRUE:"+ctx.TRUE.to_s
+    end
+    if !ctx.FALSE.nil?
+      puts "FALSE:"+ctx.FALSE.to_s
+    end
+    if !ctx.NULL.nil?
+      puts "NULL:"+ctx.NULL.to_s
+    end
   end
 
   def exitModl_array_value_item(ctx)
