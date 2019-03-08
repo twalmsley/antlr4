@@ -141,22 +141,22 @@ class PredictionContextUtils
 
     if (rootIsWildcard)
       if (a.returnState == EMPTY_RETURN_STATE)
-        return EMPTY # * + b = *
+        return EmptyPredictionContext::EMPTY # * + b = *
       end
       if (b.returnState == EMPTY_RETURN_STATE)
-        return EMPTY # a + * = *
+        return EmptyPredictionContext::EMPTY # a + * = *
       end
     else
-      if (a == EMPTY && b == EMPTY)
-        return EMPTY # $ + $ = $
+      if (a.returnState == EMPTY_RETURN_STATE && b.returnState == EMPTY_RETURN_STATE)
+        return EmptyPredictionContext::EMPTY # $ + $ = $
       end
-      if (a == EMPTY) # $ + x = [x,$]
+      if (a.returnState == EMPTY_RETURN_STATE) # $ + x = [x,$]
         payloads = [b.returnState, EMPTY_RETURN_STATE]
         parents = [b.parent, nil]
         joined = ArrayPredictionContext.new(parents, payloads)
         return joined
       end
-      if (b == EMPTY) # x + $ = [x,$] ($ is always last if present)
+      if (b.returnState == EMPTY_RETURN_STATE) # x + $ = [x,$] ($ is always last if present)
         payloads = [a.returnState, EMPTY_RETURN_STATE]
         parents = [a.parent, nil]
         joined = ArrayPredictionContext.new(parents, payloads)

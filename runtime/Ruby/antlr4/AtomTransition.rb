@@ -3,11 +3,11 @@ require '../antlr4/Transition'
 
 class AtomTransition < Transition
 
-  attr_reader :label
+  attr_reader :the_label
 
   def initialize(target, label)
     super(target)
-    @label = label
+    @the_label = label
   end
 
 
@@ -17,16 +17,16 @@ class AtomTransition < Transition
 
 
   def label()
-    return IntervalSet.of(@label)
+    return IntervalSet.of(@the_label)
   end
 
 
   def matches(symbol, minVocabSymbol, maxVocabSymbol)
-    return @label == symbol
+    return @the_label == symbol
   end
 
 
   def to_s()
-    return "" + @label
+    return "" + @the_label
   end
 end

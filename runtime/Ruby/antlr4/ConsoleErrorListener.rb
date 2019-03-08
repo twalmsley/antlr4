@@ -11,7 +11,7 @@ class ConsoleErrorListener < BaseErrorListener
                   msg,
                   e)
 
-    STDERR.printf "line %d:%d %s\n" % [line, charPositionInLine, msg]
+    STDERR.puts "line " << line.to_s << ":" << charPositionInLine.to_s << " " << msg.to_s << ""
   end
 
 end

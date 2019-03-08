@@ -142,7 +142,7 @@ class PredictionMode
 
 
   def self.getUniqueAlt(altsets)
-    all = getAlts(altsets)
+    all = getAlts_1(altsets)
     if (all.cardinality() == 1)
       return all.nextSetBit(0)
     end

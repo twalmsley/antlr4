@@ -1,4 +1,4 @@
-require '../antlr4/TerminalNode'
+require '../antlr4/ParseTree'
 
 
 class TerminalNode < ParseTree

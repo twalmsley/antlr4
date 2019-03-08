@@ -1,18 +1,14 @@
 require '../antlr4/CommonToken'
+require 'singleton'
 
 class CommonTokenFactory
 
-
-  DEFAULT = CommonTokenFactory.new
-
-
-  @copyText = false
-
+  include Singleton
 
   def initialize(copyText = false)
+    @copyText = false
     @copyText = copyText
   end
-
 
   def create(source, type, text,
              channel, start, stop,

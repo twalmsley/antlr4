@@ -22,6 +22,7 @@ class CommonToken
     @index = -1
     @type = type
     @source = EMPTY_SOURCE
+    @text = nil
   end
 
   def self.create_1(source, type, channel, start, stop)

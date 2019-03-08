@@ -28,13 +28,12 @@ class BitSet
 
   def nextSetBit(bit)
     result = -1
-    i = bit
-    while (i < @bits.length)
-      if (get(i))
-        result = i
+
+    @bits.each do |b|
+      if b >= bit
+        result = b
         break
       end
-      i += 1
     end
     return result
   end

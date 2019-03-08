@@ -4,17 +4,9 @@ require '../antlr4/DFASerializer'
 class DFA
 
   attr_accessor :states
-
   attr_accessor :s0
-
   attr_reader :decision
-
-
   attr_reader :atnStartState
-
-
-  @precedenceDfa
-
 
   def initialize(atnStartState, decision = 0)
     @atnStartState = atnStartState
@@ -89,13 +81,13 @@ class DFA
   end
 
 
-  def to_s(tokenNames)
+  def to_s_1(tokenNames)
     if (@s0 == nil)
       return ""
     end
     serializer = DFASerializer.new
     serializer.initFromTokenNames(self, tokenNames)
-    return serializer.to_s()
+    return serializer.to_s
   end
 
   def toString(vocabulary)

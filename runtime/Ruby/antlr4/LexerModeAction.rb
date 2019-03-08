@@ -1,7 +1,6 @@
 require '../antlr4/LexerAction'
 
-class LexerModeAction
-  LexerAction
+class LexerModeAction < LexerAction
   attr_reader :mode
 
 

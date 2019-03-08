@@ -12,6 +12,10 @@ class LexerATNSimulator < ATNSimulator
 
   EMPTY = EmptyPredictionContext.new(Integer::MAX)
 
+  class << self
+    attr_reader :debug
+  end
+
   class SimState
     attr_accessor :index
     attr_accessor :line
@@ -29,7 +33,7 @@ class LexerATNSimulator < ATNSimulator
 
   def initialize(recog, atn, decisionToDFA, sharedContextCache)
     super(atn, sharedContextCache)
-    @debug = false
+    @@debug = false
     @dfa_debug = false
 
     @decisionToDFA = decisionToDFA
@@ -89,7 +93,7 @@ class LexerATNSimulator < ATNSimulator
   def matchATN(input)
     startState = atn.modeToStartState[@mode]
 
-    if (@debug)
+    if (@@debug)
       printf "matchATN mode %d start: %s\n" % [@mode, startState]
     end
 
@@ -106,7 +110,7 @@ class LexerATNSimulator < ATNSimulator
 
     predict = execATN(input, nextState)
 
-    if (@debug)
+    if (@@debug)
       printf "DFA after matchATN: %s\n" % [@decisionToDFA[old_mode].toLexerString()]
     end
 
@@ -114,7 +118,7 @@ class LexerATNSimulator < ATNSimulator
   end
 
   def execATN(input, ds0)
-    if (@debug)
+    if (@@debug)
       printf "start state closure=%s\n" % [ds0.configs]
     end
 
@@ -128,7 +132,7 @@ class LexerATNSimulator < ATNSimulator
     s = ds0 # s is current/from DFA state
 
     while (true) # while more work
-      if (@debug)
+      if (@@debug)
         printf "execATN loop starting closure: %s\n" % [s.configs]
       end
 
@@ -187,7 +191,7 @@ class LexerATNSimulator < ATNSimulator
     end
 
     target = s.edges[t - MIN_DFA_EDGE]
-    if (@debug && target != nil)
+    if (@@debug && target != nil)
       puts "reuse state " + s.stateNumber.to_s + " edge to " + target.stateNumber.to_s
     end
 
@@ -245,7 +249,7 @@ class LexerATNSimulator < ATNSimulator
         next
       end
 
-      if (@debug)
+      if (@@debug)
         printf "testing %s at %s\n" % [getTokenName(t), c.toString_2(@recog, true)]
       end
 
@@ -277,7 +281,7 @@ class LexerATNSimulator < ATNSimulator
 
   def accept(input, lexerActionExecutor, startIndex, index, line, charPos)
 
-    if (@debug)
+    if (@@debug)
       printf "ACTION %s\n" % [lexerActionExecutor]
     end
 
@@ -320,7 +324,7 @@ class LexerATNSimulator < ATNSimulator
   def closure(input, config, configs, currentAltReachedAcceptState, speculative, treatEofAsEpsilon)
 
     if (config.state.is_a? RuleStopState)
-      if (@debug)
+      if (@@debug)
         if (@recog != nil)
           printf "closure at %s rule stop %s\n" % [@recog.getRuleNames()[config.state.ruleIndex], config]
         else
@@ -395,7 +399,7 @@ class LexerATNSimulator < ATNSimulator
 
     when Transition::PREDICATE
       pt = t
-      if (@debug)
+      if (@@debug)
         puts("EVAL rule " + pt.ruleIndex + ":" + pt.predIndex)
       end
       configs.hasSemanticContext = true
@@ -497,7 +501,7 @@ class LexerATNSimulator < ATNSimulator
       return
     end
 
-    if (@debug)
+    if (@@debug)
       message = "EDGE " << p.to_s << " -> " << q.to_s << " upon " << t
       puts(message)
     end

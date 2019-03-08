@@ -37,8 +37,9 @@ class Lexer < Recognizer
     @_modeStack = []
     @_tokenStartCharIndex = -1
     @_mode = DEFAULT_MODE
-    @_factory = CommonTokenFactory::DEFAULT
+    @_factory = CommonTokenFactory.instance
     @_token = nil
+    @_hitEOF = false
   end
 
   def reset

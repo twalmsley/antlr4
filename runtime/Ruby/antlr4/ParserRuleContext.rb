@@ -29,6 +29,7 @@ class ParserRuleContext < RuleContext
 
   def initialize(parent = nil, invokingStateNumber = nil)
     super(parent, invokingStateNumber)
+    @children = []
   end
 
 # Double dispatch methods for listeners

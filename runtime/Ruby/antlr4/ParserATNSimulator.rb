@@ -38,9 +38,9 @@ class ParserATNSimulator < ATNSimulator
     @_dfa = nil
 
     @debug = false
-    @debug_list_atn_decisions = true
+    @debug_list_atn_decisions = false
     @dfa_debug = false
-    @retry_debug = true
+    @retry_debug = false
 
   end
 
@@ -201,7 +201,7 @@ class ParserATNSimulator < ATNSimulator
         end
 
         if (@dfa_debug)
-          puts("ctx sensitive state " << outerContext << " in " << d)
+          puts("ctx sensitive state " << outerContext.to_s << " in " << d.to_s)
         end
         fullCtx = true
         s0_closure =
@@ -365,10 +365,15 @@ class ParserATNSimulator < ATNSimulator
 
       altSubSets = PredictionMode.getConflictingAltSubsets(reach)
       if (@debug)
-        puts("LL altSubSets=" << altSubSets <<
-                 ", predict=" << PredictionMode.getUniqueAlt(altSubSets) <<
+        tmp = ""
+        altSubSets.each do |as|
+          tmp << as.to_s
+          tmp << " "
+        end
+        puts("LL altSubSets=" << tmp <<
+                 ", predict=" << PredictionMode.getUniqueAlt(altSubSets).to_s <<
                  ", resolvesToJustOneViableAlt=" <<
-                 PredictionMode.resolvesToJustOneViableAlt(altSubSets))
+                 PredictionMode.resolvesToJustOneViableAlt(altSubSets).to_s)
       end
 
 #			puts("altSubSets: "+altSubSets)
