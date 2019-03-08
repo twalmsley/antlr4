@@ -2,9 +2,9 @@ class ProfilingATNSimulator < ParserATNSimulator
 
   def initialize(parser)
     super(parser,
-          parser.getInterpreter().atn,
-          parser.getInterpreter().decisionToDFA,
-          parser.getInterpreter().sharedContextCache)
+          parser._interp.atn,
+          parser._interp.decisionToDFA,
+          parser._interp.sharedContextCache)
 
     @numDecisions = @atn.decisionToState.size()
     @_sllStopIndex = 0

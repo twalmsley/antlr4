@@ -88,7 +88,7 @@ class Parser < Recognizer
     setTrace(false)
     @_precedenceStack.clear()
     @_precedenceStack.push(0)
-    interpreter = getInterpreter()
+    interpreter = @_interp
     if (interpreter != nil)
       interpreter.reset()
     end
@@ -505,7 +505,7 @@ class Parser < Recognizer
 
 
   def isExpectedToken(symbol)
-    atn = getInterpreter().atn
+    atn = @_interp.atn
     ctx = @_ctx
     s = atn.states.get(getState())
     following = atn.nextTokens(s)
@@ -546,7 +546,7 @@ class Parser < Recognizer
 
 
   def getExpectedTokensWithinCurrentRule()
-    atn = getInterpreter().atn
+    atn = @_interp.atn
     s = atn.states.get(getState())
     return atn.nextTokens(s)
   end
@@ -621,7 +621,7 @@ class Parser < Recognizer
 
 
   def getParseInfo()
-    interp = getInterpreter()
+    interp = @_interp
     if (interp.is_a? ProfilingATNSimulator)
       return ParseInfo.new(interp)
     end
@@ -630,7 +630,7 @@ class Parser < Recognizer
 
 
   def setProfile(profile)
-    interp = getInterpreter()
+    interp = @_interp
     saveMode = interp.getPredictionMode()
     if (profile)
       if (!(interp.is_a? ProfilingATNSimulator))
@@ -640,7 +640,7 @@ class Parser < Recognizer
       sim = ParserATNSimulator.new(self, getATN(), interp.decisionToDFA, interp.getSharedContextCache())
       setInterpreter(sim)
     end
-    getInterpreter().setPredictionMode(saveMode)
+    @_interp.setPredictionMode(saveMode)
   end
 
 

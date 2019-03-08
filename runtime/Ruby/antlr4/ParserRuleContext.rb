@@ -89,10 +89,10 @@ class ParserRuleContext < RuleContext
 
     j = -1 # what element have we found with ctxType?
     @children.each do |o|
-      if (ctxType.isInstance(o))
+      if (o.class.name.include? ctxType)
         j += 1
         if (j == i)
-          return ctxType.cast(o)
+          return o
         end
       end
     end
@@ -108,8 +108,8 @@ class ParserRuleContext < RuleContext
     @children.each do |o|
       if (o.is_a? TerminalNode)
         tnode = o
-        symbol = tnode.getSymbol()
-        if (symbol.getType() == ttype)
+        symbol = tnode.symbol
+        if (symbol != nil && symbol.type == ttype)
           j += 1
           if (j == i)
             return tnode
@@ -130,8 +130,8 @@ class ParserRuleContext < RuleContext
     @children.each do |o|
       if (o.is_a? TerminalNode)
         tnode = o
-        symbol = tnode.getSymbol()
-        if (symbol.getType() == ttype)
+        symbol = tnode.symbol
+        if (symbol.type == ttype)
           if (tokens == nil)
             tokens = []
           end
@@ -158,12 +158,12 @@ class ParserRuleContext < RuleContext
 
     contexts = nil
     @children.each do |o|
-      if (ctxType.isInstance(o))
+      if (o.class.name.include? ctxType)
         if (contexts == nil)
           contexts = []
         end
 
-        contexts << ctxType.cast(o)
+        contexts << o
       end
     end
 
@@ -181,10 +181,10 @@ class ParserRuleContext < RuleContext
 
 
   def getSourceInterval()
-    if (start == nil)
+    if (@start == nil)
       return Interval.INVALID
     end
-    if (stop == nil || @stop.getTokenIndex() < @start.getTokenIndex())
+    if (@stop == nil || @stop.getTokenIndex() < @start.getTokenIndex())
       return Interval.of(@start.getTokenIndex(), @start.getTokenIndex() - 1) # empty
     end
     return Interval.of(@start.getTokenIndex(), @stop.getTokenIndex())

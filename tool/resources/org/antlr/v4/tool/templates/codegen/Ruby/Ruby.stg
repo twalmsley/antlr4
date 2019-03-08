@@ -478,7 +478,7 @@ setState(<choice.stateNumber>)
 @_errHandler.sync(self)
 <if(choice.label)><labelref(choice.label)> = @_input.LT(1)<endif>
 <preamble; separator="\n">
-case ( getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx) )
+case ( @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx) )
 <alts:{alt |
 when <i>
 	<alt>
@@ -489,7 +489,7 @@ end
 OptionalBlock(choice, alts, error) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self)
-case ( getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx) )
+case ( @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx) )
 <alts:{alt |
 when <i><if(!choice.ast.greedy)>+1<endif>
 	<alt>
@@ -500,7 +500,7 @@ end
 StarBlock(choice, alts, sync, iteration) ::= <<
 setState(<choice.stateNumber>)
 @_errHandler.sync(self);
-_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
+_alt = @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx)
 while ( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 	if ( _alt==1<if(!choice.ast.greedy)>+1<endif> )
 		<iteration>
@@ -508,7 +508,7 @@ while ( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 	end
 	setState(<choice.loopBackStateNumber>)
 	@_errHandler.sync(self)
-	_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
+	_alt = @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx)
 end
 >>
 
@@ -527,7 +527,7 @@ when <i><if(!choice.ast.greedy)>+1<endif>
 	end
 	setState(<choice.loopBackStateNumber>) <! loopback/exit decision !>
 	@_errHandler.sync(self)
-	_alt = getInterpreter().adaptivePredict(@_input,<choice.decision>,@_ctx)
+	_alt = @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx)
     break if !( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 end
 >>
@@ -682,17 +682,17 @@ RuleContextListDecl(rdecl) ::= "<rdecl.name> = []"
 
 ContextTokenGetterDecl(t)      ::= <<
 def <t.name>()
-  return getToken(<parser.name>.<t.name>, 0)
+  return getToken(<parser.name>::<t.name>, 0)
 end
 >>
 ContextTokenListGetterDecl(t)  ::= <<
 def <t.name>()
- return getTokens(<parser.name>.<t.name>)
+ return getTokens(<parser.name>::<t.name>)
 end
 >>
 ContextTokenListIndexedGetterDecl(t)  ::= <<
 def <t.name>_i( i)
-	return getToken(<parser.name>.<t.name>, i)
+	return getToken(<parser.name>::<t.name>, i)
 end
 >>
 ContextRuleGetterDecl(r)       ::= <<

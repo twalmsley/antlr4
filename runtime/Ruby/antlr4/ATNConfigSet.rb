@@ -68,11 +68,10 @@ class ATNConfigSet
 
   def findFirstRuleStopState
     result = nil
-    iter = @configLookup.iterator
-    while (iter.hasNext)
-      x = iter.next
-      if (x.state.is_a? RuleStopState)
-        result = x
+
+    @configs.each do |config|
+      if (config.state.is_a? RuleStopState)
+        result = config
         break
       end
     end

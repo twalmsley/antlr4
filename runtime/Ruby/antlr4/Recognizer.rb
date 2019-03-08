@@ -6,6 +6,8 @@ class Recognizer
 
   EOF = -1
 
+  attr_accessor :_interp
+
   def initialize
     @tokenTypeMapCache = []
     @ruleIndexMapCache = []
@@ -83,20 +85,9 @@ class Recognizer
   end
 
 
-  def getInterpreter()
-    return @_interp
-  end
-
-
   def getParseInfo()
     return nil
   end
-
-
-  def setInterpreter(interpreter)
-    @_interp = interpreter
-  end
-
 
   def getErrorHeader(e)
     line = e.getOffendingToken().getLine()

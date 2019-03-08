@@ -152,7 +152,11 @@ class Array2DHashSet
 
 
   def iterator()
-    return SetIterator.new(toArray(), self)
+    a = toArray
+    if(@comparator != nil)
+      a.sort(@comparator)
+    end
+    return SetIterator.new(a, self)
   end
 
 

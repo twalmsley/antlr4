@@ -2,7 +2,7 @@ require '../antlr4/DFASerializer'
 
 class LexerDFASerializer < DFASerializer
   def initialize(dfa)
-    super(dfa, VocabularyImpl::EMPTY_VOCABULARY)
+    initFromVocabulary(dfa, VocabularyImpl::EMPTY_VOCABULARY)
   end
 
 

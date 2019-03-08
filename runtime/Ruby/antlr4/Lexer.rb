@@ -26,22 +26,6 @@ class Lexer < Recognizer
   attr_accessor :_mode
   attr_accessor :_text
 
-  def initialize(input = nil)
-    super()
-    if input != nil
-      @_input = input
-      @_tokenFactorySourcePair = OpenStruct.new
-      @_tokenFactorySourcePair.a = self
-      @_tokenFactorySourcePair.b = input
-    end
-    @_modeStack = []
-    @_tokenStartCharIndex = -1
-    @_mode = DEFAULT_MODE
-    @_factory = CommonTokenFactory.instance
-    @_token = nil
-    @_hitEOF = false
-  end
-
   def reset
 # wack Lexer state variables
     if (@_input != nil)
@@ -56,12 +40,26 @@ class Lexer < Recognizer
     @_text = nil
 
     @_hitEOF = false
-    @_mode = Lexer.DEFAULT_MODE
+    @_mode = DEFAULT_MODE
     @_modeStack.clear()
 
-    getInterpreter().reset()
+    if !@_interp.nil?
+      @_interp.reset()
+    end
   end
 
+  def initialize(input = nil)
+    super()
+    if input != nil
+      @_input = input
+      @_tokenFactorySourcePair = OpenStruct.new
+      @_tokenFactorySourcePair.a = self
+      @_tokenFactorySourcePair.b = input
+    end
+    @_modeStack = []
+    reset
+    @_factory = CommonTokenFactory.instance
+  end
 
   def nextToken
     if (@_input == nil)
@@ -96,14 +94,14 @@ class Lexer < Recognizer
       @_token = nil
       @_channel = Token::DEFAULT_CHANNEL
       @_tokenStartCharIndex = @_input.index()
-      @_tokenStartCharPositionInLine = getInterpreter().getCharPositionInLine()
-      @_tokenStartLine = getInterpreter().getLine()
+      @_tokenStartCharPositionInLine = @_interp.getCharPositionInLine()
+      @_tokenStartLine = @_interp.getLine()
       @_text = nil
       loop do
         @_type = Token::INVALID_TYPE
 
         begin
-          ttype = getInterpreter().match(@_input, @_mode)
+          ttype = @_interp.match(@_input, @_mode)
         rescue LexerNoViableAltException => e
           notifyListeners(e) # report error
           recover_1(e)
@@ -212,20 +210,20 @@ class Lexer < Recognizer
 
 
   def getLine()
-    return getInterpreter().getLine()
+    return @_interp.getLine()
   end
 
 
   def getCharPositionInLine()
-    return getInterpreter().getCharPositionInLine()
+    return @_interp.getCharPositionInLine()
   end
 
   def setLine(line)
-    getInterpreter().setLine(line)
+    @_interp.setLine(line)
   end
 
   def setCharPositionInLine(charPositionInLine)
-    getInterpreter().setCharPositionInLine(charPositionInLine)
+    @_interp.setCharPositionInLine(charPositionInLine)
   end
 
 
@@ -238,7 +236,7 @@ class Lexer < Recognizer
     if (@_text != nil)
       return _text
     end
-    return getInterpreter().getText(@_input)
+    return @_interp.getText(@_input)
   end
 
 
@@ -298,7 +296,7 @@ class Lexer < Recognizer
   def recover_1(e)
     if (@_input.LA(1) != IntStream::EOF)
       # skip a char and begin again
-      getInterpreter().consume(@_input)
+      @_interp.consume(@_input)
     end
   end
 

@@ -252,7 +252,7 @@ if (p.getNumberOfTransitions() > 1)
     overrideDecisionReached = true
   end
 else
-  predictedAlt = getInterpreter().adaptivePredict(_input, decision, _ctx)
+  predictedAlt = @_interp.adaptivePredict(_input, decision, _ctx)
 end
 end
 return predictedAlt

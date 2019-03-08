@@ -85,7 +85,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
 
   def sync(recognizer)
-    s = recognizer.getInterpreter().atn.states[recognizer.getState()]
+    s = recognizer._interp.atn.states[recognizer.getState()]
 #		System.err.println("sync @ "+s.stateNumber+"="+s.getClass().getSimpleName())
 # If already recovering, don't try to sync
     if (inErrorRecoveryMode(recognizer))
@@ -237,9 +237,9 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 # if current token is consistent with what could come after current
 # ATN state, then we know we're missing a token error recovery
 # is free to conjure up and insert the missing token
-    currentState = recognizer.getInterpreter().atn.states[recognizer.getState()]
+    currentState = recognizer._interp.atn.states[recognizer.getState()]
     nextt = currentState.transition(0).target
-    atn = recognizer.getInterpreter().atn
+    atn = recognizer._interp.atn
     expectingAtLL2 = atn.nextTokens_ctx(nextt, recognizer._ctx)
 #		System.out.println("LT(2) set="+expectingAtLL2.to_s(recognizer.getTokenNames()))
     if (expectingAtLL2.contains(currentSymbolType))
@@ -332,7 +332,7 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
 
 
   def getErrorRecoverySet(recognizer)
-    atn = recognizer.getInterpreter().atn
+    atn = recognizer._interp.atn
     ctx = recognizer._ctx
     recoverSet = IntervalSet.new()
     while (ctx != nil && ctx.invokingState >= 0)

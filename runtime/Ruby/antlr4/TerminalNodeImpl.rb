@@ -51,7 +51,7 @@ class TerminalNodeImpl < TerminalNode
 
 
   def to_s()
-    if (@symbol.getType() == Token::EOF)
+    if (@symboltype == Token::EOF)
       return "<EOF>"
     end
     return @symbol.getText()

@@ -1,8 +1,6 @@
-class FailedPredicateException
-  extends RecognitionException
-  private final int ruleIndex
-  private final int predicateIndex
-  private final String predicate
+require '../antlr4/RecognitionException'
+
+class FailedPredicateException < RecognitionException
 
   public FailedPredicateException(Parser recognizer)
   this(recognizer, null)
@@ -17,7 +15,7 @@ public FailedPredicateException(Parser recognizer,
                                               String message)
 
 super(formatMessage(predicate, message), recognizer, recognizer.getInputStream(), recognizer._ctx)
-ATNState s = recognizer.getInterpreter().atn.states.get(recognizer.getState())
+ATNState s = recognizer._interp.atn.states.get(recognizer.getState())
 
 AbstractPredicateTransition trans = (AbstractPredicateTransition) s.transition(0)
 if (trans instanceof PredicateTransition)
