@@ -41,6 +41,9 @@ class RuleContext < RuleNode
     self
   end
 
+  def set_alt_number(_num)
+  end
+
   def text
     return '' if child_count == 0
 
@@ -114,7 +117,7 @@ class RuleContext < RuleNode
       else
         rule_index = p.rule_index
         rule_name = rule_index >= 0 && rule_index < rule_names.size ? rule_names[rule_index] : rule_index
-        buf << rule_name
+        buf << rule_name.to_s
       end
 
       buf << ' ' if !p.parent.nil? && (!rule_names.nil? || !p.parent.empty?)

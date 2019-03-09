@@ -18,7 +18,7 @@ class LexerActionExecutor
   def self.append(lexer_action_executor, lexer_action)
     return LexerActionExecutor.new([lexer_action]) if lexer_action_executor.nil?
 
-    lexer_actions = lexer_action_executor._a.dup
+    lexer_actions = lexer_action_executor.lexer_actions.dup
     lexer_actions << lexer_action
     LexerActionExecutor.new(lexer_actions)
   end

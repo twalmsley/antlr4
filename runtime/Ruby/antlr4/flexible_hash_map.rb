@@ -51,7 +51,7 @@ class FlexibleHashMap
     end
 
     bucket.each do |e|
-      return e.value if @comparator.eql?(e.key, typed_key)
+      return e.value if @comparator.equals(e.key, typed_key)
     end
     nil
   end
@@ -64,7 +64,7 @@ class FlexibleHashMap
     bucket = @buckets[b]
     bucket = @buckets[b] = [] if bucket.nil?
     bucket.each do |e|
-      next unless @comparator.eql?(e.key, key)
+      next unless @comparator.equals(e.key, key)
 
       prev = e.value
       e.value = value

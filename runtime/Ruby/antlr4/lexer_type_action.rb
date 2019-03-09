@@ -16,7 +16,7 @@ class LexerTypeAction < LexerAction
   end
 
   def execute(lexer)
-    lexer.setType(@type)
+    lexer._type = @type
   end
 
   def hash

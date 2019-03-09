@@ -112,16 +112,16 @@ class <file.grammarName>BaseListener \< <file.grammarName>Listener
  def exit<lname; format="cap">(ctx)
  end}; separator="\n">
 
- def enterEveryRule(ctx)
+ def enter_every_rule(ctx)
  end
 
- def exitEveryRule(ctx)
+ def exit_every_rule(ctx)
  end
 
- def visitTerminal(node)
+ def visit_terminal(node)
  end
 
- def visitErrorNode(node)
+ def visit_error_node(node)
  end
 
 end
@@ -165,7 +165,7 @@ module <file.genPackage>
  class <file.grammarName>BaseVisitor \< AbstractParseTreeVisitor
 	<file.visitorNames:{lname |
 def visit<lname; format="cap">( ctx)
- return visitChildren(ctx)
+ return visit_children(ctx)
  end
  }; separator="\n">
 
@@ -207,15 +207,15 @@ class <parser.name> \< <superClass; null="Parser">
 	 return "<parser.grammarFileName; format="java-escape">"
 	end
 
-	def getRuleNames()
+	def rule_names()
 	 return @@ruleNames
 	end
 
-	def getSerializedATN()
+	def serialized_atn()
 	 return @@_serializedATN
 	end
 
-	def getATN()
+	def atn()
 	 return @@_ATN
 	end
 
@@ -345,8 +345,8 @@ def <currentRule.name>(<args; separator=",">)
 	<else>
 	rescue RecognitionException => re
 		_localctx.exception = re
-		@_errHandler.reportError(self, re)
-		@_errHandler.recover(self, re)
+		@_err_handler.report_error(self, re)
+		@_err_handler.recover(self, re)
 	<endif>
 	ensure
 		<finallyAction>
@@ -386,8 +386,8 @@ def <currentRule.name>( _p<args:{a | , <a>}>)
 
 	rescue RecognitionException => re
 		_localctx.exception = re
-		@_errHandler.reportError(self, re)
-		@_errHandler.recover(self, re)
+		@_err_handler.report_error(self, re)
+		@_err_handler.recover(self, re)
 
 	ensure
 		<finallyAction>
@@ -399,7 +399,7 @@ end
 
 CodeBlockForOuterMostAlt(currentOuterMostAltCodeBlock, locals, preamble, ops) ::= <<
 <if(currentOuterMostAltCodeBlock.altLabel)>_localctx =  <currentOuterMostAltCodeBlock.altLabel; format="cap">Context.new(_localctx)<endif>
-enterOuterAlt(_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
+enter_outer_alt(_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
 <CodeBlockForAlt(currentAltCodeBlock=currentOuterMostAltCodeBlock, ...)>
 >>
 
@@ -411,11 +411,11 @@ CodeBlockForAlt(currentAltCodeBlock, locals, preamble, ops) ::= <<
 >>
 
 LL1AltBlock(choice, preamble, alts, error) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self)
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self)
 <if(choice.label)><labelref(choice.label)> = @_input.LT(1)<endif>
 <preamble; separator="\n">
-case (@_input.LA(1))
+case (@_input.la(1))
 <if(choice.altLook && alts)>
 <choice.altLook, alts:{look, alt | when <look:{l | <parser.name>::<l>}; separator=", ">
 	<alt>}; separator="\n\n">
@@ -426,9 +426,9 @@ end
 >>
 
 LL1OptionalBlock(choice, alts, error) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self)
-case (@_input.LA(1))
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self)
+case (@_input.la(1))
 <choice.altLook,alts:{look,alt| <cases(ttypes=look)>
 	<alt>
 	}; separator="\n">
@@ -437,8 +437,8 @@ end
 >>
 
 LL1OptionalBlockSingleAlt(choice, expr, alts, preamble, error, followExpr) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self)
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self)
 <preamble; separator="\n">
 if (<expr>)
 	<alts; separator="\n">
@@ -447,25 +447,25 @@ end
 >>
 
 LL1StarBlockSingleAlt(choice, loopExpr, alts, preamble, iteration) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self)
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self)
 <preamble; separator="\n">
 while (<loopExpr>)
 	<alts; separator="\n">
-	setState(<choice.loopBackStateNumber>)
-	@_errHandler.sync(self)
+	@_state_number = <choice.loopBackStateNumber>
+	@_err_handler.sync(self)
 	<iteration>
 end
 >>
 
 LL1PlusBlockSingleAlt(choice, loopExpr, alts, preamble, iteration) ::= <<
-setState(<choice.blockStartStateNumber>) <! alt block decision !>
-@_errHandler.sync(self)
+@_state_number = <choice.blockStartStateNumber> <! alt block decision !>
+@_err_handler.sync(self)
 <preamble; separator="\n">
 loop do
 	<alts; separator="\n">
-	setState(<choice.stateNumber>) <! loopback/exit decision !>
-	@_errHandler.sync(self)
+	@_state_number = <choice.stateNumber> <! loopback/exit decision !>
+	@_err_handler.sync(self)
 	<iteration>
  break if (!( <loopExpr>) )
 end
@@ -474,11 +474,11 @@ end
 // LL(*) stuff
 
 AltBlock(choice, preamble, alts, error) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self)
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self)
 <if(choice.label)><labelref(choice.label)> = @_input.LT(1)<endif>
 <preamble; separator="\n">
-case ( @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx) )
+case ( @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx) )
 <alts:{alt |
 when <i>
 	<alt>
@@ -487,9 +487,9 @@ end
 >>
 
 OptionalBlock(choice, alts, error) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self)
-case ( @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx) )
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self)
+case ( @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx) )
 <alts:{alt |
 when <i><if(!choice.ast.greedy)>+1<endif>
 	<alt>
@@ -498,23 +498,23 @@ end
 >>
 
 StarBlock(choice, alts, sync, iteration) ::= <<
-setState(<choice.stateNumber>)
-@_errHandler.sync(self);
-_alt = @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx)
+@_state_number = <choice.stateNumber>
+@_err_handler.sync(self);
+_alt = @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx)
 while ( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 	if ( _alt==1<if(!choice.ast.greedy)>+1<endif> )
 		<iteration>
 		<alts> <! should only be one !>
 	end
-	setState(<choice.loopBackStateNumber>)
-	@_errHandler.sync(self)
-	_alt = @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx)
+	@_state_number = <choice.loopBackStateNumber>
+	@_err_handler.sync(self)
+	_alt = @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx)
 end
 >>
 
 PlusBlock(choice, alts, error) ::= <<
-setState(<choice.blockStartStateNumber>) <! alt block decision !>
-@_errHandler.sync(self)
+@_state_number = <choice.blockStartStateNumber> <! alt block decision !>
+@_err_handler.sync(self)
 _alt = 1<if(!choice.ast.greedy)>+1<endif>
 loop do
 	case (_alt)
@@ -525,9 +525,9 @@ when <i><if(!choice.ast.greedy)>+1<endif>
 	else
 		<error>
 	end
-	setState(<choice.loopBackStateNumber>) <! loopback/exit decision !>
-	@_errHandler.sync(self)
-	_alt = @_interp.adaptivePredict(@_input,<choice.decision>,@_ctx)
+	@_state_number = <choice.loopBackStateNumber> <! loopback/exit decision !>
+	@_err_handler.sync(self)
+	_alt = @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx)
     break if !( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
 end
 >>
@@ -574,7 +574,7 @@ InvokeRule(r, argExprsChunks) ::= <<
 >>
 
 MatchToken(m) ::= <<
-setState(<m.stateNumber>)
+@_state_number = <m.stateNumber>
 <if(m.labels)><m.labels:{l | <labelref(l)> = }><endif>match(<m.name>)
 >>
 
@@ -583,23 +583,23 @@ MatchSet(m, expr, capture) ::= "<CommonSetStuff(m, expr, capture, false)>"
 MatchNotSet(m, expr, capture) ::= "<CommonSetStuff(m, expr, capture, true)>"
 
 CommonSetStuff(m, expr, capture, invert) ::= <<
-setState(<m.stateNumber>)
+@_state_number = <m.stateNumber>
 <if(m.labels)><m.labels:{l | <labelref(l)> = }>@_input.LT(1)<endif>
 <capture>
 if ( <if(invert)><m.varName> \<= 0 || <else>!<endif>(<expr>) )
-	<if(m.labels)><m.labels:{l | <labelref(l)> = (Token)}><endif>_errHandler.recoverInline(self)
+	<if(m.labels)><m.labels:{l | <labelref(l)> = (Token)}><endif>@_err_handler.recover_in_line(self)
 
 else
-	if ( @_input.LA(1)==Token::EOF )
+	if ( @_input.la(1)==Token::EOF )
 	  @matchedEOF = true
 	end
-	@_errHandler.reportMatch(self)
+	@_err_handler.report_match(self)
 	consume()
 end
 >>
 
 Wildcard(w) ::= <<
-setState(<w.stateNumber>)
+@_state_number = <w.stateNumber>
 <if(w.labels)><w.labels:{l | <labelref(l)> = }><endif>matchWildcard()
 >>
 
@@ -610,7 +610,7 @@ Action(a, foo, chunks) ::= "<chunks>"
 ArgAction(a, chunks) ::= "<chunks>"
 
 SemPred(p, chunks, failChunks) ::= <<
-setState(<p.stateNumber>)
+@_state_number = <p.stateNumber>
 if (!(<chunks>))
   raise FailedPredicateException, self, <p.predicate><if(failChunks)>, <failChunks><elseif(p.msg)>, <p.msg><endif>)
 end
@@ -682,32 +682,32 @@ RuleContextListDecl(rdecl) ::= "<rdecl.name> = []"
 
 ContextTokenGetterDecl(t)      ::= <<
 def <t.name>()
-  return getToken(<parser.name>::<t.name>, 0)
+  return token(<parser.name>::<t.name>, 0)
 end
 >>
 ContextTokenListGetterDecl(t)  ::= <<
 def <t.name>()
- return getTokens(<parser.name>::<t.name>)
+ return tokens(<parser.name>::<t.name>)
 end
 >>
 ContextTokenListIndexedGetterDecl(t)  ::= <<
 def <t.name>_i( i)
-	return getToken(<parser.name>::<t.name>, i)
+	return token(<parser.name>::<t.name>, i)
 end
 >>
 ContextRuleGetterDecl(r)       ::= <<
 def <r.name>()
-	return getRuleContext("<r.ctxName>",0)
+	return rule_context("<r.ctxName>",0)
 end
 >>
 ContextRuleListGetterDecl(r)   ::= <<
 def <r.name>()
-	return getRuleContexts("<r.ctxName>")
+	return rule_contexts("<r.ctxName>")
 end
 >>
 ContextRuleListIndexedGetterDecl(r)   ::= <<
 def <r.name>_i( i)
-	return getRuleContext("<r.ctxName>",i)
+	return rule_context("<r.ctxName>",i)
 end
 >>
 
@@ -724,7 +724,7 @@ ImplicitSetLabel(id)		  ::= "_tset<id>"
 ListLabelName(label)		  ::= "<label>"
 
 CaptureNextToken(d) ::= "<d.varName> = @_input.LT(1)"
-CaptureNextTokenType(d) ::= "<d.varName> = @_input.LA(1)"
+CaptureNextTokenType(d) ::= "<d.varName> = @_input.la(1)"
 
 StructDecl(struct,ctorAttrs,attrs,getters,dispatchMethods,interfaces,extensionMembers)
 	::= <<
@@ -764,7 +764,7 @@ end
 >>
 
 ListenerDispatchMethod(method) ::= <<
-def <if(method.isEnter)>enter<else>exit<endif>Rule( listener)
+def <if(method.isEnter)>enter<else>exit<endif>_rule( listener)
 	if ( listener.is_a? <parser.grammarName>Listener )
 	  listener.<if(method.isEnter)>enter<else>exit<endif><struct.derivedFromName; format="cap">(self)
 	end
@@ -860,7 +860,7 @@ Lexer(lexer, atn, actionFuncs, sempredFuncs, superClass) ::= <<
 
 class <lexer.name> <"\<"> <superClass; null="Lexer">
 
-	@_sharedContextCache = PredictionContextCache.new
+	@_shared_context_cache = PredictionContextCache.new
 	<if(lexer.tokens)>
 		<lexer.tokens:{k | <k>=<lexer.tokens.(k)>}; separator="\n", wrap, anchor>
 	<endif>
@@ -908,23 +908,23 @@ class <lexer.name> <"\<"> <superClass; null="Lexer">
 	 return "<lexer.grammarFileName>"
 	end
 
-	def getRuleNames()
+	def rule_names()
 	 return @@ruleNames
 	end
 
-	def getSerializedATN()
+	def serialized_atn()
 	  return @@_serializedATN
 	end
 
-	def getChannelNames()
+	def channel_names()
 	  return @@channelNames
 	end
 
-	def getModeNames()
+	def mode_names()
 	  return @@modeNames
 	end
 
-	def getATN()
+	def atn()
 	 return @@_ATN
 	end
 

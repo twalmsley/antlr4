@@ -73,12 +73,12 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
   end
 
   def sync(recognizer)
-    s = recognizer._interp.atn.states[recognizer.getState]
+    s = recognizer._interp.atn.states[recognizer._state_number]
     #    System.err.println("sync @ "+s.stateNumber+"="+s.getClass().getSimpleName())
     # If already recovering, don't try to sync
     return if error_recovery_mode?(recognizer)
 
-    tokens = recognizer.input_stream
+    tokens = recognizer._input
     la = tokens.la(1)
 
     # try cheaper subset first might get lucky. seems to shave a wee bit off
@@ -94,8 +94,8 @@ class DefaultErrorStrategy < ANTLRErrorStrategy
       if @next_tokens_context.nil?
         # It's possible the next token won't match information tracked
         # by sync is restricted for performance.
-        @next_tokens_context = recognizer.getContext
-        @next_tokens_state = recognizer.getState
+        @next_tokens_context = recognizer._ctx
+        @next_tokens_state = recognizer._state_number
       end
       return
     end

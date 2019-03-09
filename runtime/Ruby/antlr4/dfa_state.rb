@@ -10,9 +10,9 @@ class DFAState
 
   attr_accessor :prediction
 
-  attr_accessor :lexerActionExecutor
+  attr_accessor :lexer_action_executor
 
-  attr_accessor :requiresFullContext
+  attr_accessor :requires_full_context
 
   attr_accessor :predicates
 

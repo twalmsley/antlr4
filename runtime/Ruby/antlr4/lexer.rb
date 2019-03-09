@@ -192,18 +192,6 @@ class Lexer < Recognizer
     @_interp.text(@_input)
   end
 
-  def channel_names
-    nil
-  end
-
-  def mode_names
-    nil
-  end
-
-  def token_names
-    nil
-  end
-
   def all_tokens
     tokens = []
     t = next_token

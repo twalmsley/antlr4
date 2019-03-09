@@ -29,10 +29,10 @@ class ParserATNSimulator < ATNSimulator
     @_outer_context = nil
     @_dfa = nil
 
-    @debug = true
-    @debug_list_atn_decisions = true
-    @dfa_debug = true
-    @retry_debug = true
+    @debug = false
+    @debug_list_atn_decisions = false
+    @dfa_debug = false
+    @retry_debug = false
   end
 
   def clear_dfa
@@ -83,7 +83,7 @@ class ParserATNSimulator < ATNSimulator
 
       alt = exec_atn(dfa, s0, input, index, outer_ctx)
       if @debug
-        puts('DFA after predictATN: ' << dfa.to_s(@parser.get_vocabulary))
+        puts('DFA after predictATN: ' << dfa.to_s2(@parser.get_vocabulary))
       end
       return alt
     ensure
@@ -133,7 +133,7 @@ class ParserATNSimulator < ATNSimulator
         raise exc
       end
 
-      if d.requiresFullContext && @mode != PredictionMode::SLL
+      if d.requires_full_context && @mode != PredictionMode::SLL
         # IF PREDS, MIGHT RESOLVE TO SINGLE ALT => SLL (or syntax error)
         conflicting_alts = d.configs.conflictingAlts
         unless d.predicates.nil?
@@ -230,7 +230,7 @@ class ParserATNSimulator < ATNSimulator
     elsif PredictionMode.has_sll_conflict_terminating_prediction(@mode, reach)
       # MORE THAN ONE VIABLE ALTERNATIVE
       d.configs.conflictingAlts = conflicting_alts(reach)
-      d.requiresFullContext = true
+      d.requires_full_context = true
       # in SLL-only mode, we will stop at this state and return the minimum alt
       d.is_accept_state = true
       d.prediction = d.configs.conflictingAlts.next_set_bit(0)
@@ -860,7 +860,7 @@ class ParserATNSimulator < ATNSimulator
   end
 
   def epsilon_target(config, t, collect_predicates, in_context, full_ctx, treat_eof_as_epsilon)
-    case t.get_serialization_type
+    case t.serialization_type
     when Transition::RULE
       rule_transition(config, t)
 
@@ -1065,7 +1065,7 @@ class ParserATNSimulator < ATNSimulator
     from.edges[t + 1] = to # connect
 
     if @debug
-      puts("DFA=\n" << dfa.to_s(!@parser.nil? ? @parser.get_vocabulary : VocabularyImpl.EMPTY_VOCABULARY))
+      puts("DFA=\n" << dfa.to_s2(!@parser.nil? ? @parser.get_vocabulary : VocabularyImpl.EMPTY_VOCABULARY))
     end
 
     to
@@ -1090,7 +1090,7 @@ class ParserATNSimulator < ATNSimulator
   def report_attempting_full_context(dfa, conflict_alts, configs, start_index, stop_index)
     if @debug || @retry_debug
       interval = Interval.of(start_index, stop_index)
-      puts('reportAttemptingFullContext decision=' << dfa.decision.to_s << ':' << configs.to_s << ', input=' << @parser.getTokenStream.text2(interval).to_s)
+      puts('reportAttemptingFullContext decision=' << dfa.decision.to_s << ':' << configs.to_s << ', input=' << @parser._input.text2(interval).to_s)
     end
     unless @parser.nil?
       @parser.error_listener_dispatch.report_attempting_full_context(@parser, dfa, start_index, stop_index, conflict_alts, configs)
@@ -1100,7 +1100,7 @@ class ParserATNSimulator < ATNSimulator
   def report_context_sensitivity(dfa, prediction, configs, start_index, stop_index)
     if @debug || @retry_debug
       interval = Interval.of(start_index, stop_index)
-      puts('reportContextSensitivity decision=' << dfa.decision.to_s << ':' << configs.to_s << ', input=' << @parser.getTokenStream.text2(interval).to_s)
+      puts('reportContextSensitivity decision=' << dfa.decision.to_s << ':' << configs.to_s << ', input=' << @parser._input.text2(interval).to_s)
     end
     unless @parser.nil?
       @parser.error_listener_dispatch.report_context_sensitivity(@parser, dfa, start_index, stop_index, prediction, configs)
@@ -1110,7 +1110,7 @@ class ParserATNSimulator < ATNSimulator
   def report_ambiguity(dfa, _d, start_index, stop_index, exact, ambig_alts, configs) # configs that LL not SLL considered conflicting
     if @debug || @retry_debug
       interval = Interval.of(start_index, stop_index)
-      puts('reportAmbiguity ' << ambig_alts.to_s << ':' << configs.to_s << ', input=' << @parser.getTokenStream.text2(interval).to_s)
+      puts('reportAmbiguity ' << ambig_alts.to_s << ':' << configs.to_s << ', input=' << @parser._input.text2(interval).to_s)
     end
     unless @parser.nil?
       @parser.error_listener_dispatch.report_ambiguity(@parser, dfa, start_index, stop_index, exact, ambig_alts, configs)

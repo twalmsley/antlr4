@@ -47,6 +47,7 @@ class Parser < Recognizer
   end
 
   attr_accessor :_ctx
+  attr_reader :_input
 
   @@bypass_alts_atn_cache = {}
 
@@ -238,7 +239,7 @@ class Parser < Recognizer
 
   def consume
     o = current_token
-    input_stream.consume if o.type != EOF
+    @_input.consume if o.type != EOF
     has_listener = !@_parse_listeners.nil? && !@_parse_listeners.empty?
     if @_build_parse_trees || has_listener
       if @_err_handler.in_error_recovery_mode(self)
@@ -293,12 +294,12 @@ class Parser < Recognizer
 
     # trigger event on @_ctx, before it reverts to parent
     trigger_exit_rule_event unless @_parse_listeners.nil?
-    setState(@_ctx.invoking_state)
+    @_state_number = @_ctx.invoking_state
     @_ctx = @_ctx.parent
   end
 
   def enter_outer_alt(local_ctx, alt_num)
-    local_ctx.setAltNumber(alt_num)
+    local_ctx.set_alt_number(alt_num)
     # if we have new local_ctx, make sure we replace existing ctx
     # that is previous child of parse tree
     if @_build_parse_trees && @_ctx != local_ctx

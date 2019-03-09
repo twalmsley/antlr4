@@ -42,14 +42,14 @@ class DFA
     @s0.edges[precedence]
   end
 
-  def precedence_start_state2(precedence, startState)
+  def precedence_start_state2(precedence, start_state)
     unless precedence_dfa?
       raise IllegalStateException, 'Only precedence DFAs may contain a precedence start state.'
     end
 
     return if precedence < 0
 
-    @s0.edges[precedence] = startState
+    @s0.edges[precedence] = start_state
   end
 
   def precedence_dfa(precedence_dfa)
@@ -58,7 +58,7 @@ class DFA
     end
   end
 
-  def states
+  def get_states
     result = @states.keys
     result.sort! { |i, j| i.state_number - j.state_number }
 
@@ -69,11 +69,11 @@ class DFA
     to_s2(VocabularyImpl.EMPTY_VOCABULARY)
   end
 
-  def to_s1(tokenNames)
+  def to_s1(token_names)
     return '' if @s0.nil?
 
     serializer = DFASerializer.new
-    serializer.init_from_token_names(self, tokenNames)
+    serializer.init_from_token_names(self, token_names)
     serializer.to_s
   end
 

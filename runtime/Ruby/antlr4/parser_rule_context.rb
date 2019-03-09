@@ -30,10 +30,10 @@ class ParserRuleContext < RuleContext
     @children = []
   end
 
-  def enter_rule(listener)
+  def enter_rule(_listener)
   end
 
-  def exit_rule(listener)
+  def exit_rule(_listener)
   end
 
   def add_any_child(t)
@@ -47,7 +47,7 @@ class ParserRuleContext < RuleContext
   end
 
   def add_child_terminal_node(t)
-    t.setParent(self)
+    t.parent = self
     add_any_child(t)
   end
 

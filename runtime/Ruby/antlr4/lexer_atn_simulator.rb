@@ -34,8 +34,8 @@ class LexerATNSimulator < ATNSimulator
 
   def initialize(recog, atn, decision_to_dfa, shared_context_cache)
     super(atn, shared_context_cache)
-    @@debug = true
-    @dfa_debug = true
+    @@debug = false
+    @dfa_debug = false
 
     @decision_to_dfa = decision_to_dfa
     @recog = recog
@@ -468,7 +468,7 @@ class LexerATNSimulator < ATNSimulator
 
     unless first_config_with_rule_stop_state.nil?
       proposed.is_accept_state = true
-      proposed.lexerActionExecutor = first_config_with_rule_stop_state.lexer_action_executor
+      proposed.lexer_action_executor = first_config_with_rule_stop_state.lexer_action_executor
       proposed.prediction = atn.rule_to_token_type[first_config_with_rule_stop_state.state.rule_index]
     end
 

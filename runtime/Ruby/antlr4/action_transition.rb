@@ -10,7 +10,7 @@ class ActionTransition < Transition
     @is_ctx_dependent = is_ctx_dependent
   end
 
-  def get_serialization_type
+  def serialization_type
     ACTION
   end
 

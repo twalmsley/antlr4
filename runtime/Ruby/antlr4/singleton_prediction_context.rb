@@ -12,6 +12,10 @@ class SingletonPredictionContext < PredictionContext
     @return_state = return_state
   end
 
+  def get_parent(_i)
+    @parent
+  end
+
   def size
     1
   end

@@ -14,7 +14,7 @@ class DFASerializer
     return nil if @dfa.s0.nil?
 
     buf = ''
-    states = @dfa.states
+    states = @dfa.get_states
     states.each do |s|
       n = 0
       n = s.edges.length unless s.edges.nil?
@@ -43,7 +43,7 @@ class DFASerializer
 
   def state_string(s)
     n = s.state_number
-    base_state_str = (s.is_accept_state ? ':' : '') << 's' << n.to_s << (s.requiresFullContext ? '^' : '')
+    base_state_str = (s.is_accept_state ? ':' : '') << 's' << n.to_s << (s.requires_full_context ? '^' : '')
     if s.is_accept_state
       if !s.predicates.nil?
         preds = ''
@@ -56,5 +56,6 @@ class DFASerializer
         return base_state_str << '=>' << @vocabulary.symbolic_name(s.prediction)
       end
     end
+    base_state_str
   end
 end
