@@ -1,10 +1,9 @@
-require '../antlr4/ATNConfig'
+require '../antlr4/atn_config'
 
 cfg = ATNConfig.new
 
-depth = cfg.getOuterContextDepth
+depth = cfg.outer_context_depth
 
-puts "depth is not a number" if !depth.is_a? Fixnum
-puts depth if depth >0
-puts depth if depth <=0
-
+puts 'depth is not a number' unless depth.is_a? Integer
+puts depth if depth > 0
+puts depth if depth <= 0

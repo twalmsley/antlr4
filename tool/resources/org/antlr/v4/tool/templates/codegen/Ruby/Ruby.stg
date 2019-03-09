@@ -40,11 +40,11 @@ rubyTypeInitMap ::= [
 ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-require '../antlr4/PredictionContextCache'
-require '../antlr4/Parser'
-require '../antlr4/ParserATNSimulator'
-require '../antlr4/ParserRuleContext'
-require '../antlr4/RecognitionException'
+require '../antlr4/prediction_context_cache'
+require '../antlr4/parser'
+require '../antlr4/parser_atn_simulator'
+require '../antlr4/parser_rule_context'
+require '../antlr4/recognition_exception'
 require "../../../../tmp/ruby/<file.grammarName>Listener"
 require "../../../../tmp/ruby/<file.grammarName>Visitor"
 
@@ -74,7 +74,7 @@ ListenerFile(file, header, namedActions) ::= <<
 module <file.genPackage>
 <endif>
 <header>
-require '../antlr4/ParseTreeListener'
+require '../antlr4/parse_tree_listener'
 
 class <file.grammarName>Listener \< ParseTreeListener
 	<file.listenerNames:{lname |
@@ -94,9 +94,9 @@ end
 BaseListenerFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 <header>
-require '../antlr4/ParserRuleContext'
-require '../antlr4/ErrorNode'
-require '../antlr4/TerminalNode'
+require '../antlr4/parser_rule_context'
+require '../antlr4/error_node'
+require '../antlr4/terminal_node'
 require '../../../../tmp/ruby/<file.grammarName>Listener'
 
 <if(file.genPackage)>
@@ -133,7 +133,7 @@ end
 
 VisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
-require '../antlr4/ParseTreeVisitor'
+require '../antlr4/parse_tree_visitor'
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -154,7 +154,7 @@ end
 BaseVisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-require '../antlr4/AbstractParseTreeVisitor'
+require '../antlr4/abstract_parse_tree_visitor'
 
 
 <if(file.genPackage)>
@@ -286,8 +286,8 @@ parser_ctor(p) ::= <<
 def initialize( input)
 	super(input)
 	i = 0
-	while i \< @@_ATN.getNumberOfDecisions()
-		@@_decisionToDFA[i] = DFA.new(@@_ATN.getDecisionState(i), i)
+	while i \< @@_ATN.number_of_decisions()
+		@@_decisionToDFA[i] = DFA.new(@@_ATN.decision_state(i), i)
 		i+=1
 	end
 
@@ -329,8 +329,8 @@ RuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,namedActions,fina
 <altLabelCtxs:{l | <altLabelCtxs.(l)>}; separator="\n">
 
 def <currentRule.name>(<args; separator=",">)
-	_localctx =  <currentRule.ctxType>.new(@_ctx, getState()<currentRule.args:{a | , <a.name>}>)
-	enterRule(_localctx, <currentRule.startState>, RULE_<currentRule.name>)
+	_localctx =  <currentRule.ctxType>.new(@_ctx, @_state_number<currentRule.args:{a | , <a.name>}>)
+	enter_rule(_localctx, <currentRule.startState>, RULE_<currentRule.name>)
 	<namedActions.init>
 	<locals; separator="\n">
 	begin
@@ -350,7 +350,7 @@ def <currentRule.name>(<args; separator=",">)
 	<endif>
 	ensure
 		<finallyAction>
-		exitRule()
+		exit_rule()
 	end
 	return _localctx
 end
@@ -369,7 +369,7 @@ end
 
 def <currentRule.name>( _p<args:{a | , <a>}>)
 	 _parentctx = _ctx
-	 _parentState = getState()
+	 _parentState = @_state_number
 	_localctx =  <currentRule.ctxType>.new(_ctx, _parentState<currentRule.args:{a | , <a.name>}>)
 	 @_prevctx = _localctx
 	 _startState = <currentRule.startState>
@@ -569,7 +569,7 @@ cases(ttypes) ::= <<
 >>
 
 InvokeRule(r, argExprsChunks) ::= <<
-setState(<r.stateNumber>)
+@_state_number = <r.stateNumber>
 <if(r.labels)><r.labels:{l | <labelref(l)> = }><endif><r.name>(<if(r.ast.options.p)><r.ast.options.p><if(argExprsChunks)>,<endif><endif><argExprsChunks>)
 >>
 
@@ -837,13 +837,13 @@ end
 LexerFile(lexerFile, lexer, namedActions) ::= <<
 <fileHeader(lexerFile.grammarFileName, lexerFile.ANTLRVersion)>
 <namedActions.header>
-require '../antlr4/ATNDeserializer'
-require '../antlr4/LexerATNSimulator'
-require '../antlr4/DFA'
-require '../antlr4/Token'
-require '../antlr4/PredictionContextCache'
-require '../antlr4/VocabularyImpl'
-require '../antlr4/Lexer'
+require '../antlr4/atn_deserializer'
+require '../antlr4/lexer_atn_simulator'
+require '../antlr4/dfa'
+require '../antlr4/token'
+require '../antlr4/Prediction_context_cache'
+require '../antlr4/vocabulary_impl'
+require '../antlr4/lexer'
 
 <if(lexerFile.genPackage)>
 module <lexerFile.genPackage>
@@ -896,8 +896,8 @@ class <lexer.name> <"\<"> <superClass; null="Lexer">
 		super(input)
 
 		i = 0
-		while i \< @@_ATN.getNumberOfDecisions()
-			@@_decisionToDFA[i] = DFA.new(@@_ATN.getDecisionState(i), i)
+		while i \< @@_ATN.number_of_decisions()
+			@@_decisionToDFA[i] = DFA.new(@@_ATN.decision_state(i), i)
 			i+=1
 		end
 
