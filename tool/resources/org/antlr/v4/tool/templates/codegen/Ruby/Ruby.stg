@@ -40,13 +40,9 @@ rubyTypeInitMap ::= [
 ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-require '../antlr4/prediction_context_cache'
-require '../antlr4/parser'
-require '../antlr4/parser_atn_simulator'
-require '../antlr4/parser_rule_context'
-require '../antlr4/recognition_exception'
-require "../../../../tmp/ruby/<file.grammarName>Listener"
-require "../../../../tmp/ruby/<file.grammarName>Visitor"
+require 'antlr4/runtime'
+require "modl/parser/<file.grammarName>Listener"
+require "modl/parser/<file.grammarName>Visitor"
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -74,9 +70,9 @@ ListenerFile(file, header, namedActions) ::= <<
 module <file.genPackage>
 <endif>
 <header>
-require '../antlr4/parse_tree_listener'
+require 'antlr4/runtime'
 
-class <file.grammarName>Listener \< ParseTreeListener
+class <file.grammarName>Listener \< Antlr4::Runtime::ParseTreeListener
 	<file.listenerNames:{lname |
 
 def enter<lname; format="cap">(ctx)
@@ -94,10 +90,8 @@ end
 BaseListenerFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 <header>
-require '../antlr4/parser_rule_context'
-require '../antlr4/error_node'
-require '../antlr4/terminal_node'
-require '../../../../tmp/ruby/<file.grammarName>Listener'
+require 'antlr4/runtime'
+require 'modl/parser/<file.grammarName>Listener'
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -133,14 +127,14 @@ end
 
 VisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
-require '../antlr4/parse_tree_visitor'
+require 'antlr4/runtime'
 
 <if(file.genPackage)>
 module <file.genPackage>
 <endif>
 <header>
 
-class <file.grammarName>Visitor \< ParseTreeVisitor
+class <file.grammarName>Visitor \< Antlr4::Runtime::ParseTreeVisitor
 	<file.visitorNames:{lname |
 def visit<lname; format="cap">(ctx)
 end}; separator="\n">
@@ -154,7 +148,7 @@ end
 BaseVisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-require '../antlr4/abstract_parse_tree_visitor'
+require 'antlr4/runtime'
 
 
 <if(file.genPackage)>
@@ -162,7 +156,7 @@ module <file.genPackage>
 <endif>
 <header>
 
- class <file.grammarName>BaseVisitor \< AbstractParseTreeVisitor
+ class <file.grammarName>BaseVisitor \< Antlr4::Runtime::AbstractParseTreeVisitor
 	<file.visitorNames:{lname |
 def visit<lname; format="cap">( ctx)
  return visit_children(ctx)
@@ -186,12 +180,12 @@ Parser(parser, funcs, atn, sempredFuncs, superClass) ::= <<
 
 Parser_(parser, funcs, atn, sempredFuncs, ctor, superClass) ::= <<
 
-class <parser.name> \< <superClass; null="Parser">
+class <parser.name> \< <superClass; null="Antlr4::Runtime::Parser">
 
 	class \<\< self
 		@@_decisionToDFA = []
 	end
-	@@_sharedContextCache = PredictionContextCache.new()
+	@@_sharedContextCache = Antlr4::Runtime::PredictionContextCache.new()
 	<if(parser.tokens)>
 		<parser.tokens:{k | <k>=<parser.tokens.(k)>}; separator="\n", wrap, anchor>
 	<endif>
@@ -248,7 +242,7 @@ vocabulary(literalNames, symbolicNames) ::= <<
 		<symbolicNames:{t | <t>}; null="nil", separator=", ", wrap, anchor>
 ]
 
-@@VOCABULARY =  VocabularyImpl.new(@@_LITERAL_NAMES, @@_SYMBOLIC_NAMES)
+@@VOCABULARY =  Antlr4::Runtime::VocabularyImpl.new(@@_LITERAL_NAMES, @@_SYMBOLIC_NAMES)
 
 def getVocabulary
 	@@VOCABULARY
@@ -287,11 +281,11 @@ def initialize( input)
 	super(input)
 	i = 0
 	while i \< @@_ATN.number_of_decisions()
-		@@_decisionToDFA[i] = DFA.new(@@_ATN.decision_state(i), i)
+		@@_decisionToDFA[i] = Antlr4::Runtime::DFA.new(@@_ATN.decision_state(i), i)
 		i+=1
 	end
 
-	@_interp =  ParserATNSimulator.new(self,@@_ATN,@@_decisionToDFA,@@_sharedContextCache)
+	@_interp =  Antlr4::Runtime::ParserATNSimulator.new(self,@@_ATN,@@_decisionToDFA,@@_sharedContextCache)
 end
 >>
 
@@ -728,7 +722,7 @@ CaptureNextTokenType(d) ::= "<d.varName> = @_input.la(1)"
 
 StructDecl(struct,ctorAttrs,attrs,getters,dispatchMethods,interfaces,extensionMembers)
 	::= <<
- class <struct.name> \< <if(contextSuperClass)><contextSuperClass><else>ParserRuleContext<endif><if(interfaces)> <endif>
+ class <struct.name> \< <if(contextSuperClass)><contextSuperClass><else>Antlr4::Runtime::ParserRuleContext<endif><if(interfaces)> <endif>
 	<attrs:{a | attr_accessor :<a>}; separator="\n">
 	<getters:{g | <g>}; separator="\n">
 	<if(ctorAttrs)>def initialize( parent,  invokingState) \n super(parent, invokingState)\nend<endif>
@@ -837,13 +831,7 @@ end
 LexerFile(lexerFile, lexer, namedActions) ::= <<
 <fileHeader(lexerFile.grammarFileName, lexerFile.ANTLRVersion)>
 <namedActions.header>
-require '../antlr4/atn_deserializer'
-require '../antlr4/lexer_atn_simulator'
-require '../antlr4/dfa'
-require '../antlr4/token'
-require '../antlr4/Prediction_context_cache'
-require '../antlr4/vocabulary_impl'
-require '../antlr4/lexer'
+require 'antlr4/runtime'
 
 <if(lexerFile.genPackage)>
 module <lexerFile.genPackage>
@@ -858,9 +846,9 @@ end
 
 Lexer(lexer, atn, actionFuncs, sempredFuncs, superClass) ::= <<
 
-class <lexer.name> <"\<"> <superClass; null="Lexer">
+class <lexer.name> <"\<"> <superClass; null="Antlr4::Runtime::Lexer">
 
-	@_shared_context_cache = PredictionContextCache.new
+	@_shared_context_cache = Antlr4::Runtime::PredictionContextCache.new
 	<if(lexer.tokens)>
 		<lexer.tokens:{k | <k>=<lexer.tokens.(k)>}; separator="\n", wrap, anchor>
 	<endif>
@@ -897,11 +885,11 @@ class <lexer.name> <"\<"> <superClass; null="Lexer">
 
 		i = 0
 		while i \< @@_ATN.number_of_decisions()
-			@@_decisionToDFA[i] = DFA.new(@@_ATN.decision_state(i), i)
+			@@_decisionToDFA[i] = Antlr4::Runtime::DFA.new(@@_ATN.decision_state(i), i)
 			i+=1
 		end
 
-		@_interp = LexerATNSimulator.new(self,@@_ATN,@@_decisionToDFA,@_sharedContextCache)
+		@_interp = Antlr4::Runtime::LexerATNSimulator.new(self,@@_ATN,@@_decisionToDFA,@_sharedContextCache)
 	end
 
 	def getGrammarFileName()
@@ -942,7 +930,7 @@ SerializedATN(model) ::= <<
 @@_serializedATN = ["<model.serialized; wrap={",<\n>    "}>"].join("")
 <endif>
 
-@@_ATN = ATNDeserializer.new().deserialize(@@_serializedATN)
+@@_ATN = Antlr4::Runtime::ATNDeserializer.new().deserialize(@@_serializedATN)
 
 >>
 
