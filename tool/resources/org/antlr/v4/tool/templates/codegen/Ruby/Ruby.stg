@@ -337,7 +337,7 @@ def <currentRule.name>(<args; separator=",">)
 	<if(exceptions)>
 	<exceptions; separator="\n">
 	<else>
-	rescue RecognitionException => re
+	rescue Antlr4::Runtime::RecognitionException => re
 		_localctx.exception = re
 		@_err_handler.report_error(self, re)
 		@_err_handler.recover(self, re)
@@ -378,7 +378,7 @@ def <currentRule.name>( _p<args:{a | , <a>}>)
 		<postamble; separator="\n">
 		<namedActions.after>
 
-	rescue RecognitionException => re
+	rescue Antlr4::Runtime::RecognitionException => re
 		_localctx.exception = re
 		@_err_handler.report_error(self, re)
 		@_err_handler.recover(self, re)
@@ -495,7 +495,7 @@ StarBlock(choice, alts, sync, iteration) ::= <<
 @_state_number = <choice.stateNumber>
 @_err_handler.sync(self);
 _alt = @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx)
-while ( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
+while ( _alt!=<choice.exitAlt> && _alt!=Antlr4::Runtime::ATN::INVALID_ALT_NUMBER )
 	if ( _alt==1<if(!choice.ast.greedy)>+1<endif> )
 		<iteration>
 		<alts> <! should only be one !>
@@ -522,13 +522,13 @@ when <i><if(!choice.ast.greedy)>+1<endif>
 	@_state_number = <choice.loopBackStateNumber> <! loopback/exit decision !>
 	@_err_handler.sync(self)
 	_alt = @_interp.adaptive_predict(@_input,<choice.decision>,@_ctx)
-    break if !( _alt!=<choice.exitAlt> && _alt!=ATN::INVALID_ALT_NUMBER )
+    break if !( _alt!=<choice.exitAlt> && _alt!=Antlr4::Runtime::ATN::INVALID_ALT_NUMBER )
 end
 >>
 
 Sync(s) ::= "sync(<s.expecting.name>);"
 
-ThrowNoViableAlt(t) ::= "raise NoViableAltException self"
+ThrowNoViableAlt(t) ::= "raise Antlr4::Runtime::NoViableAltException self"
 
 TestSetInline(s) ::= <<
 <s.bitsets:{bits | <if(rest(rest(bits.ttypes)))><bitsetBitfieldComparison(s, bits)><else><bitsetInlineComparison(s, bits)><endif>}; separator=" || ">
@@ -584,7 +584,7 @@ if ( <if(invert)><m.varName> \<= 0 || <else>!<endif>(<expr>) )
 	<if(m.labels)><m.labels:{l | <labelref(l)> = (Token)}><endif>@_err_handler.recover_in_line(self)
 
 else
-	if ( @_input.la(1)==Token::EOF )
+	if ( @_input.la(1)==Antlr4::Runtime::Token::EOF )
 	  @matchedEOF = true
 	end
 	@_err_handler.report_match(self)
@@ -606,7 +606,7 @@ ArgAction(a, chunks) ::= "<chunks>"
 SemPred(p, chunks, failChunks) ::= <<
 @_state_number = <p.stateNumber>
 if (!(<chunks>))
-  raise FailedPredicateException, self, <p.predicate><if(failChunks)>, <failChunks><elseif(p.msg)>, <p.msg><endif>)
+  raise Antlr4::Runtime::FailedPredicateException, self, <p.predicate><if(failChunks)>, <failChunks><elseif(p.msg)>, <p.msg><endif>)
 end
 >>
 
