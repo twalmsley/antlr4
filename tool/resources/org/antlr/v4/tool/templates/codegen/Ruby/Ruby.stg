@@ -41,18 +41,16 @@ ParserFile(file, parser, namedActions, contextSuperClass) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
 require 'antlr4/runtime'
-require "modl/parser/<file.grammarName>Listener"
-require "modl/parser/<file.grammarName>Visitor"
 
 <if(file.genPackage)>
 module <file.genPackage>
 <endif>
 
 <if(file.genListener)>
-the<file.grammarName>Listener = <file.grammarName>Listener.new
+@@the<file.grammarName>Listener = <file.grammarName>Listener.new
 <endif>
 <if(file.genVisitor)>
-the<file.grammarName>Visitor = <file.grammarName>Visitor.new
+@@the<file.grammarName>Visitor = <file.grammarName>Visitor.new
 <endif>
 
 <namedActions.header>
@@ -91,7 +89,6 @@ BaseListenerFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 <header>
 require 'antlr4/runtime'
-require 'modl/parser/<file.grammarName>Listener'
 
 <if(file.genPackage)>
 module <file.genPackage>
@@ -925,7 +922,7 @@ SerializedATN(model) ::= <<
 @@_serializedATNSegments = <length(model.segments)>
 <model.segments:{segment|@@_serializedATNSegment<i0> =
 	"<segment; wrap={"+<\n><\t>"}>"}; separator="\n">
-@@_serializedATN = Utils.join([<model.segments:{segment | _serializedATNSegment<i0>}; separator=",\n">],"")
+@@_serializedATN = [<model.segments:{segment | @@_serializedATNSegment<i0>}; separator=",\n">].join("")
 <else>
 @@_serializedATN = ["<model.serialized; wrap={",<\n>    "}>"].join("")
 <endif>
