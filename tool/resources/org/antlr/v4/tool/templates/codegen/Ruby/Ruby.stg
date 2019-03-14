@@ -768,7 +768,7 @@ def accept(visitor)
 	if ( visitor.is_a? <parser.grammarName>Visitor )
 	  return visitor.visit<struct.derivedFromName; format="cap">(self)
 	else
-	 return visitor.visitChildren(self)
+	 return visitor.visit_children(self)
 	end
 end
 >>
