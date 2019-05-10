@@ -756,7 +756,7 @@ end
 
 ListenerDispatchMethod(method) ::= <<
 def <if(method.isEnter)>enter<else>exit<endif>_rule( listener)
-	if ( listener.is_a? <parser.grammarName>Listener )
+	if ( listener.respond_to?(:<if(method.isEnter)>enter<else>exit<endif><struct.derivedFromName; format="cap">) )
 	  listener.<if(method.isEnter)>enter<else>exit<endif><struct.derivedFromName; format="cap">(self)
 	end
 end
@@ -765,7 +765,7 @@ end
 VisitorDispatchMethod(method) ::= <<
 
 def accept(visitor)
-	if ( visitor.is_a? <parser.grammarName>Visitor )
+	if ( visitor.respond_to?(:visit<struct.derivedFromName; format="cap">) )
 	  return visitor.visit<struct.derivedFromName; format="cap">(self)
 	else
 	 return visitor.visit_children(self)
