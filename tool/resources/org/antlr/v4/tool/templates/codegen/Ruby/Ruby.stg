@@ -525,7 +525,7 @@ end
 
 Sync(s) ::= "sync(<s.expecting.name>);"
 
-ThrowNoViableAlt(t) ::= "raise Antlr4::Runtime::NoViableAltException self"
+ThrowNoViableAlt(t) ::= "raise Antlr4::Runtime::NoViableAltException, self"
 
 TestSetInline(s) ::= <<
 <s.bitsets:{bits | <if(rest(rest(bits.ttypes)))><bitsetBitfieldComparison(s, bits)><else><bitsetInlineComparison(s, bits)><endif>}; separator=" || ">
@@ -556,7 +556,7 @@ bitsetInlineComparison(s, bits) ::= <%
 %>
 
 cases(ttypes) ::= <<
-<ttypes:{t | when <t>}; separator="\n">
+when <ttypes:{t | <t>}; separator=", ">
 >>
 
 InvokeRule(r, argExprsChunks) ::= <<
